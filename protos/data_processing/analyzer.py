@@ -12,59 +12,42 @@ class Analyzer:
 
     '''
     def __init__(self, logger=None):
-        self.logger = getLogger(logger.name).getChild(self.__name__) \
-            if logger else None
+        self.logger = getLogger(logger.name).getChild(
+                self.__class__.__name__) if logger else None
 
-    def feature_type_split(self, data, special_list=[], uniq_disc_num_max=100):
+    def get_null_stat(self, target_df, sort_target=False, ascending=False):
         r'''
-        a function which categorises the columns of input data to three types,
-        namely, cattegorical, discrete numerical, and continuous numerical.
-
-        * Example usage
-        >>> cat_list, dis_num_list, num_list = feature_type_split(
-                application_train, special_list=['AMT_REQ_CREDIT_BUREAU_YEAR'])
-        >>> cat_list
-        ['NAME_CONTRACT_TYPE', 'CODE_GENDER', ... ,'EMERGENCYSTATE_MODE']
-        >>> dis_num_list
-        ['TARGET', 'CNT_CHILDREN', ... ,'AMT_REQ_CREDIT_BUREAU_YEAR']
-        >>> num_list
-        ['SK_ID_CURR', 'AMT_INCOME_TOTAL', ... ,'DAYS_LAST_PHONE_CHANGE']
-
+        return null count and percentge for each columns of target_df
 
         Parameters
         --------------------
-        data : DataFrame
-            the dataframe about which you want to categorize
-        special_list : list of strings
-            the list of column names which you specifically use as
-            discrete numerical features.
-        uniq_disc_num_max : integer
-            the number of uniq elements which used to separate discrete
-            and continous numbers.
-            (continuous case tend to has more types of uniq numbers.)
+        target_df : DataFrame
+            the dataframe about which you want to get null stat
+        sort_target : string
+            the column name based on which you want to sort the result.
+        ascending : bool
+            the flag which specifes if you want to sort in acsending order.
+            you can use this only when you specify sort_target.
 
         Results
         --------------------
-        cat_list : list of columns
-            the list of categorical features.
-
-        dis_num_list : list of columns
-            the list of discrete numerical features.
-
-        num_list : list of columns
-            the list of continuous numerical features.
+        res_df : DataFrame
+            the dataframe which contains the null stats of target_df
 
         '''
-        cat_list = []
-        dis_num_list = []
-        num_list = []
-        for i in data.columns.tolist():
-            if data[i].dtype == 'object':
-                cat_list.append(i)
-            elif data[i].nunique() < uniq_disc_num_max:
-                dis_num_list.append(i)
-            elif i in special_list:     # if you want to add some special cases
-                dis_num_list.append(i)
-            else:
-                num_list.append(i)
-        return cat_list, dis_num_list, num_list
+        if type(sort_target) != str:
+            raise TypeError('arg sort_target should be str.')
+
+        total_count = target_df.shape[0]
+        null_count = target_df.isnull().sum().values
+        null_ratio = null_count / total_count
+        if sort_target:
+            res_df = pd.DataFrame(data={'null_count': null_count,
+                                        'null_ratio': null_ratio},
+                                  index=target_df.columns.values).sort_values(
+                                        sort_target, ascending=ascending)
+        else:
+            res_df = pd.DataFrame(data={'null_count': null_count,
+                                        'null_ratio': null_ratio},
+                                  index=target_df.columns.values)
+        return res_df
