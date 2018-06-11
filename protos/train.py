@@ -4,6 +4,7 @@ from sklearn.metrics import log_loss, roc_auc_score, auc, roc_curve
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, ParameterGrid
 from sklearn.neural_network import MLPClassifier
+from xgboost import XGBClassifier
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn import metrics
 from sklearn.feature_selection import VarianceThreshold
@@ -64,13 +65,16 @@ def main():
 #    exit(0)
 
     all_params = {
-#        'max_iter': [1],
-        'hidden_layer_sizes': [(100)],
+        'max_iter': [100],
+        'solver': ['lbfgs', 'adam'],
+        'hidden_layer_sizes': [(20, )],
         'verbose': [True],
         'early_stopping': [True],
         'validation_fraction': [0.3],
         'random_state': [777],
     }
+
+#    all_params = {}
 
     # logistic regression params
 #    all_params = {
@@ -117,13 +121,14 @@ def main():
 
     logger.info('start re-training')
     clf = MLPClassifier(**best_params)
-    #clf = LogisticRegression(**best_params)
+#    clf = XGBClassifier(**best_params)
+    # clf = LogisticRegression(**best_params)
     clf.fit(x_train, y_train)
 
     logger.info('train end')
 
 #    x_test = sel.transform(x_test)
-    res = clf.predict_proba(x_test)[:,1]
+    res = clf.predict_proba(x_test)[:, 1]
 
     logger.info('formatting the test result...')
     res_df = pd.DataFrame({
