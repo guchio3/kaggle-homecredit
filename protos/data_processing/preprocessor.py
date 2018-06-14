@@ -173,9 +173,8 @@ class Preprocessor:
             if target_df[col].dtype == 'object'\
                     or col in additional_features:
                 if self.logger:
-                    self.logger.debug('encoding the category {} \
-                        as onehot style...'.format(col))
-                tmp = pd.get_dummies(target_df[col], col)
+                    self.logger.debug('encoding the category {}'.format(col))
+                tmp = pd.get_dummies(target_df[col], col, drop_first=True)
                 for col2 in tmp.columns.values:
                     target_df[col2] = tmp[col2].values
                 target_df.drop(col, axis=1, inplace=True)

@@ -39,10 +39,13 @@ class DataIO:
                     for key in filenames_dict}
         return res_dict
 
-    def save_csv(self, target_df, filename):
+    def save_csv(self, target_df, filename, index, withtime=False):
+        if withtime:
+            filename = filename.split('.')[0] + \
+                       '_{}'.format(self.current_time) + filename.split('.')[1]
         if self.logger:
             self.logger.info('saving dataframe to {}'.format(filename))
-        target_df.to_csv(filename, index=False)
+        target_df.to_csv(filename, index=index)
         if self.logger:
             self.logger.info('successfully saved')
 
