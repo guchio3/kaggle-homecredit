@@ -4,6 +4,7 @@ import pandas as pd
 
 from tqdm import tqdm
 from logging import getLogger
+from collections import Counter
 
 from data_processing.imputers import CustomImputer
 
@@ -173,10 +174,38 @@ class Preprocessor:
             if target_df[col].dtype == 'object'\
                     or col in additional_features:
                 if self.logger:
-                    self.logger.debug('encoding the category {} \
-                        as onehot style...'.format(col))
-                tmp = pd.get_dummies(target_df[col], col)
+                    self.logger.debug('encoding the category {}'.format(col))
+                tmp = pd.get_dummies(target_df[col], col, drop_first=True)
                 for col2 in tmp.columns.values:
                     target_df[col2] = tmp[col2].values
                 target_df.drop(col, axis=1, inplace=True)
+        return target_df
+
+    def down_sampling(self, target_df, target_column):
+        r'''
+        down-sample the values.
+
+        Parameters
+        --------------------
+        target_df : DataFrame
+            the dataframe to which you want to apply onehot encoding.
+        target_column : (basically) strings
+            the names of columns based on which you want to apply
+            down sampling
+
+        Results
+        --------------------
+        target_df : DataFrame
+            the dataframe which is applied down sampling
+        '''
+        if self.logger:
+            self.logger.info('applying down sampling...'.format())
+        counter = Counter(target_df[target_column].values)
+        mincnt = min(counter.values())
+        target_df = pd.concat([
+            target_df[
+                target_df[target_column] == sample_value].sample(mincnt)
+                for sample_value in target_df[target_column].unique()
+            ])
+
         return target_df
