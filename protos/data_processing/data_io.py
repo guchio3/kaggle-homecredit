@@ -17,7 +17,15 @@ class DataIO:
         self.logger = getLogger(logger.name).getChild(
             self.__class__.__name__) if logger else None
         self.tdatetime = datetime.datetime.now()
-        self.current_time = self.tdatetime.strftime('%Y-%m-%d_%H-%M-%S')
+        self.current_time = self.tdatetime.strftime('%Y-%m-%d-%H-%M-%S')
+
+    def _add_time(self, filename):
+        filename_sp = filename.split('/')
+        filename_sp[-1] = '.'.join(filename_sp[-1].split('.')[:-1]) + \
+            '_{}'.format(self.current_time) \
+            + '.' + filename_sp[-1].split('.')[-1]
+        filename = '/'.join(filename_sp)
+        return filename
 
     def read_csv(self, filename):
         if self.logger:
@@ -41,8 +49,7 @@ class DataIO:
 
     def save_csv(self, target_df, filename, index, withtime=False):
         if withtime:
-            filename = filename.split('.')[0] + \
-                       '_{}'.format(self.current_time) + filename.split('.')[1]
+            filename = self._add_time(filename)
         if self.logger:
             self.logger.info('saving dataframe to {}'.format(filename))
         target_df.to_csv(filename, index=index)
