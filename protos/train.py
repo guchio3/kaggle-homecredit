@@ -98,7 +98,7 @@ def main():
     all_params = {
         'max_iter': [200],
         'solver': ['adam'],
-        'hidden_layer_sizes': [(30, ), (30, 30), (100, ), (100, 100), (100, 30)],
+        'hidden_layer_sizes': [(30, ), (100, 30)],
         #'hidden_layer_sizes': [(30, )],
 #        'hidden_layer_sizes': [(30, ), (30, 30), (100, ), (200, ), ],
 #        'verbose': [True],
@@ -106,8 +106,9 @@ def main():
 #        'early_stopping': [False, ],
 #        'validation_fraction': [0.15],
         'random_state': [0],
-        'learning_rate_init': [0.00001, 0.000001],
-        'alpha': [0.1, 0.],
+        'learning_rate_init': [0.00001, ],
+        'alpha': [0.1, ],
+        'batch_norm': [(True, ), (False, ), (False, True)],
         'dropout': [(0.0, ), (0.1, 0.3), (0., 0.3), (0.1, 0.2)],
     }
 
