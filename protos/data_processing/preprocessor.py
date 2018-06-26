@@ -19,7 +19,7 @@ class Preprocessor:
 
     def __init__(self, logger=None):
         self.logger = getLogger(logger.name).getChild(
-                self.__class__.__name__) if logger else None
+            self.__class__.__name__) if logger else None
 
     def impute(self, target_df, target_column_list, missing_values="NaN",
                strategy='mean', axis=0, verbose=0, copy=True):
@@ -73,7 +73,7 @@ class Preprocessor:
         #                  strategy='mean', axis=0, verbose=0, copy=True)
         imputer = CustomImputer(strategy=strategy)
         target_df[target_column_list] = imputer.fit_transform(
-                target_df[target_column_list])
+            target_df[target_column_list])
         if self.logger:
             self.logger.info('data imputing done.')
         return target_df
@@ -134,7 +134,7 @@ class Preprocessor:
 
     def foldout(self, train_df, test_size, seed=0):
         self.logger.info(
-                'foldout training data (test size : {})'.format(test_size))
+            'foldout training data (test size : {})'.format(test_size))
         np.random.seed(seed)
 
         df_size = train_df.shape[0]
@@ -145,7 +145,8 @@ class Preprocessor:
 
         return res_train_df, res_val_df
 
-    def onehot_encoding(self, target_df, additional_features=[]):
+    def onehot_encoding(self, target_df,
+                        additional_features=[], drop_first=True):
         r'''
         Encode the categorical columns of the input df into onehot style.
         This function recognizes the columns as categorical ones if the type
@@ -170,16 +171,20 @@ class Preprocessor:
         '''
         if self.logger:
             self.logger.info('encoding dataframe as onehot style'.format())
+        original_columns = list(target_df.columns)
         for col in tqdm(target_df.columns.values):
             if target_df[col].dtype == 'object'\
                     or col in additional_features:
                 if self.logger:
                     self.logger.debug('encoding the category {}'.format(col))
-                tmp = pd.get_dummies(target_df[col], col, drop_first=True)
+                tmp = pd.get_dummies(
+                    target_df[col], col, drop_first=drop_first)
                 for col2 in tmp.columns.values:
                     target_df[col2] = tmp[col2].values
                 target_df.drop(col, axis=1, inplace=True)
-        return target_df
+        new_columns = [c for c in target_df.columns
+                       if c not in original_columns]
+        return target_df, new_columns
 
     def down_sampling(self, target_df, target_column):
         r'''
@@ -205,7 +210,7 @@ class Preprocessor:
         target_df = pd.concat([
             target_df[
                 target_df[target_column] == sample_value].sample(mincnt)
-                for sample_value in target_df[target_column].unique()
-            ])
+            for sample_value in target_df[target_column].unique()
+        ])
 
         return target_df
