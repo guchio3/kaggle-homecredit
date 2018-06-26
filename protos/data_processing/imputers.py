@@ -13,16 +13,21 @@ class CustomImputer(BaseEstimator, TransformerMixin):
         if self.strategy in ['mean', 'median']:
             if not all(np.isin(X.dtypes,
                                [np.dtype('int32'), np.dtype('int64'),
-                                   np.dtype('float32'), np.dtype('float64')])):
-                raise ValueError('dtypes mismatch np.number dtype is \
-                                 required for {}. (your dtypes are {}.)\
-                                 '.format(self.strategy, X.dtypes))
+                                   np.dtype('float32'), np.dtype('float64'),
+                                   np.dtype('uint8')])):
+                raise ValueError('''dtypes mismatch np.number dtype is \
+                                 required for {}. your dtypes are {}.\
+                                 '''.format(self.strategy, X.dtypes))
         if self.strategy == 'mean':
             self.fill = X.mean()
         elif self.strategy == 'median':
             self.fill = X.median()
         elif self.strategy == 'most_frequent':
             self.fill = X.mode().iloc[0]
+        elif self.strategy == 'min':
+            self.fill = X.min()
+        elif self.strategy == 'max':
+            self.fill = X.max()
         elif self.strategy == 'fill':
             if isinstance(self.fill, list) and isinstance(X, pd.DataFrame):
                 self.fill = dict([(cname, v)

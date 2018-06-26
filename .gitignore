@@ -1,4 +1,4 @@
 ./inputs/
-./log.txt
+./log/
 
 *.pyc

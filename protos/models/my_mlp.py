@@ -1,27 +1,32 @@
-import os
 import numpy as np
-import random as rn
 import tensorflow as tf
 
 # from keras import Model
 from keras import regularizers
 from keras.layers import Input, Dense, Activation, BatchNormalization, Dropout
+from keras.layers import PReLU
 from keras.models import Model
 from keras.optimizers import SGD, Adam, RMSprop
 from keras.callbacks import EarlyStopping
+from keras import regularizers
 
 from .callbacks.interval_evalation import IntervalEvaluation
+
+import os
+import random as rn
+from logging import getLogger
 
 
 class myMLPClassifier():
     def __init__(self, hidden_layer_sizes=(100, ),
                  batch_norm=(False, False), dropout=(0.0, 0.0, ),
-                 activation='relu', solver='adam',
+                 activation=PReLU, solver='adam',
+                 #                 activation='relu', solver='adam',
                  batch_size='auto', learning_rate='constant',
                  learning_rate_init=0.001, alpha=0.0001,
                  power_t=0.5, max_iter=200,
                  verbose=1, random_state=None, tol=0.0001,
-                 validation_fraction=0.1, eval_set=None):
+                 validation_fraction=0.0, eval_set=None, logger=None):
         if random_state:
             os.environ['PYTHONHASHSEED'] = '0'
             np.random.seed(random_state)
@@ -48,6 +53,7 @@ class myMLPClassifier():
 #        self.batch_norm = [BatchNormalization(axis=-1) if b else None
 #                           for b in batch_norm]
         self.batch_norm = batch_norm
+        self.activation = activation
         self.batch_size = 200 if batch_size == 'auto' else batch_size
         self.learning_rate = learning_rate
         self.alpha = alpha
@@ -58,13 +64,17 @@ class myMLPClassifier():
         self.validation_split = validation_fraction
         self.validation_data = eval_set
         if solver == 'sgd':
-            self.optimizer = SGD(lr=learning_rate_init, )
+            self.optimizer = SGD(lr=learning_rate_init, decay=0.05)
         elif solver == 'adam':
             self.optimizer = Adam(lr=learning_rate_init, )
         elif solver == 'rmsprop':
             self.optimizer = RMSprop(lr=learning_rate_init, )
         else:
             assert(NotImplementedError)
+
+        assert logger, 'ERROR: please set logger.'
+        self.logger = getLogger(logger.name).getChild(
+            self.__class__.__name__) if logger else None
 
     def build(self, input_shape, output_shape):
         inputs = Input(shape=input_shape, )
@@ -74,7 +84,8 @@ class myMLPClassifier():
 #        x = self.batch_norm[0](x) if self.batch_norm[0] else x
         for l, d, b in zip(
                 self.hidden_layers, self.dropout[1:], self.batch_norm[1:]):
-            x = Dense(l, activation='relu')(x)
+            x = Dense(l, activation='relu',
+                      kernel_regularizer=regularizers.l2(self.alpha))(x)
             x = Dropout(d)(x)
             x = BatchNormalization(axis=-1, )(x) if b else x
 #            x = l(x)
@@ -87,16 +98,21 @@ class myMLPClassifier():
             x = Dense(output_shape, activation='softmax')(x)
         self.model = Model(inputs, x)
         self.model.compile(self.optimizer, loss='binary_crossentropy',
+                           # self.model.compile(self.optimizer,
+                           # loss='mean_squared_error',
                            metrics=['accuracy'],)
 #                           kernel_regularizer=regularizers.l2(self.alpha))
 
-    def fit(self, x, y, eval_set=None):
+    def fit(self, x, y, eval_set=None, use_callbacks=True):
         self.build(x[0].shape, y[0].shape)
         callbacks = []
+        if eval_set and use_callbacks:
+            callbacks.append(IntervalEvaluation(validation_data=eval_set,
+                                                logger=self.logger))
+#        callbacks.append(EarlyStopping(monitor='roc_auc_val',
         callbacks.append(EarlyStopping(monitor='val_loss',
+                                       # min_delta=0.0001, patience=3))
                                        min_delta=0.0001, patience=2))
-        if eval_set:
-            callbacks.append(IntervalEvaluation(validation_data=eval_set))
         self.model.fit(x=x, y=y,
                        validation_data=eval_set,
                        batch_size=self.batch_size,
