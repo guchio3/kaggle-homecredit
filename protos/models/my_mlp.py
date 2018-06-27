@@ -11,6 +11,7 @@ from keras.callbacks import EarlyStopping
 from keras import regularizers
 
 from .callbacks.interval_evalation import IntervalEvaluation
+from .objectives.pair_loss import pair_loss
 
 import os
 import random as rn
@@ -20,8 +21,7 @@ from logging import getLogger
 class myMLPClassifier():
     def __init__(self, hidden_layer_sizes=(100, ),
                  batch_norm=(False, False), dropout=(0.0, 0.0, ),
-                 activation=PReLU, solver='adam',
-                 #                 activation='relu', solver='adam',
+                 activation='relu', solver='adam',
                  batch_size='auto', learning_rate='constant',
                  learning_rate_init=0.001, alpha=0.0001,
                  power_t=0.5, max_iter=200,
@@ -64,7 +64,7 @@ class myMLPClassifier():
         self.validation_split = validation_fraction
         self.validation_data = eval_set
         if solver == 'sgd':
-            self.optimizer = SGD(lr=learning_rate_init, decay=0.05)
+            self.optimizer = SGD(lr=learning_rate_init, decay=0.1)
         elif solver == 'adam':
             self.optimizer = Adam(lr=learning_rate_init, )
         elif solver == 'rmsprop':
@@ -97,7 +97,8 @@ class myMLPClassifier():
         else:
             x = Dense(output_shape, activation='softmax')(x)
         self.model = Model(inputs, x)
-        self.model.compile(self.optimizer, loss='binary_crossentropy',
+        self.model.compile(self.optimizer, loss=pair_loss,
+        #self.model.compile(self.optimizer, loss='binary_crossentropy',
                            # self.model.compile(self.optimizer,
                            # loss='mean_squared_error',
                            metrics=['accuracy'],)

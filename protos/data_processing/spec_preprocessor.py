@@ -85,7 +85,7 @@ class HomeCreditPreprocessor(Preprocessor):
 
     def fe_application(self, df):
         # Optional: Remove 4 applications with XNA CODE_GENDER (train set)
-        df = df[df['CODE_GENDER'] != 'XNA']
+#        df = df[df['CODE_GENDER'] != 'XNA']
 
         # NaN values for DAYS_EMPLOYED: 365.243 -> nan
         df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)

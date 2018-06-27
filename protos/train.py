@@ -12,6 +12,12 @@ from sklearn.feature_selection import VarianceThreshold
 
 from keras.utils import plot_model
 from keras.backend import tensorflow_backend as backend
+from keras import backend as K
+K.set_session(K.tf.Session(
+    config=K.tf.ConfigProto(
+#        intra_op_parallelism_threads=2, 
+#        inter_op_parallelism_threads=2)))
+         device_count={'CPU': 8})))
 
 from tqdm import tqdm
 from logging import getLogger
@@ -121,8 +127,9 @@ def main():
 
     all_params = {
         'max_iter': [200],
-        'solver': ['adam', 'sgd'],
-        'hidden_layer_sizes': [(250, 40)],
+        'solver': ['sgd'],
+        #'solver': ['sgd', 'adam'],
+        'hidden_layer_sizes': [(250, 70), ],
 #        'hidden_layer_sizes': [(400, 40)],
         #'hidden_layer_sizes': [(150, 35), (300, 50), (500, 100), (500, 50), (400, 40)],
         #'hidden_layer_sizes': [(150, 35)],
@@ -130,11 +137,11 @@ def main():
 #        'hidden_layer_sizes': [(30, ), (30, 30, 30, ), (100, 30)],
         'random_state': [0],
 #        'learning_rate_init': [0.00001, ],
-#        'learning_rate_init': [0.0003, ],
-        'learning_rate_init': [0.003, ],
-        'alpha': [0.1, ],
+        'learning_rate_init': [0.7, ],
+        'alpha': [0.05, 0.0, ],
+        'batch_size': [200, 256, 512],
         'batch_norm': [(False, True), ],
-        'dropout': [(0.1, 0.3, )],
+        'dropout': [(0.05, 0.5, 0.2)],
 #        'dropout': [(0.1, 0.3), (0.1, 0.5)],
     }
 
@@ -160,11 +167,10 @@ def main():
     i = 0
     for params in tqdm(list(ParameterGrid(all_params))):
         logger.info('params: {}'.format(params))
+        list_score = []
         for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
             x_trn, x_val = x_train[trn_idx], x_train[val_idx]
             y_trn, y_val = y_train[trn_idx], y_train[val_idx]
-
-            list_score = []
 
 #            clf = MLPClassifier(**params)
             clf = myMLPClassifier(logger=logger, **params)
@@ -183,11 +189,10 @@ def main():
             else:
                 trained_model_ids[i] = [clf, ]
 #            if len(trained_model_ids[i]) > 1:
-#                break
+                break
 
         auc_score = np.array(list_score).mean()
         logger.info('avg auc score of the current cv : {}'.format(auc_score))
-        list_score = []
         if max_score < auc_score:
             max_score = auc_score
             best_params = params
