@@ -199,6 +199,13 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg.columns = pd.Index(
             ['PREV_' + e[0] + "_" + e[1].upper()
              for e in df_agg.columns.tolist()])
+        df_agg_5 = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
+            groupby('SK_ID_CURR').\
+            agg({**num_aggregations, **cat_aggregations})
+        df_agg_5.columns = pd.Index(
+            ['PREV_5_' + e[0] + "_" + e[1].upper()
+             for e in df_agg_5.columns.tolist()])
+        df_agg = df_agg.join(df_agg_5, how='left', on='SK_ID_CURR')
         # previous Applications: Approved Applications - only numerical features
         approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
         approved_agg = approved.groupby('SK_ID_CURR').head(HEAD_SIZE)\
