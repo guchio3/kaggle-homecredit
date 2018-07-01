@@ -47,14 +47,14 @@ class HomeCreditPreprocessor(Preprocessor):
                     if col in special_list:
                         self.logger.info('{} + was null...'.format(col))
                         df['WAS_NAN_' + col] = \
-                            df[col].isnull()
+                            df[col].isnull().astype(int)
                 else:
                     null_count = df[col].isnull().sum()
                     null_ratio = null_count / total_count
                     if null_ratio > null_rat_th:
                         self.logger.info('{} + was null...'.format(col))
                         df['WAS_NAN_' + col] = \
-                            df[col].isnull()
+                            df[col].isnull().astype(int)
         else:
             assert NotImplementedError
         return df
@@ -85,16 +85,67 @@ class HomeCreditPreprocessor(Preprocessor):
 
     def fe_application(self, df):
         # Optional: Remove 4 applications with XNA CODE_GENDER (train set)
-#        df = df[df['CODE_GENDER'] != 'XNA']
+        #        df = df[df['CODE_GENDER'] != 'XNA']
+
+        docs = [_f for _f in df.columns if 'FLAG_DOC' in _f]
+        live = [_f for _f in df.columns if ('FLAG_' in _f) &
+                ('FLAG_DOC' not in _f) & ('_FLAG_' not in _f)]
 
         # NaN values for DAYS_EMPLOYED: 365.243 -> nan
         df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)
-        # Some simple new features (percentages)
-        df['DAYS_EMPLOYED_PERC'] = df['DAYS_EMPLOYED'] / df['DAYS_BIRTH']
-        df['INCOME_CREDIT_PERC'] = df['AMT_INCOME_TOTAL'] / df['AMT_CREDIT']
-        df['INCOME_PER_PERSON'] = df['AMT_INCOME_TOTAL'] / df['CNT_FAM_MEMBERS']
-        df['ANNUITY_INCOME_PERC'] = df['AMT_ANNUITY'] / df['AMT_INCOME_TOTAL']
-        df['PAYMENT_RATE'] = df['AMT_ANNUITY'] / df['AMT_CREDIT']
+
+        inc_by_org = df[['AMT_INCOME_TOTAL', 'ORGANIZATION_TYPE']].groupby(
+            'ORGANIZATION_TYPE').median()['AMT_INCOME_TOTAL']
+
+        df['NEW_CREDIT_TO_ANNUITY_RATIO'] = \
+            df['AMT_CREDIT'] / df['AMT_ANNUITY']
+        df['NEW_CREDIT_TO_GOODS_RATIO'] = \
+            df['AMT_CREDIT'] / df['AMT_GOODS_PRICE']
+        df['NEW_DOC_IND_KURT'] = df[docs].kurtosis(axis=1)
+        df['NEW_LIVE_IND_SUM'] = df[live].sum(axis=1)
+        df['NEW_INC_PER_CHLD'] = df['AMT_INCOME_TOTAL'] / \
+            (1 + df['CNT_CHILDREN'])
+        df['NEW_INC_BY_ORG'] = df['ORGANIZATION_TYPE'].map(inc_by_org)
+        df['NEW_EMPLOY_TO_BIRTH_RATIO'] = \
+            df['DAYS_EMPLOYED'] / df['DAYS_BIRTH']
+        df['NEW_ANNUITY_TO_INCOME_RATIO'] = df['AMT_ANNUITY'] / \
+            (1 + df['AMT_INCOME_TOTAL'])
+        df['NEW_SOURCES_PROD'] = df['EXT_SOURCE_1'] * \
+            df['EXT_SOURCE_2'] * df['EXT_SOURCE_3']
+        df['NEW_EXT_SOURCES_MEAN'] = df[['EXT_SOURCE_1',
+                                         'EXT_SOURCE_2',
+                                         'EXT_SOURCE_3']].mean(axis=1)
+        df['NEW_SCORES_STD'] = df[['EXT_SOURCE_1',
+                                   'EXT_SOURCE_2', 'EXT_SOURCE_3']].std(axis=1)
+        df['NEW_SCORES_STD'] = df['NEW_SCORES_STD'].fillna(
+            df['NEW_SCORES_STD'].mean())
+        df['NEW_CAR_TO_BIRTH_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_BIRTH']
+        df['NEW_CAR_TO_EMPLOY_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_EMPLOYED']
+        df['NEW_PHONE_TO_BIRTH_RATIO'] = df['DAYS_LAST_PHONE_CHANGE'] / \
+            df['DAYS_BIRTH']
+        df['NEW_PHONE_TO_BIRTH_RATIO_EMPLOYER'] = \
+            df['DAYS_LAST_PHONE_CHANGE'] / \
+            df['DAYS_EMPLOYED']
+        df['NEW_CREDIT_TO_INCOME_RATIO'] = df['AMT_CREDIT'] / \
+            df['AMT_INCOME_TOTAL']
+
+        # Categorical features with Binary encode (0 or 1; two categories)
+        for bin_feature in ['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY']:
+            df[bin_feature], uniques = pd.factorize(df[bin_feature])
+#        # Categorical features with One-Hot encode
+#        df, cat_cols = self.onehot_encoding(df)
+        dropcolum = ['FLAG_DOCUMENT_2', 'FLAG_DOCUMENT_4',
+                     'FLAG_DOCUMENT_5', 'FLAG_DOCUMENT_6',
+                     'FLAG_DOCUMENT_7', 'FLAG_DOCUMENT_8',
+                     'FLAG_DOCUMENT_9', 'FLAG_DOCUMENT_10',
+                     'FLAG_DOCUMENT_11', 'FLAG_DOCUMENT_12',
+                     'FLAG_DOCUMENT_13', 'FLAG_DOCUMENT_14',
+                     'FLAG_DOCUMENT_15', 'FLAG_DOCUMENT_16',
+                     'FLAG_DOCUMENT_17', 'FLAG_DOCUMENT_18',
+                     'FLAG_DOCUMENT_19', 'FLAG_DOCUMENT_20',
+                     'FLAG_DOCUMENT_21']
+        df = df.drop(dropcolum, axis=1)
+        gc.collect()
         return df
 
     def fe_application_prev(self, df):
@@ -112,15 +163,15 @@ class HomeCreditPreprocessor(Preprocessor):
         df['APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
         # Previous applications numeric features
         num_aggregations = {
-            'AMT_ANNUITY': ['min', 'max', 'mean'],
-            'AMT_APPLICATION': ['min', 'max', 'mean'],
-            'AMT_CREDIT': ['min', 'max', 'mean'],
-            'APP_CREDIT_PERC': ['min', 'max', 'mean', 'var'],
-            'AMT_DOWN_PAYMENT': ['min', 'max', 'mean'],
-            'AMT_GOODS_PRICE': ['min', 'max', 'mean'],
-            'HOUR_APPR_PROCESS_START': ['min', 'max', 'mean'],
-            'RATE_DOWN_PAYMENT': ['min', 'max', 'mean'],
-            'DAYS_DECISION': ['min', 'max', 'mean'],
+            'AMT_ANNUITY': ['max', 'mean'],
+            'AMT_APPLICATION': ['max', 'mean'],
+            'AMT_CREDIT': ['max', 'mean'],
+            'APP_CREDIT_PERC': ['max', 'mean'],
+            'AMT_DOWN_PAYMENT': ['max', 'mean'],
+            'AMT_GOODS_PRICE': ['max', 'mean'],
+            'HOUR_APPR_PROCESS_START': ['max', 'mean'],
+            'RATE_DOWN_PAYMENT': ['max', 'mean'],
+            'DAYS_DECISION': ['max', 'mean'],
             'CNT_PAYMENT': ['mean', 'sum'],
         }
         # Previous applications categorical features
@@ -135,6 +186,7 @@ class HomeCreditPreprocessor(Preprocessor):
         # dfious Applications: Approved Applications - only numerical features
         approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
         approved_agg = approved.groupby('SK_ID_CURR').agg(num_aggregations)
+        app_agg_cols = approved_agg.columns.tolist()
         approved_agg.columns = pd.Index(
             ['APPROVED_' + e[0] + "_" + e[1].upper()
              for e in approved_agg.columns.tolist()])
@@ -148,6 +200,12 @@ class HomeCreditPreprocessor(Preprocessor):
              for e in refused_agg.columns.tolist()])
         df_agg = df_agg.join(refused_agg, how='left', on='SK_ID_CURR')
         del refused, refused_agg, approved, approved_agg, df
+
+        for e in app_agg_cols:
+            df_agg['NEW_RATIO_PREV_' + e[0] + "_" + e[1].upper()] = \
+                    df_agg['APPROVED_' + e[0] + "_" + e[1].upper()] /\
+                    df_agg['REFUSED_' + e[0] + "_" + e[1].upper()]
+
         gc.collect()
         return df_agg
 
@@ -170,13 +228,13 @@ class HomeCreditPreprocessor(Preprocessor):
 
         # Bureau and bureau_balance numeric features
         num_aggregations = {
-            'DAYS_CREDIT': ['min', 'max', 'mean', 'var'],
-            'DAYS_CREDIT_ENDDATE': ['min', 'max', 'mean'],
+            'DAYS_CREDIT': ['mean', 'var'],
+            'DAYS_CREDIT_ENDDATE': ['mean'],
             'DAYS_CREDIT_UPDATE': ['mean'],
-            'CREDIT_DAY_OVERDUE': ['max', 'mean'],
+            'CREDIT_DAY_OVERDUE': ['mean'],
             'AMT_CREDIT_MAX_OVERDUE': ['mean'],
-            'AMT_CREDIT_SUM': ['max', 'mean', 'sum'],
-            'AMT_CREDIT_SUM_DEBT': ['max', 'mean', 'sum'],
+            'AMT_CREDIT_SUM': ['mean', 'sum'],
+            'AMT_CREDIT_SUM_DEBT': ['mean', 'sum'],
             'AMT_CREDIT_SUM_OVERDUE': ['mean'],
             'AMT_CREDIT_SUM_LIMIT': ['mean', 'sum'],
             'AMT_ANNUITY': ['max', 'mean'],
@@ -256,8 +314,8 @@ class HomeCreditPreprocessor(Preprocessor):
             'NUM_INSTALMENT_VERSION': ['nunique'],
             'DPD': ['max', 'mean', 'sum'],
             'DBD': ['max', 'mean', 'sum'],
-            'PAYMENT_PERC': ['max', 'mean', 'sum', 'var'],
-            'PAYMENT_DIFF': ['max', 'mean', 'sum', 'var'],
+            'PAYMENT_PERC': ['mean', 'var'],
+            'PAYMENT_DIFF': ['mean', 'var'],
             'AMT_INSTALMENT': ['max', 'mean', 'sum'],
             'AMT_PAYMENT': ['min', 'max', 'mean', 'sum'],
             'DAYS_ENTRY_PAYMENT': ['max', 'mean', 'sum']
@@ -269,7 +327,7 @@ class HomeCreditPreprocessor(Preprocessor):
             ['INSTAL_' + e[0] + "_" + e[1].upper()
                 for e in df_agg.columns.tolist()])
         # Count dftallments accounts
-        df_agg['dfTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg['INSTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
         del df
         gc.collect()
         return df_agg

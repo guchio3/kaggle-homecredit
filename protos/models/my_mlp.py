@@ -7,11 +7,11 @@ from keras.layers import Input, Dense, Activation, BatchNormalization, Dropout
 from keras.layers import PReLU
 from keras.models import Model
 from keras.optimizers import SGD, Adam, RMSprop
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras import regularizers
 
 from .callbacks.interval_evalation import IntervalEvaluation
-from .objectives.pair_loss import pair_loss
+from .objectives.pair_loss import pair_loss, pair_loss_with_BCE
 
 import os
 import random as rn
@@ -97,23 +97,33 @@ class myMLPClassifier():
         else:
             x = Dense(output_shape, activation='softmax')(x)
         self.model = Model(inputs, x)
-        self.model.compile(self.optimizer, loss=pair_loss,
-        #self.model.compile(self.optimizer, loss='binary_crossentropy',
+#        self.model.compile(self.optimizer, loss=pair_loss_with_BCE,
+#        self.model.compile(self.optimizer, loss=pair_loss,
+        self.model.compile(self.optimizer, loss='binary_crossentropy',
                            # self.model.compile(self.optimizer,
                            # loss='mean_squared_error',
                            metrics=['accuracy'],)
 #                           kernel_regularizer=regularizers.l2(self.alpha))
 
-    def fit(self, x, y, eval_set=None, use_callbacks=True):
+    def load_weights(self, load_filename):
+        self.logger.info('loading params from {}...'.format(load_filename))
+        self.model.load_weights(load_filename)
+
+    def fit(self, x, y, eval_set=None, best_model_filename='temp_model.h5'):
         self.build(x[0].shape, y[0].shape)
         callbacks = []
-        if eval_set and use_callbacks:
+        if eval_set:
             callbacks.append(IntervalEvaluation(validation_data=eval_set,
                                                 logger=self.logger))
 #        callbacks.append(EarlyStopping(monitor='roc_auc_val',
-        callbacks.append(EarlyStopping(monitor='val_loss',
-                                       # min_delta=0.0001, patience=3))
-                                       min_delta=0.0001, patience=2))
+            callbacks.append(EarlyStopping(monitor='val_loss',
+                                        min_delta=0.0001, patience=3))
+#                                       min_delta=0.0001, patience=2))
+        if best_model_filename:
+            callbacks.append(ModelCheckpoint(
+                filepath=best_model_filename,
+                monitor='val_loss',
+                save_best_only=True))
         self.model.fit(x=x, y=y,
                        validation_data=eval_set,
                        batch_size=self.batch_size,
