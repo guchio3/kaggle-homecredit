@@ -122,7 +122,7 @@ def main():
     x_test = test_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
 
     all_params = {
-#        'nthread': [4],
+        'nthread': [15],
         # is_unbalance=True,
         'n_estimators': [10000],
         'learning_rate': [0.02],
