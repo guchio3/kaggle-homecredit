@@ -87,10 +87,10 @@ def main():
         'BURO_AMT_CREDIT_SUM_DEBT_MEAN',
         ])
 #    bureau_df = prep.auto_impute(bureau_df)
-    pos_df = prep.fe_pos_cash(pos_df, special_list=[
+    pos_df = prep.fe_pos_cash(pos_df)
+    pos_df = prep.add_was_null(pos_df, special_list=[
         'POS_MONTHS_BALANCE_SIZE',
         ])
-    pos_df = prep.add_was_null(pos_df)
 #    pos_df = prep.auto_impute(pos_df)
     ins_df = prep.fe_installments_payments(ins_df)
     ins_df = prep.add_was_null(ins_df, special_list=[
@@ -117,8 +117,8 @@ def main():
     train_and_test_df = train_and_test_df.merge(
             cred_df, on='SK_ID_CURR', how='left')
 
-    train_and_test_df = prep.auto_impute(
-            train_and_test_df, mode='min')
+#    train_and_test_df = prep.auto_impute(
+#            train_and_test_df, mode='min')
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 

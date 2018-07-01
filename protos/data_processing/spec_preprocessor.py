@@ -8,6 +8,9 @@ import gc
 from .preprocessor import Preprocessor
 
 
+HEAD_SIZE = 100
+
+
 class HomeCreditPreprocessor(Preprocessor):
     def __init__(self, logger=None,
                  train_df=None, test_df=None, prev_app_df=None,
@@ -110,15 +113,19 @@ class HomeCreditPreprocessor(Preprocessor):
             df['DAYS_EMPLOYED'] / df['DAYS_BIRTH']
         df['NEW_ANNUITY_TO_INCOME_RATIO'] = df['AMT_ANNUITY'] / \
             (1 + df['AMT_INCOME_TOTAL'])
-        df['NEW_SOURCES_PROD'] = df['EXT_SOURCE_1'] * \
+        df['NEW_EXT_SOURCES_PROD'] = df['EXT_SOURCE_1'] * \
             df['EXT_SOURCE_2'] * df['EXT_SOURCE_3']
         df['NEW_EXT_SOURCES_MEAN'] = df[['EXT_SOURCE_1',
                                          'EXT_SOURCE_2',
                                          'EXT_SOURCE_3']].mean(axis=1)
-        df['NEW_SCORES_STD'] = df[['EXT_SOURCE_1',
-                                   'EXT_SOURCE_2', 'EXT_SOURCE_3']].std(axis=1)
-        df['NEW_SCORES_STD'] = df['NEW_SCORES_STD'].fillna(
-            df['NEW_SCORES_STD'].mean())
+        df['NEW_EXT_SCORES_STD'] = df[['EXT_SOURCE_1',
+                                       'EXT_SOURCE_2',
+                                       'EXT_SOURCE_3']].std(axis=1)
+        df['NEW_EXT_SOURCE_1M2'] = df['EXT_SOURCE_1'] - df['EXT_SOURCE_2']
+        df['NEW_EXT_SOURCE_2M3'] = df['EXT_SOURCE_2'] - df['EXT_SOURCE_3']
+        df['NEW_EXT_SOURCE_3M1'] = df['EXT_SOURCE_3'] - df['EXT_SOURCE_1']
+#        df['NEW_EXT_SCORES_STD'] = df['NEW_EXT_SCORES_STD'].fillna(
+#            df['NEW_SCORES_STD'].mean())
         df['NEW_CAR_TO_BIRTH_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_BIRTH']
         df['NEW_CAR_TO_EMPLOY_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_EMPLOYED']
         df['NEW_PHONE_TO_BIRTH_RATIO'] = df['DAYS_LAST_PHONE_CHANGE'] / \
@@ -133,7 +140,6 @@ class HomeCreditPreprocessor(Preprocessor):
         for bin_feature in ['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY']:
             df[bin_feature], uniques = pd.factorize(df[bin_feature])
 #        # Categorical features with One-Hot encode
-#        df, cat_cols = self.onehot_encoding(df)
         dropcolum = ['FLAG_DOCUMENT_2', 'FLAG_DOCUMENT_4',
                      'FLAG_DOCUMENT_5', 'FLAG_DOCUMENT_6',
                      'FLAG_DOCUMENT_7', 'FLAG_DOCUMENT_8',
@@ -149,6 +155,15 @@ class HomeCreditPreprocessor(Preprocessor):
         return df
 
     def fe_application_prev(self, df):
+        # add raw sequential information processing fe
+        seq_agg = {
+            'NAME_CONTRACT_STATUS': ['first']
+        }
+        seq_agg = df.groupby('SK_ID_CURR').agg(
+            {**seq_agg})
+        seq_agg.columns = pd.Index(
+            ['PREV_SEQ_' + e[0] + "_" + e[1].upper()
+             for e in seq_agg.columns.tolist()])
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
         self.logger.info(
             'categorial features of previous application are... {}'
@@ -178,33 +193,42 @@ class HomeCreditPreprocessor(Preprocessor):
         cat_aggregations = {}
         for cat in cat_cols:
             cat_aggregations[cat] = ['mean']
-        df_agg = df.groupby('SK_ID_CURR').agg(
-            {**num_aggregations, **cat_aggregations})
+        df_agg = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
+            groupby('SK_ID_CURR').\
+            agg({**num_aggregations, **cat_aggregations})
         df_agg.columns = pd.Index(
             ['PREV_' + e[0] + "_" + e[1].upper()
              for e in df_agg.columns.tolist()])
-        # dfious Applications: Approved Applications - only numerical features
+        # previous Applications: Approved Applications - only numerical features
         approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
-        approved_agg = approved.groupby('SK_ID_CURR').agg(num_aggregations)
-        app_agg_cols = approved_agg.columns.tolist()
+        approved_agg = approved.groupby('SK_ID_CURR').head(HEAD_SIZE)\
+            .groupby('SK_ID_CURR').\
+            agg(num_aggregations)
+#        app_agg_cols = approved_agg.columns.tolist()
         approved_agg.columns = pd.Index(
             ['APPROVED_' + e[0] + "_" + e[1].upper()
              for e in approved_agg.columns.tolist()])
-        #df_agg = df_agg.join(approved_agg, how='left', on='SK_ID_CURR')
         df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
         # dfious Applications: Refused Applications - only numerical features
         refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
-        refused_agg = refused.groupby('SK_ID_CURR').agg(num_aggregations)
+        refused_agg = refused.groupby('SK_ID_CURR').head(HEAD_SIZE)\
+            .groupby('SK_ID_CURR')\
+            .agg(num_aggregations)
         refused_agg.columns = pd.Index(
             ['REFUSED_' + e[0] + "_" + e[1].upper()
              for e in refused_agg.columns.tolist()])
         df_agg = df_agg.join(refused_agg, how='left', on='SK_ID_CURR')
+        df_agg['PREV_CNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg['PREV_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
+        df_agg['PREV_REFUSED_RATIO'] = df_agg['PREV_CNT'] /\
+            df_agg['PREV_REFUSED_CNT']
+        df_agg = df_agg.merge(seq_agg, how='left', on='SK_ID_CURR')
         del refused, refused_agg, approved, approved_agg, df
 
-        for e in app_agg_cols:
-            df_agg['NEW_RATIO_PREV_' + e[0] + "_" + e[1].upper()] = \
-                    df_agg['APPROVED_' + e[0] + "_" + e[1].upper()] /\
-                    df_agg['REFUSED_' + e[0] + "_" + e[1].upper()]
+#        for e in app_agg_cols:
+#            df_agg['NEW_RATIO_PREV_' + e[0] + "_" + e[1].upper()] = \
+#                    df_agg['APPROVED_' + e[0] + "_" + e[1].upper()] /\
+#                    df_agg['REFUSED_' + e[0] + "_" + e[1].upper()]
 
         gc.collect()
         return df_agg
@@ -284,15 +308,15 @@ class HomeCreditPreprocessor(Preprocessor):
             'SK_DPD': ['max', 'mean'],
             'SK_DPD_DEF': ['max', 'mean']
         }
-        for cat in cat_cols:
-            aggregations[cat] = ['mean']
+#        for cat in cat_cols:
+#            aggregations[cat] = ['mean']
 
         df_agg = df.groupby('SK_ID_CURR').agg(aggregations)
         df_agg.columns = pd.Index(
             ['POS_' + e[0] + "_" + e[1].upper()
                 for e in df_agg.columns.tolist()])
         # Count df cash accounts
-        df_agg['df_COUNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg['POS_COUNT'] = df.groupby('SK_ID_CURR').size()
         del df
         gc.collect()
         return df_agg
