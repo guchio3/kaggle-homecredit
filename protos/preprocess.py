@@ -126,8 +126,8 @@ def main():
 #    prep.add_prev_loan_cnt()
 
     logger.info('saving train and test dfs...')
-    dataio.save_csv(train_df, '../inputs/my_train_2_w_missing_and_was_null_with_prev5.csv', index=False)
-    dataio.save_csv(test_df, '../inputs/my_test_2_w_missing_and_was_null_with_prev5.csv', index=False)
+    dataio.save_csv(train_df, '../inputs/my_train_2_w_missing_and_was_null_with_prev3.csv', index=False)
+    dataio.save_csv(test_df, '../inputs/my_test_2_w_missing_and_was_null_with_prev3.csv', index=False)
 #    dataio.save_csv(prep.train_df, '../inputs/my_train_2.csv', index=False)
 #    dataio.save_csv(prep.test_df, '../inputs/my_test_2.csv', index=False)
 

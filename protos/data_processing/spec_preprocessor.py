@@ -9,6 +9,7 @@ from .preprocessor import Preprocessor
 
 
 HEAD_SIZE = 100
+SUB_HEAD_SIZE = 3
 
 
 class HomeCreditPreprocessor(Preprocessor):
@@ -199,13 +200,13 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg.columns = pd.Index(
             ['PREV_' + e[0] + "_" + e[1].upper()
              for e in df_agg.columns.tolist()])
-        df_agg_5 = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
             groupby('SK_ID_CURR').\
             agg({**num_aggregations, **cat_aggregations})
-        df_agg_5.columns = pd.Index(
-            ['PREV_5_' + e[0] + "_" + e[1].upper()
-             for e in df_agg_5.columns.tolist()])
-        df_agg = df_agg.join(df_agg_5, how='left', on='SK_ID_CURR')
+        df_agg_pref.columns = pd.Index(
+            ['PREV_PREF_' + e[0] + "_" + e[1].upper()
+             for e in df_agg_pref.columns.tolist()])
+        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
         # previous Applications: Approved Applications - only numerical features
         approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
         approved_agg = approved.groupby('SK_ID_CURR').head(HEAD_SIZE)\
@@ -286,6 +287,13 @@ class HomeCreditPreprocessor(Preprocessor):
         bureau_agg.columns = pd.Index(
             ['BURO_' + e[0] + "_" + e[1].upper()
                 for e in bureau_agg.columns.tolist()])
+        bureau_agg_pref = bureau.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+            groupby('SK_ID_CURR').\
+            agg({**num_aggregations, **cat_aggregations})
+        bureau_agg_pref.columns = pd.Index(
+            ['BURO_PREF' + e[0] + "_" + e[1].upper()
+                for e in bureau_agg_pref.columns.tolist()])
+        bureau_agg = bureau_agg.join(bureau_agg_pref, how='left', on='SK_ID_CURR')
         # Bureau: Active credits - using only numerical aggregations
         active = bureau[bureau['CREDIT_ACTIVE_Active'] == 1]
         active_agg = active.groupby('SK_ID_CURR').agg(num_aggregations)
@@ -322,6 +330,12 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg.columns = pd.Index(
             ['POS_' + e[0] + "_" + e[1].upper()
                 for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+                groupby('SK_ID_CURR').agg(aggregations)
+        df_agg_pref.columns = pd.Index(
+            ['POS_PREF_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_pref.columns.tolist()])
+        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
         # Count df cash accounts
         df_agg['POS_COUNT'] = df.groupby('SK_ID_CURR').size()
         del df
@@ -357,6 +371,12 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg.columns = pd.Index(
             ['INSTAL_' + e[0] + "_" + e[1].upper()
                 for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+                groupby('SK_ID_CURR').agg(aggregations)
+        df_agg_pref.columns = pd.Index(
+            ['INSTAL_PREF_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_pref.columns.tolist()])
+        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
         # Count dftallments accounts
         df_agg['INSTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
         del df
@@ -373,6 +393,12 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg.columns = pd.Index(
             ['CC_' + e[0] + "_" + e[1].upper()
                 for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+                groupby('SK_ID_CURR').agg(['min', 'max', 'mean', 'sum', 'var'])
+        df_agg_pref.columns = pd.Index(
+            ['CC_PREF_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_pref.columns.tolist()])
+        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
         # Count credit card lines
         df_agg['CC_COUNT'] = df.groupby('SK_ID_CURR').size()
         del df

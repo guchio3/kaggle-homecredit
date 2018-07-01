@@ -91,8 +91,8 @@ def main():
     prep = HomeCreditPreprocessor(logger=logger)
 
     dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_2_w_missing_and_was_null_with_prev5.csv',
-        'test': '../inputs/my_test_2_w_missing_and_was_null_with_prev5.csv'})
+        'train': '../inputs/my_train_2_w_missing_and_was_null_with_prev3_all.csv',
+        'test': '../inputs/my_test_2_w_missing_and_was_null_with_prev3_all.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
@@ -122,7 +122,7 @@ def main():
     x_test = test_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
 
     all_params = {
-        'nthread': [15],
+        'nthread': [14],
         # is_unbalance=True,
         'n_estimators': [10000],
         'learning_rate': [0.02],
