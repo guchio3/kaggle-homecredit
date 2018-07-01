@@ -91,8 +91,8 @@ def main():
     prep = HomeCreditPreprocessor(logger=logger)
 
     dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_2_w_missing_and_was_null.csv',
-        'test': '../inputs/my_test_2_w_missing_and_was_null.csv'})
+        'train': '../inputs/my_train_2_w_missing_and_was_null_with_prev5.csv',
+        'test': '../inputs/my_test_2_w_missing_and_was_null_with_prev5.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
