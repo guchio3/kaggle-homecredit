@@ -6,6 +6,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, ParameterGrid
 from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn import metrics
 from sklearn.feature_selection import VarianceThreshold
@@ -15,9 +16,9 @@ from keras.backend import tensorflow_backend as backend
 from keras import backend as K
 K.set_session(K.tf.Session(
     config=K.tf.ConfigProto(
-#        intra_op_parallelism_threads=2, 
-#        inter_op_parallelism_threads=2)))
-         device_count={'CPU': 8})))
+        #        intra_op_parallelism_threads=2,
+        #        inter_op_parallelism_threads=2)))
+        device_count={'CPU': 8})))
 
 from tqdm import tqdm
 from logging import getLogger
@@ -90,8 +91,8 @@ def main():
     prep = HomeCreditPreprocessor(logger=logger)
 
     dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_2.csv',
-        'test': '../inputs/my_test_2.csv'})
+        'train': '../inputs/my_train_2_w_missing_and_was_null.csv',
+        'test': '../inputs/my_test_2_w_missing_and_was_null.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
@@ -102,11 +103,6 @@ def main():
                 are contained only by training set...')
 #    train_df = remove_train_only_category(train_df, test_df)
     train_and_test_df = pd.concat([train_df, test_df], axis=0)
-    logger.info('normalizing inputs...')
-#    scaler = MinMaxScaler()
-    scaler = GaussRankScaler()
-    # apply gaussrank normalization
-    train_and_test_df = continuousNormalization(train_and_test_df, scaler)
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
@@ -126,42 +122,25 @@ def main():
     x_test = test_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
 
     all_params = {
-        'max_iter': [200],
-        'solver': ['sgd'],
-        #'solver': ['sgd', 'adam'],
-        'hidden_layer_sizes': [(250, 70), ],
-#        'hidden_layer_sizes': [(400, 40)],
-        #'hidden_layer_sizes': [(150, 35), (300, 50), (500, 100), (500, 50), (400, 40)],
-        #'hidden_layer_sizes': [(150, 35)],
-#        'hidden_layer_sizes': [(100, 30), (150, 35)],
-#        'hidden_layer_sizes': [(30, ), (30, 30, 30, ), (100, 30)],
-        'random_state': [0, 17, 41, 333, 1001],
-#        'learning_rate_init': [0.00001, ],
-        'learning_rate_init': [0.7, ],
-        'alpha': [0.05, ],
-        'batch_size': [256],
-        'batch_norm': [(False, True), ],
-        'dropout': [(0.05, 0.5,)],
-#        'dropout': [(0.1, 0.3), (0.1, 0.5)],
+#        'nthread': [4],
+        # is_unbalance=True,
+        'n_estimators': [10000],
+        'learning_rate': [0.02],
+        'num_leaves': [32],
+        'colsample_bytree': [0.9497036],
+        'subsample': [0.8715623],
+        'max_depth': [8],
+        'reg_alpha': [0.04],
+        'reg_lambda': [0.073],
+        'min_split_gain': [0.0222415],
+        'min_child_weight': [40],
+        'silent': [-1],
+        'verbose': [-1],
+        # scale_pos_weight=11<Paste>
     }
-
-#    all_params = {}
-
-    # logistic regression params
-#    all_params = {
-#        'max_iter': [500],
-#        'solver': ['liblinear'],
-#        'multi_class': ['ovr'],
-#        'C': [0.1],
-#        'penalty': ['l2'],
-#        'random_state': [1],
-#        'class_weight': ['balanced'],
-#        'verbose': [1],
-#    }
 
     max_score = -1
     best_params = None
-    best_models = -1
     trained_model_ids = {}
 #    num_epochs = []
     i = 0
@@ -172,18 +151,12 @@ def main():
             x_trn, x_val = x_train[trn_idx], x_train[val_idx]
             y_trn, y_val = y_train[trn_idx], y_train[val_idx]
 
-#            clf = MLPClassifier(**params)
-            clf = myMLPClassifier(logger=logger, **params)
-            #if clf.__call__.__name__ == 'myMLPClassifier':
-#            clf.fit(x_trn, y_trn)
-            clf.fit(x_trn, y_trn, 
-                    eval_set=[x_val, y_val],
-                    best_model_filename='temp_model.h5')
-            clf.load_weights(load_filename='temp_model.h5')
-            #num_epochs.append(len(r.history['loss']))
+            clf = LGBMClassifier(**params)
+            clf.fit(x_trn, y_trn, eval_set=[(x_trn, y_trn), (x_val, y_val)],
+                    eval_metric='auc', verbose=100, early_stopping_rounds=200)
 
-            pred_prob = clf.predict_proba(x_val)[:, 1]
-            #pred_prob = clf.predict_proba(x_val)[:, 0]
+            pred_prob = clf.predict_proba(
+                    x_val, num_iteration=clf.best_iteration_)[:, 1]
             auc_score = roc_auc_score(y_val, pred_prob)
             logger.debug('auc : {}'.format(auc_score))
             list_score.append(auc_score)
