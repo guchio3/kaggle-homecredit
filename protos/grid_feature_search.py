@@ -101,10 +101,11 @@ def main():
     max_score = -1
     dropped_features = []
     i = 0
-    for feature in tqdm(x_train_df.columns.tolist()):
+    for feature in tqdm([None] + x_train_df.columns.tolist()):
         logger.info('dropping feature... {}'.format(feature))
         list_score = []
-        x_train = x_train_df.drop([feature], axis=1).values
+        if feature is not None:
+            x_train = x_train_df.drop([feature], axis=1).values
         for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
             x_trn, x_val = x_train[trn_idx], x_train[val_idx]
             y_trn, y_val = y_train[trn_idx], y_train[val_idx]
