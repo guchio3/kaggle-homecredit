@@ -83,7 +83,7 @@ def main():
 #        'nthread': [4],
         # is_unbalance=True,
 #        'n_estimators': [10000],
-        'n_estimators': 100,
+        'n_estimators': 500,
         'learning_rate': 0.02,
         'num_leaves': 32,
         'colsample_bytree': 0.9497036,
@@ -106,13 +106,15 @@ def main():
         list_score = []
         if feature is not None:
             x_train = x_train_df.drop([feature], axis=1).values
+        else:
+            x_train = x_train_df.values
         for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
             x_trn, x_val = x_train[trn_idx], x_train[val_idx]
             y_trn, y_val = y_train[trn_idx], y_train[val_idx]
 
             clf = LGBMClassifier(**params)
             clf.fit(x_trn, y_trn, eval_set=[(x_trn, y_trn), (x_val, y_val)],
-                    eval_metric='auc', verbose=10)
+                    eval_metric='auc', verbose=100)
 
             pred_prob = clf.predict_proba(x_val)[:, 1]
             auc_score = roc_auc_score(y_val, pred_prob)
@@ -135,8 +137,12 @@ def main():
 
     logger.info('max score: {}'.format(max_score))
     logger.info('dropped features'.format(dropped_features))
-    with open('./dropped_features.json', 'wb') as fout:
-        fout.write(json.dumps(dropped_features))
+    try:
+        with open('./dropped_features.json', 'w') as fout:
+            fout.write(json.dumps(dropped_features))
+    except:
+        with open('./dropped_features.json', 'wb') as fout:
+            fout.write(json.dumps(dropped_features))
 
     logger.info('end')
 
