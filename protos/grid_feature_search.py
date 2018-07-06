@@ -136,7 +136,7 @@ def main():
         logger.info('current max score: {}'.format(max_score))
 
     logger.info('max score: {}'.format(max_score))
-    logger.info('dropped features'.format(dropped_features))
+    logger.info('dropped features {}'.format(dropped_features))
     try:
         with open('./dropped_features.json', 'w') as fout:
             fout.write(json.dumps(dropped_features))

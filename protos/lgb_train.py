@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+import seaborn as sns
 from sklearn.metrics import log_loss, roc_auc_score, auc, roc_curve
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
@@ -33,6 +35,7 @@ from models.my_mlp import myMLPClassifier
 from scipy.special import erfinv
 
 np.random.seed(100)
+plt.switch_backend('agg')
 
 
 class GaussRankScaler():
@@ -82,6 +85,18 @@ def remove_train_only_category(train_df, test_df):
     return train_df
 
 
+# Display/plot feature importance
+def display_importances(feature_importance_df_):
+    cols = feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False)[:100].index
+    feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False)[:100].to_csv('lgbm_importances01.csv')
+    best_features = feature_importance_df_.loc[feature_importance_df_.feature.isin(cols)]
+    plt.figure(figsize=(8, 10))
+    sns.barplot(x="importance", y="feature", data=best_features.sort_values(by="importance", ascending=False))
+    plt.title('LightGBM Features (avg over folds)')
+    plt.tight_layout()
+    plt.savefig('lgbm_importances01.png')
+
+
 def main():
     logger = getLogger(__name__)
     logInit(logger, log_filename='train.py.log')
@@ -91,8 +106,8 @@ def main():
     prep = HomeCreditPreprocessor(logger=logger)
 
     dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_2_w_missing_and_was_null_with_prev3.csv',
-        'test': '../inputs/my_test_2_w_missing_and_was_null_with_prev3.csv'})
+        'train': '../inputs/my_train_2_w_missing_and_was_100_null.csv',
+        'test': '../inputs/my_test_2_w_missing_and_was_100_null.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
@@ -113,19 +128,36 @@ def main():
 
 #    x_train = train_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
     x_train = train_df.drop([
-        'TARGET', 'SK_ID_CURR'], axis=1).values
+        'TARGET', 
+        'SK_ID_CURR', 
+#        "AMT_CREDIT", 
+#        "AMT_REQ_CREDIT_BUREAU_DAY", 
+#        "NEW_EXT_SOURCES_MEAN", 
+#        "PREV_CODE_REJECT_REASON_LIMIT_MEAN"
+        ], axis=1)
+    train_feats = x_train.columns
+    x_train = x_train.values
+
 #    x_train = train_df.drop([
 #        'TARGET', 'SK_ID_CURR',
 #        'EXT_SOURCE_1', 'EXT_SOURCE_2',
 #        'EXT_SOURCE_3'], axis=1).values
     y_train = train_df['TARGET'].values
-    x_test = test_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
+    x_test = test_df.drop([
+        'TARGET', 
+        'SK_ID_CURR',
+#        "AMT_CREDIT", 
+#        "AMT_REQ_CREDIT_BUREAU_DAY", 
+#        "NEW_EXT_SOURCES_MEAN", 
+#        "PREV_CODE_REJECT_REASON_LIMIT_MEAN",
+        ], axis=1).values
 
     all_params = {
         'nthread': [-1],
-        'boosting': ['gbdt', 'gbrt', 'rf', 
-            'random_forest', 'dart', 'goss'],
+#        'boosting': ['gbdt', 'gbrt', 'rf', 
+#            'random_forest', 'dart', 'goss'],
         # is_unbalance=True,
+#        'boosting_type': ['goss'],
         'n_estimators': [10000],
         'learning_rate': [0.02],
         'num_leaves': [32],
@@ -147,6 +179,7 @@ def main():
 #    num_epochs = []
     i = 0
     for params in tqdm(list(ParameterGrid(all_params))):
+        feature_importance_df = pd.DataFrame()
         logger.info('params: {}'.format(params))
         list_score = []
         for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
@@ -168,6 +201,12 @@ def main():
                 trained_model_ids[i] = [clf, ]
 #            if len(trained_model_ids[i]) > 1:
 #                break
+            fold_importance_df = pd.DataFrame()
+            fold_importance_df["feature"] = train_feats
+            fold_importance_df["importance"] = clf.feature_importances_
+            fold_importance_df["fold"] = i + 1
+            feature_importance_df = pd.concat(
+                    [feature_importance_df, fold_importance_df], axis=0)
 
         auc_score = np.array(list_score).mean()
         logger.info('avg auc score of the current cv : {}'.format(auc_score))
@@ -181,6 +220,8 @@ def main():
         i += 1
 #        break
 
+    logger.info('displaying feature importance')
+    display_importances(feature_importance_df)
     logger.info('model: {}'.format(clf.__class__.__name__))
     logger.info('max score: {}'.format(max_score))
     logger.info('best params: {}'.format(best_params))

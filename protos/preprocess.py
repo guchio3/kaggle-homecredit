@@ -13,34 +13,15 @@ from data_processing.data_io import DataIO
 from utils.my_logging import logInit
 
 
+was_null_list = pd.read_csv('lgbm_importances01.csv')
+
 def main():
     logger = getLogger(__name__)
     logInit(logger)
     logger.info('start')
 
     dataio = DataIO(logger=logger)
-#    dfs_dict = dataio.read_csvs(OrderedDict({
-#        'train': '../inputs/application_train.csv',
-#        'test': '../inputs/application_test.csv',
-#        'prev_app': '../inputs/previous_application.csv',
-#        'bureau': '../inputs/bureau.csv',
-#        'bureau_balance': '../inputs/bureau_balance.csv',
-#        'instrallments': '../inputs/installments_payments.csv',
-#        'credit': '../inputs/credit_card_balance.csv',
-#        'pos': '../inputs/POS_CASH_balance.csv',
-#        }))
 
-#    analyzer = HomeCreditAnalyzer(logger=logger)
-#    prep = HomeCreditPreprocessor(
-#            train_df=dfs_dict['train'],
-#            test_df=dfs_dict['test'],
-            #prev_app_df=dfs_dict['prev_app'],
-#            bureau_df=dfs_dict['bureau'],
-#            bureau_balance_df=dfs_dict['bureau_balance'],
-#            instrallments_df=dfs_dict['instrallments'],
-#            credit_df=dfs_dict['credit'],
-#            pos_df=dfs_dict['pos'],
-#            logger=logger)
     prep = HomeCreditPreprocessor(logger=logger)
     logger.info('loading dfs...')
     train_df = pd.read_csv('../inputs/application_train.csv')
@@ -70,36 +51,20 @@ def main():
 #                ])
 #    train_and_test_df = prep.auto_impute(train_and_test_df)
     prev_df = prep.fe_application_prev(prev_df)
-    prev_df = prep.add_was_null(prev_df, special_list=[
-        'APPROVED_CNT_PAYMENT_MEAN',
-        'PREV_CNT_PAYMENT_MEAN',
-        'PREV_APP_CREDIT_PERC_MEAN',
-        ])
+    prev_df = prep.add_was_null(prev_df,
+            special_list=was_null_list.feature.tolist())
 #    prev_df = prep.auto_impute(prev_df)
     bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
-    bureau_df = prep.add_was_null(bureau_df, special_list=[
-        'ACTIVR_DAYS_CREDIT_MEAN',
-        'INSTAL_DAYS_ENTRY_PAYMENT_MAX',
-        'BURO_DAYS_CREDIT_ENDDATE_MEAN',
-        'BURO_AMT_CREDIT_SUM_MEAN',
-        'BURO_AMT_CREDIT_MAX_OVERDUE_MEAN',
-        'BURO_DAYS_CREDIT_MEAN',
-        'BURO_AMT_CREDIT_SUM_DEBT_MEAN',
-        ])
+    bureau_df = prep.add_was_null(bureau_df, 
+            special_list=was_null_list.feature.tolist())
 #    bureau_df = prep.auto_impute(bureau_df)
     pos_df = prep.fe_pos_cash(pos_df)
-    pos_df = prep.add_was_null(pos_df, special_list=[
-        'POS_MONTHS_BALANCE_SIZE',
-        ])
+    pos_df = prep.add_was_null(pos_df, 
+            special_list=was_null_list.feature.tolist())
 #    pos_df = prep.auto_impute(pos_df)
     ins_df = prep.fe_installments_payments(ins_df)
-    ins_df = prep.add_was_null(ins_df, special_list=[
-        'INSTAL_DPD_MEAN',
-        'INSTAL_AMT_PAYMENT_MEAN',
-        'INSTAL_DBD_SUM',
-        'INSTAL_AMT_PAYMENT_MIN',
-        'INSTAL_PAYMENT_DIFF_MEAN',
-        ])
+    ins_df = prep.add_was_null(ins_df,
+            special_list=was_null_list.feature.tolist())
 #    ins_df = prep.auto_impute(ins_df)
     cred_df = prep.fe_credit_card_balance(cred_df)
 #    cred_df = prep.add_was_null(cred_df)
@@ -126,8 +91,8 @@ def main():
 #    prep.add_prev_loan_cnt()
 
     logger.info('saving train and test dfs...')
-    dataio.save_csv(train_df, '../inputs/my_train_2_w_missing_and_was_null_with_prev3.csv', index=False)
-    dataio.save_csv(test_df, '../inputs/my_test_2_w_missing_and_was_null_with_prev3.csv', index=False)
+    dataio.save_csv(train_df, '../inputs/my_train_2_w_missing_and_was_100_null.csv', index=False)
+    dataio.save_csv(test_df, '../inputs/my_test_2_w_missing_and_was_100_null.csv', index=False)
 #    dataio.save_csv(prep.train_df, '../inputs/my_train_2.csv', index=False)
 #    dataio.save_csv(prep.test_df, '../inputs/my_test_2.csv', index=False)
 
