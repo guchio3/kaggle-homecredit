@@ -86,15 +86,15 @@ def remove_train_only_category(train_df, test_df):
 
 
 # Display/plot feature importance
-def display_importances(feature_importance_df_):
-    cols = feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False)[:100].index
-    feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False)[:100].to_csv('lgbm_importances01.csv')
+def display_importances(feature_importance_df_, filename='importance_application'):
+    cols = feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).index
+    feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).to_csv(filename + '.csv')
     best_features = feature_importance_df_.loc[feature_importance_df_.feature.isin(cols)]
     plt.figure(figsize=(8, 10))
     sns.barplot(x="importance", y="feature", data=best_features.sort_values(by="importance", ascending=False))
     plt.title('LightGBM Features (avg over folds)')
     plt.tight_layout()
-    plt.savefig('lgbm_importances01.png')
+    plt.savefig(filename + '.png')
 
 
 def main():
@@ -106,8 +106,8 @@ def main():
     prep = HomeCreditPreprocessor(logger=logger)
 
     dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_2_w_missing_and_was_100_null.csv',
-        'test': '../inputs/my_test_2_w_missing_and_was_100_null.csv'})
+        'train': '../inputs/my_train.csv',
+        'test': '../inputs/my_test.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
@@ -119,6 +119,10 @@ def main():
 #    train_df = remove_train_only_category(train_df, test_df)
     train_and_test_df = pd.concat([train_df, test_df], axis=0)
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
+
+#    importance_list = pd.read_csv('../importances/importance_2018-07-11-08-58-40.csv')
+#    train_and_test_df = train_and_test_df[importance_list.feature[:150].tolist() + ['SK_ID_CURR', 'TARGET']]
+
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
     logger.info('encoded training shape is {}'.format(train_df.shape))
@@ -160,12 +164,15 @@ def main():
 #        'boosting_type': ['goss'],
         'n_estimators': [10000],
         'learning_rate': [0.02],
+#        'learning_rate': [0.02],
         'num_leaves': [32],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-        'max_depth': [8],
-        'reg_alpha': [0.04],
-        'reg_lambda': [0.073],
+        'max_depth': [16],
+#        'max_depth': [16],
+#        'reg_alpha': [0.04],
+#        'reg_lambda': [0.073],
+#        'reg_lambda': [0.0, 0.1, 0.2],
         'min_split_gain': [0.0222415],
         'min_child_weight': [40],
         'silent': [-1],
@@ -221,7 +228,7 @@ def main():
 #        break
 
     logger.info('displaying feature importance')
-    display_importances(feature_importance_df)
+    display_importances(feature_importance_df, '../importances/importance_{}'.format(dataio.current_time))
     logger.info('model: {}'.format(clf.__class__.__name__))
     logger.info('max score: {}'.format(max_score))
     logger.info('best params: {}'.format(best_params))
@@ -260,7 +267,7 @@ def main():
         'TARGET': res
     })
 
-    dataio.save_csv(res_df, '../submits/{}_auc-{:.4}.csv'.format(
+    dataio.save_csv(res_df, '../submits/{}_auc-{:.6}.csv'.format(
         clf.__class__.__name__, max_score), index=False, withtime=True)
 
     logger.info('end')

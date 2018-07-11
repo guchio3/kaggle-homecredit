@@ -91,67 +91,192 @@ class HomeCreditPreprocessor(Preprocessor):
         # Optional: Remove 4 applications with XNA CODE_GENDER (train set)
         #        df = df[df['CODE_GENDER'] != 'XNA']
 
-        docs = [_f for _f in df.columns if 'FLAG_DOC' in _f]
-        live = [_f for _f in df.columns if ('FLAG_' in _f) &
-                ('FLAG_DOC' not in _f) & ('_FLAG_' not in _f)]
+#        docs = [_f for _f in df.columns if 'FLAG_DOC' in _f]
+#        live = [_f for _f in df.columns if ('FLAG_' in _f) &
+#                ('FLAG_DOC' not in _f) & ('_FLAG_' not in _f)]
+#
+#        # NaN values for DAYS_EMPLOYED: 365.243 -> nan
+#        df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)
+#
+#        inc_by_org = df[['AMT_INCOME_TOTAL', 'ORGANIZATION_TYPE']].groupby(
+#            'ORGANIZATION_TYPE').median()['AMT_INCOME_TOTAL']
+#
 
-        # NaN values for DAYS_EMPLOYED: 365.243 -> nan
-        df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)
-
-        inc_by_org = df[['AMT_INCOME_TOTAL', 'ORGANIZATION_TYPE']].groupby(
-            'ORGANIZATION_TYPE').median()['AMT_INCOME_TOTAL']
-
+        # この二つの INCOME 系の ratio は cv を下げる。
+        # CREDIT, ANNUITY の分布に地域差 (?) があるためと予想
+###        df['NEW_CREDIT_TO_INCOME_RATIO'] = df['AMT_CREDIT'] / \
+###            df['AMT_INCOME_TOTAL']
+###        df['NEW_ANNUITY_TO_INCOME_RATIO'] = df['AMT_ANNUITY'] / \
+###           (1 + df['AMT_INCOME_TOTAL'])
         df['NEW_CREDIT_TO_ANNUITY_RATIO'] = \
             df['AMT_CREDIT'] / df['AMT_ANNUITY']
         df['NEW_CREDIT_TO_GOODS_RATIO'] = \
             df['AMT_CREDIT'] / df['AMT_GOODS_PRICE']
-        df['NEW_DOC_IND_KURT'] = df[docs].kurtosis(axis=1)
-        df['NEW_LIVE_IND_SUM'] = df[live].sum(axis=1)
         df['NEW_INC_PER_CHLD'] = df['AMT_INCOME_TOTAL'] / \
             (1 + df['CNT_CHILDREN'])
-        df['NEW_INC_BY_ORG'] = df['ORGANIZATION_TYPE'].map(inc_by_org)
-        df['NEW_EMPLOY_TO_BIRTH_RATIO'] = \
-            df['DAYS_EMPLOYED'] / df['DAYS_BIRTH']
-        df['NEW_ANNUITY_TO_INCOME_RATIO'] = df['AMT_ANNUITY'] / \
-            (1 + df['AMT_INCOME_TOTAL'])
-        df['NEW_EXT_SOURCES_PROD'] = df['EXT_SOURCE_1'] * \
-            df['EXT_SOURCE_2'] * df['EXT_SOURCE_3']
-        df['NEW_EXT_SOURCES_MEAN'] = df[['EXT_SOURCE_1',
-                                         'EXT_SOURCE_2',
-                                         'EXT_SOURCE_3']].mean(axis=1)
-        df['NEW_EXT_SCORES_STD'] = df[['EXT_SOURCE_1',
-                                       'EXT_SOURCE_2',
-                                       'EXT_SOURCE_3']].std(axis=1)
-        df['NEW_EXT_SOURCE_1M2'] = df['EXT_SOURCE_1'] - df['EXT_SOURCE_2']
-        df['NEW_EXT_SOURCE_2M3'] = df['EXT_SOURCE_2'] - df['EXT_SOURCE_3']
-        df['NEW_EXT_SOURCE_3M1'] = df['EXT_SOURCE_3'] - df['EXT_SOURCE_1']
-#        df['NEW_EXT_SCORES_STD'] = df['NEW_EXT_SCORES_STD'].fillna(
-#            df['NEW_SCORES_STD'].mean())
-        df['NEW_CAR_TO_BIRTH_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_BIRTH']
-        df['NEW_CAR_TO_EMPLOY_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_EMPLOYED']
-        df['NEW_PHONE_TO_BIRTH_RATIO'] = df['DAYS_LAST_PHONE_CHANGE'] / \
-            df['DAYS_BIRTH']
-        df['NEW_PHONE_TO_BIRTH_RATIO_EMPLOYER'] = \
-            df['DAYS_LAST_PHONE_CHANGE'] / \
-            df['DAYS_EMPLOYED']
-        df['NEW_CREDIT_TO_INCOME_RATIO'] = df['AMT_CREDIT'] / \
-            df['AMT_INCOME_TOTAL']
+        df['NEW_CNT_PARENT_MEMBERS'] = \
+            df['CNT_FAM_MEMBERS'] - df['CNT_CHILDREN']
+###        df['NEW_GOODS_TO_ANNUITY_RATIO'] = \
+###            df['AMT_GOODS_PRICE'] / df['AMT_ANNUITY']
+        # 何歳で register したか -> 少しだけ improve
+        df['NEW_AGE_DAYS_REGISTRATION'] = \
+            df['DAYS_BIRTH'] - df['DAYS_REGISTRATION']
+        # 就職後どれくらいで車を買ったか (金遣いの粗さ?)
+###        df['NEW_CAR_AGE_MINUS_EMPLOYED'] = \
+###            df['OWN_CAR_AGE'] - df['DAYS_EMPLOYED']
+        # OBS, DEF 系 0.003 程 improve
+        df['NEW_DEF/OBS_60'] = \
+            df['DEF_60_CNT_SOCIAL_CIRCLE'] / df['OBS_60_CNT_SOCIAL_CIRCLE']
+        df['NEW_DEF/OBS_30'] = \
+            df['DEF_30_CNT_SOCIAL_CIRCLE'] / df['OBS_30_CNT_SOCIAL_CIRCLE']
+        df['NEW_60/30_OBS'] = \
+            df['OBS_60_CNT_SOCIAL_CIRCLE'] / df['OBS_30_CNT_SOCIAL_CIRCLE']
+        df['NEW_60/30_DEF'] = \
+            df['DEF_60_CNT_SOCIAL_CIRCLE'] / df['DEF_30_CNT_SOCIAL_CIRCLE']
+
+        # REGION_POPULATION_RELATIVE -> POPRAT で割る系は微妙そう
+###        df['NEW_AMT_GOODS_PRICE_POPRAT'] = \
+###            df['AMT_GOODS_PRICE'] / df['REGION_POPULATION_RELATIVE']
+###        df['NEW_AMT_CREDIT_POPRAT'] = \
+###            df['AMT_CREDIT'] * df['REGION_POPULATION_RELATIVE']
+###        df['NEW_AMT_ANNUITY_POPRAT'] = \
+###            df['AMT_ANNUITY'] * df['REGION_POPULATION_RELATIVE']
+###        df['NEW_AMT_GOODS_PRICE_POPRAT'] = \
+###            df['AMT_GOODS_PRICE'] * df['REGION_POPULATION_RELATIVE']
+#        df['NEW_AMT_INCOME_TOTAL_POPRAT'] = \
+#            df['AMT_INCOME_TOTAL'] / df['REGION_RATING_CLIENT']
+
+        # DOCUMENT 数 -> 割と improve
+        df['NEW_NUM_DOCS'] = \
+           df[df.columns[df.columns.str.contains('FLAG_DOCUMENT_')]].sum(axis=1, skipna=True)
+        df['NEW_SUM_AVGS'] = \
+           df[df.columns[df.columns.str.contains('_AVG$')]].sum(axis=1, skipna=True)
+#        df['NEW_SUM_MODES'] = \
+#           df[df.columns[df.columns.str.contains('_MODE$')]].sum(axis=1, skipna=True)
+#        df['NEW_SUM_MEDIS'] = \
+#           df[df.columns[df.columns.str.contains('_MEDI$')]].sum(axis=1, skipna=True)
+#        print(df[df.columns[df.columns.str.contains('FLAG_DOCUMENT_')]])
+#           df.apply(lambda x: x.str.extract('FLAG_DOCUMENT_(.+)').sum(), axis=1)
+           #df[df.str.extract('FLAG_DOCUMENT_(.+)')].sum()
+
+        # 人口密度に対する家に関する統計量
+        house_stat_list = [
+                'APARTMENTS_AVG',
+                'BASEMENTAREA_AVG',
+                'YEARS_BEGINEXPLUATATION_AVG',
+                'YEARS_BUILD_AVG',
+                'COMMONAREA_AVG',
+                'ELEVATORS_AVG',
+                'ENTRANCES_AVG',
+                'FLOORSMAX_AVG',
+                'FLOORSMIN_AVG',
+                'LANDAREA_AVG',
+                'LIVINGAPARTMENTS_AVG',
+                'LIVINGAREA_AVG',
+                'NONLIVINGAPARTMENTS_AVG',
+                'NONLIVINGAREA_AVG',
+#                'APARTMENTS_MODE',
+#                'BASEMENTAREA_MODE',
+#                'YEARS_BEGINEXPLUATATION_MODE',
+#                'YEARS_BUILD_MODE',
+#                'COMMONAREA_MODE',
+#                'ELEVATORS_MODE',
+#                'ENTRANCES_MODE',
+#                'FLOORSMAX_MODE',
+#                'FLOORSMIN_MODE',
+#                'LANDAREA_MODE',
+#                'LIVINGAPARTMENTS_MODE',
+#                'LIVINGAREA_MODE',
+#                'NONLIVINGAPARTMENTS_MODE',
+#                'NONLIVINGAREA_MODE',
+#                'APARTMENTS_MEDI',
+#                'BASEMENTAREA_MEDI',
+#                'YEARS_BEGINEXPLUATATION_MEDI',
+#                'YEARS_BUILD_MEDI',
+#                'COMMONAREA_MEDI',
+#                'ELEVATORS_MEDI',
+#                'ENTRANCES_MEDI',
+#                'FLOORSMAX_MEDI',
+#                'FLOORSMIN_MEDI',
+#                'LANDAREA_MEDI',
+#                'LIVINGAPARTMENTS_MEDI',
+#                'LIVINGAREA_MEDI',
+#                'NONLIVINGAPARTMENTS_MEDI',
+#                'NONLIVINGAREA_MEDI',
+#                'TOTALAREA_MODE',
+        ]
+
+#        for house_stat in house_stat_list:
+#            df['NEW_'+house_stat+'_REGRATRAT'] = \
+#                    df[house_stat] / df['AMT_INCOME_TOTAL']
+
+##        df['NEW_DOC_IND_KURT'] = df[docs].kurtosis(axis=1)
+##        df['NEW_LIVE_IND_SUM'] = df[live].sum(axis=1)
+#        df['NEW_INC_BY_ORG'] = df['ORGANIZATION_TYPE'].map(inc_by_org)
+#        df['NEW_EMPLOY_TO_BIRTH_RATIO'] = \
+#            df['DAYS_EMPLOYED'] / df['DAYS_BIRTH']
+#        # importnant
+#        df['NEW_EXT_SOURCES_PROD'] = df['EXT_SOURCE_1'] * \
+#            df['EXT_SOURCE_2'] * df['EXT_SOURCE_3']
+#        # important
+#        df['NEW_EXT_SOURCES_MEAN'] = df[['EXT_SOURCE_1',
+#                                         'EXT_SOURCE_2',
+#                                         'EXT_SOURCE_3']].mean(axis=1)
+##        df['NEW_EXT_SCORES_STD'] = df[['EXT_SOURCE_1',
+##                                       'EXT_SOURCE_2',
+##                                       'EXT_SOURCE_3']].std(axis=1)
+##        df['NEW_EXT_SOURCE_1M2'] = df['EXT_SOURCE_1'] - df['EXT_SOURCE_2']
+##        df['NEW_EXT_SOURCE_2M3'] = df['EXT_SOURCE_2'] - df['EXT_SOURCE_3']
+##        df['NEW_EXT_SOURCE_3M1'] = df['EXT_SOURCE_3'] - df['EXT_SOURCE_1']
+#        df['NEW_CAR_TO_BIRTH_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_BIRTH']
+#        df['NEW_CAR_TO_EMPLOY_RATIO'] = df['OWN_CAR_AGE'] / df['DAYS_EMPLOYED']
+#        df['NEW_PHONE_TO_BIRTH_RATIO'] = df['DAYS_LAST_PHONE_CHANGE'] / \
+#            df['DAYS_BIRTH']
+#        df['NEW_PHONE_TO_BIRTH_RATIO_EMPLOYER'] = \
+#            df['DAYS_LAST_PHONE_CHANGE'] / \
+#            df['DAYS_EMPLOYED']
 
         # Categorical features with Binary encode (0 or 1; two categories)
-        for bin_feature in ['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY']:
-            df[bin_feature], uniques = pd.factorize(df[bin_feature])
-#        # Categorical features with One-Hot encode
-        dropcolum = ['FLAG_DOCUMENT_2', 'FLAG_DOCUMENT_4',
-                     'FLAG_DOCUMENT_5', 'FLAG_DOCUMENT_6',
-                     'FLAG_DOCUMENT_7', 'FLAG_DOCUMENT_8',
-                     'FLAG_DOCUMENT_9', 'FLAG_DOCUMENT_10',
-                     'FLAG_DOCUMENT_11', 'FLAG_DOCUMENT_12',
-                     'FLAG_DOCUMENT_13', 'FLAG_DOCUMENT_14',
-                     'FLAG_DOCUMENT_15', 'FLAG_DOCUMENT_16',
-                     'FLAG_DOCUMENT_17', 'FLAG_DOCUMENT_18',
-                     'FLAG_DOCUMENT_19', 'FLAG_DOCUMENT_20',
-                     'FLAG_DOCUMENT_21']
-        df = df.drop(dropcolum, axis=1)
+#        for bin_feature in ['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY']:
+#            df[bin_feature], uniques = pd.factorize(df[bin_feature])
+        # Categorical features with One-Hot encode
+#        dropcolumn = ['FLAG_DOCUMENT_2', 'FLAG_DOCUMENT_4',
+#                     'FLAG_DOCUMENT_5', 'FLAG_DOCUMENT_6',
+#                     'FLAG_DOCUMENT_7', 'FLAG_DOCUMENT_8',
+#                     'FLAG_DOCUMENT_9', 'FLAG_DOCUMENT_10',
+#                     'FLAG_DOCUMENT_11', 'FLAG_DOCUMENT_12',
+#                     'FLAG_DOCUMENT_13', 'FLAG_DOCUMENT_14',
+#                     'FLAG_DOCUMENT_15', 'FLAG_DOCUMENT_16',
+#                     'FLAG_DOCUMENT_17', 'FLAG_DOCUMENT_18',
+#                     'FLAG_DOCUMENT_19', 'FLAG_DOCUMENT_20',
+#                     'FLAG_DOCUMENT_21']
+        dropcolumn = [
+                'NAME_CONTRACT_TYPE',
+###                'DAYS_REGISTRATION',
+###                'REGION_POPULATION_RELATIVE',
+###                'AMT_REQ_CREDIT_BUREAU_YEAR',
+###                'HOUR_APPR_PROCESS_START',
+###                'TOTALAREA_MODE',
+#                'NONLIVINGAREA_AVG',
+###                'NAME_EDUCATION_TYPE',
+###                'LANDAREA_MEDI',
+###                'BASEMENTAREA_AVG',
+###                'FLAG_WORK_PHONE',
+###                'YEARS_BEGINEXPLUATATION_MEDI',
+###                'APARTMENTS_MODE',
+###                'COMMONAREA_MEDI',
+###                'APARTMENTS_MEDI',
+###                'LIVINGAREA_MEDI',
+###                'YEARS_BUILD_MODE',
+###                'ORGANIZATION_TYPE',
+###                'ENTRANCES_MODE',
+###                '',
+#                '',
+#                '',
+#                '',
+                ]
+#        dropcolumn += house_stat_list
+        df = df.drop(dropcolumn, axis=1)
         gc.collect()
         return df
 
