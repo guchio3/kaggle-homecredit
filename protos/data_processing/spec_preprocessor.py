@@ -98,8 +98,9 @@ class HomeCreditPreprocessor(Preprocessor):
 #        # NaN values for DAYS_EMPLOYED: 365.243 -> nan
 #        df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)
 #
-#        inc_by_org = df[['AMT_INCOME_TOTAL', 'ORGANIZATION_TYPE']].groupby(
-#            'ORGANIZATION_TYPE').median()['AMT_INCOME_TOTAL']
+        inc_by_org = df[['AMT_INCOME_TOTAL', 'ORGANIZATION_TYPE']].groupby(
+            'ORGANIZATION_TYPE').median()['AMT_INCOME_TOTAL']
+        df['NEW_INC_BY_ORG'] = df['ORGANIZATION_TYPE'].map(inc_by_org)
 #
 
         # この二つの INCOME 系の ratio は cv を下げる。
@@ -149,8 +150,8 @@ class HomeCreditPreprocessor(Preprocessor):
         # DOCUMENT 数 -> 割と improve
         df['NEW_NUM_DOCS'] = \
            df[df.columns[df.columns.str.contains('FLAG_DOCUMENT_')]].sum(axis=1, skipna=True)
-        df['NEW_SUM_AVGS'] = \
-           df[df.columns[df.columns.str.contains('_AVG$')]].sum(axis=1, skipna=True)
+#        df['NEW_SUM_AVGS'] = \
+#           df[df.columns[df.columns.str.contains('_AVG$')]].sum(axis=1, skipna=True)
 #        df['NEW_SUM_MODES'] = \
 #           df[df.columns[df.columns.str.contains('_MODE$')]].sum(axis=1, skipna=True)
 #        df['NEW_SUM_MEDIS'] = \
