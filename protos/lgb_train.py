@@ -128,7 +128,8 @@ def main():
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
     n_splits = 5
-    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=777)
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=71)
+#    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=777)
 
 #    x_train = train_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
     x_train = train_df.drop([
