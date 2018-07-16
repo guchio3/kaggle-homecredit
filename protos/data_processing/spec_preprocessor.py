@@ -88,20 +88,48 @@ class HomeCreditPreprocessor(Preprocessor):
         return df
 
     def fe_application(self, df):
-        # Optional: Remove 4 applications with XNA CODE_GENDER (train set)
-        #        df = df[df['CODE_GENDER'] != 'XNA']
+        # ===============================
+        # 欠損値埋め
+        # ===============================
+        # application train のみにある categorical features を削除
+        #df['CODE_GENDER'].replace('XNA', np.nan, inplace=True)
+        #df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)
+        #df['NAME_FAMILY_STATUS'].replace('Unknown', np.nan, inplace=True)
+        #df['ORGANIZATION_TYPE'].replace('XNA', np.nan, inplace=True)
 
 #        docs = [_f for _f in df.columns if 'FLAG_DOC' in _f]
 #        live = [_f for _f in df.columns if ('FLAG_' in _f) &
 #                ('FLAG_DOC' not in _f) & ('_FLAG_' not in _f)]
 #
-#        # NaN values for DAYS_EMPLOYED: 365.243 -> nan
-#        df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)
-#
-#        inc_by_org = df[['AMT_INCOME_TOTAL', 'ORGANIZATION_TYPE']].groupby(
-#            'ORGANIZATION_TYPE').median()['AMT_INCOME_TOTAL']
-#
+        # ===============================
+        # group 毎の統計 (target encoding 以外)
+        # ===============================
+###        inc_by_org = df[['AMT_INCOME_TOTAL', 'ORGANIZATION_TYPE']].groupby(
+###            'ORGANIZATION_TYPE').mean()['AMT_INCOME_TOTAL']
+###        df['NEW_INC_BY_ORG'] = df['ORGANIZATION_TYPE'].map(inc_by_org)
 
+        # ===============================
+        # target encodings (include ext_srcs)
+        # ===============================
+#        exts = ['EXT_SOURCE_1', 'EXT_SOURCE_2', 'EXT_SOURCE_3']
+#        ext_mean = 'NEW_EXTS_MEAN'
+#        df[ext_mean] = df[exts].mean(axis=1)
+#        ext_orgs = df[exts + ['ORGANIZATION_TYPE']]\
+#                .groupby('ORGANIZATION_TYPE').mean()[exts]
+#        for ext in exts:
+#            df['NEW_'+ext+'_BY_ORG'] = df['ORGANIZATION_TYPE'].map(ext_orgs[ext])
+#        df['NEW_EXT_MEAN_BY_ORG'] = df['ORGANIZATION_TYPE'].map(inc_by_org)
+#        ext_mean_orgs = df[['ORGANIZATION_TYPE', ext_mean]]\
+#                .groupby('ORGANIZATION_TYPE').mean()[ext_mean]
+#        df[ext_mean+'_BY_ORG'] = df['ORGANIZATION_TYPE'].map(ext_mean_orgs)
+#        ext_mean_orgs = df[['NAME_EDUCATION_TYPE', ext_mean]]\
+#                .groupby('NAME_EDUCATION_TYPE').mean()[ext_mean]
+#        df[ext_mean+'_BY_EDU'] = df['NAME_EDUCATION_TYPE'].map(ext_mean_orgs)
+#        df.drop(ext_mean, axis=1, inplace=True)
+
+        # ===============================
+        # manual feature engineering 
+        # ===============================
         # この二つの INCOME 系の ratio は cv を下げる。
         # CREDIT, ANNUITY の分布に地域差 (?) があるためと予想
 ###        df['NEW_CREDIT_TO_INCOME_RATIO'] = df['AMT_CREDIT'] / \
@@ -127,8 +155,8 @@ class HomeCreditPreprocessor(Preprocessor):
         # OBS, DEF 系 0.003 程 improve
         df['NEW_DEF/OBS_60'] = \
             df['DEF_60_CNT_SOCIAL_CIRCLE'] / df['OBS_60_CNT_SOCIAL_CIRCLE']
-        df['NEW_DEF/OBS_30'] = \
-            df['DEF_30_CNT_SOCIAL_CIRCLE'] / df['OBS_30_CNT_SOCIAL_CIRCLE']
+#        df['NEW_DEF/OBS_30'] = \
+#            df['DEF_30_CNT_SOCIAL_CIRCLE'] / df['OBS_30_CNT_SOCIAL_CIRCLE']
         df['NEW_60/30_OBS'] = \
             df['OBS_60_CNT_SOCIAL_CIRCLE'] / df['OBS_30_CNT_SOCIAL_CIRCLE']
         df['NEW_60/30_DEF'] = \
@@ -149,8 +177,8 @@ class HomeCreditPreprocessor(Preprocessor):
         # DOCUMENT 数 -> 割と improve
         df['NEW_NUM_DOCS'] = \
            df[df.columns[df.columns.str.contains('FLAG_DOCUMENT_')]].sum(axis=1, skipna=True)
-        df['NEW_SUM_AVGS'] = \
-           df[df.columns[df.columns.str.contains('_AVG$')]].sum(axis=1, skipna=True)
+#        df['NEW_SUM_AVGS'] = \
+#           df[df.columns[df.columns.str.contains('_AVG$')]].prod(axis=1, skipna=True)
 #        df['NEW_SUM_MODES'] = \
 #           df[df.columns[df.columns.str.contains('_MODE$')]].sum(axis=1, skipna=True)
 #        df['NEW_SUM_MEDIS'] = \
@@ -161,44 +189,44 @@ class HomeCreditPreprocessor(Preprocessor):
 
         # 人口密度に対する家に関する統計量
         house_stat_list = [
-                'APARTMENTS_AVG',
-                'BASEMENTAREA_AVG',
+#                'APARTMENTS_AVG',
+#                'BASEMENTAREA_AVG',
                 'YEARS_BEGINEXPLUATATION_AVG',
-                'YEARS_BUILD_AVG',
-                'COMMONAREA_AVG',
-                'ELEVATORS_AVG',
-                'ENTRANCES_AVG',
-                'FLOORSMAX_AVG',
-                'FLOORSMIN_AVG',
-                'LANDAREA_AVG',
-                'LIVINGAPARTMENTS_AVG',
-                'LIVINGAREA_AVG',
-                'NONLIVINGAPARTMENTS_AVG',
-                'NONLIVINGAREA_AVG',
-#                'APARTMENTS_MODE',
-#                'BASEMENTAREA_MODE',
-#                'YEARS_BEGINEXPLUATATION_MODE',
-#                'YEARS_BUILD_MODE',
-#                'COMMONAREA_MODE',
-#                'ELEVATORS_MODE',
-#                'ENTRANCES_MODE',
-#                'FLOORSMAX_MODE',
-#                'FLOORSMIN_MODE',
-#                'LANDAREA_MODE',
-#                'LIVINGAPARTMENTS_MODE',
-#                'LIVINGAREA_MODE',
-#                'NONLIVINGAPARTMENTS_MODE',
-#                'NONLIVINGAREA_MODE',
+#                'YEARS_BUILD_AVG',
+#                'COMMONAREA_AVG',
+#                'ELEVATORS_AVG',
+#                'ENTRANCES_AVG',
+#                'FLOORSMAX_AVG',
+#                'FLOORSMIN_AVG',
+#                'LANDAREA_AVG',
+#                'LIVINGAPARTMENTS_AVG',
+#                'LIVINGAREA_AVG',
+#                'NONLIVINGAPARTMENTS_AVG',
+#                'NONLIVINGAREA_AVG',
+                'APARTMENTS_MODE', #
+                'BASEMENTAREA_MODE', #
+                'YEARS_BEGINEXPLUATATION_MODE',
+                'YEARS_BUILD_MODE', #
+                'COMMONAREA_MODE',
+                'ELEVATORS_MODE', #
+                'ENTRANCES_MODE',
+                'FLOORSMAX_MODE',
+                'FLOORSMIN_MODE',
+                'LANDAREA_MODE',
+                'LIVINGAPARTMENTS_MODE',
+                'LIVINGAREA_MODE',
+                'NONLIVINGAPARTMENTS_MODE',
+                'NONLIVINGAREA_MODE', #
 #                'APARTMENTS_MEDI',
-#                'BASEMENTAREA_MEDI',
-#                'YEARS_BEGINEXPLUATATION_MEDI',
+                'BASEMENTAREA_MEDI',
+                'YEARS_BEGINEXPLUATATION_MEDI',
 #                'YEARS_BUILD_MEDI',
 #                'COMMONAREA_MEDI',
 #                'ELEVATORS_MEDI',
 #                'ENTRANCES_MEDI',
 #                'FLOORSMAX_MEDI',
 #                'FLOORSMIN_MEDI',
-#                'LANDAREA_MEDI',
+                'LANDAREA_MEDI',
 #                'LIVINGAPARTMENTS_MEDI',
 #                'LIVINGAREA_MEDI',
 #                'NONLIVINGAPARTMENTS_MEDI',
@@ -219,12 +247,12 @@ class HomeCreditPreprocessor(Preprocessor):
 #        df['NEW_EXT_SOURCES_PROD'] = df['EXT_SOURCE_1'] * \
 #            df['EXT_SOURCE_2'] * df['EXT_SOURCE_3']
 #        # important
-#        df['NEW_EXT_SOURCES_MEAN'] = df[['EXT_SOURCE_1',
-#                                         'EXT_SOURCE_2',
-#                                         'EXT_SOURCE_3']].mean(axis=1)
-##        df['NEW_EXT_SCORES_STD'] = df[['EXT_SOURCE_1',
-##                                       'EXT_SOURCE_2',
-##                                       'EXT_SOURCE_3']].std(axis=1)
+###        df['NEW_EXT_SOURCES_MEAN'] = df[['EXT_SOURCE_1',
+###                                         'EXT_SOURCE_2',
+###                                         'EXT_SOURCE_3']].mean(axis=1)
+###        df['NEW_EXT_SCORES_STD'] = df[['EXT_SOURCE_1',
+###                                       'EXT_SOURCE_2',
+###                                       'EXT_SOURCE_3']].std(axis=1)
 ##        df['NEW_EXT_SOURCE_1M2'] = df['EXT_SOURCE_1'] - df['EXT_SOURCE_2']
 ##        df['NEW_EXT_SOURCE_2M3'] = df['EXT_SOURCE_2'] - df['EXT_SOURCE_3']
 ##        df['NEW_EXT_SOURCE_3M1'] = df['EXT_SOURCE_3'] - df['EXT_SOURCE_1']
@@ -240,18 +268,26 @@ class HomeCreditPreprocessor(Preprocessor):
 #        for bin_feature in ['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY']:
 #            df[bin_feature], uniques = pd.factorize(df[bin_feature])
         # Categorical features with One-Hot encode
-#        dropcolumn = ['FLAG_DOCUMENT_2', 'FLAG_DOCUMENT_4',
-#                     'FLAG_DOCUMENT_5', 'FLAG_DOCUMENT_6',
-#                     'FLAG_DOCUMENT_7', 'FLAG_DOCUMENT_8',
-#                     'FLAG_DOCUMENT_9', 'FLAG_DOCUMENT_10',
-#                     'FLAG_DOCUMENT_11', 'FLAG_DOCUMENT_12',
-#                     'FLAG_DOCUMENT_13', 'FLAG_DOCUMENT_14',
-#                     'FLAG_DOCUMENT_15', 'FLAG_DOCUMENT_16',
-#                     'FLAG_DOCUMENT_17', 'FLAG_DOCUMENT_18',
-#                     'FLAG_DOCUMENT_19', 'FLAG_DOCUMENT_20',
-#                     'FLAG_DOCUMENT_21']
         dropcolumn = [
-                'NAME_CONTRACT_TYPE',
+                     'FLAG_DOCUMENT_2', 
+#                     'FLAG_DOCUMENT_4',
+#                     'FLAG_DOCUMENT_5', 'FLAG_DOCUMENT_6',
+#                     'FLAG_DOCUMENT_7',
+#                     'FLAG_DOCUMENT_8',
+#                     'FLAG_DOCUMENT_9', 
+                     'FLAG_DOCUMENT_10',
+#                     'FLAG_DOCUMENT_11', 
+                     'FLAG_DOCUMENT_12',
+                     'FLAG_DOCUMENT_13', 'FLAG_DOCUMENT_14',
+                     'FLAG_DOCUMENT_15', 'FLAG_DOCUMENT_16',
+                     'FLAG_DOCUMENT_17',
+#                     'FLAG_DOCUMENT_18',
+                     'FLAG_DOCUMENT_19', 'FLAG_DOCUMENT_20',
+                     'FLAG_DOCUMENT_21']
+        dropcolumn += [
+#                'NAME_CONTRACT_TYPE', # これが overfit の原因 ?
+#                'AMT_CREDIT',
+#                'AMT_REQ_CREDIT_BUREAU_DAY',
 ###                'DAYS_REGISTRATION',
 ###                'REGION_POPULATION_RELATIVE',
 ###                'AMT_REQ_CREDIT_BUREAU_YEAR',
@@ -259,26 +295,122 @@ class HomeCreditPreprocessor(Preprocessor):
 ###                'TOTALAREA_MODE',
 #                'NONLIVINGAREA_AVG',
 ###                'NAME_EDUCATION_TYPE',
-###                'LANDAREA_MEDI',
 ###                'BASEMENTAREA_AVG',
 ###                'FLAG_WORK_PHONE',
-###                'YEARS_BEGINEXPLUATATION_MEDI',
-###                'APARTMENTS_MODE',
-###                'COMMONAREA_MEDI',
-###                'APARTMENTS_MEDI',
-###                'LIVINGAREA_MEDI',
 ###                'YEARS_BUILD_MODE',
 ###                'ORGANIZATION_TYPE',
-###                'ENTRANCES_MODE',
-###                '',
-#                '',
-#                '',
-#                '',
+###                'NAME_INCOME_TYPE',
+###                'FLAG_MOBIL',
+#                'FLAG_CONT_MOBILE',
+#                'HOUSETYPE_MODE',
+#                'WALLSMATERIAL_MODE',
+#                'FLAG_EMP_PHONE',
+#                'FLAG_DOCUMENT_9',
+#                'OCCUPATION_TYPE',
+#                'AMT_REQ_CREDIT_BUREAU_HOUR',
+#                'FLAG_OWN_CAR',
+#                'REG_REGION_NOT_WORK_REGION',
+#                'FLAG_EMAIL',
+#                'CNT_CHILDREN',
+#                'CNT_FAM_MEMBERS',
+#                'WEEKDAY_APPR_PROCESS_START',
+#                'DEF_60_CNT_SOCIAL_CIRCLE',
+#                'DEF_30_CNT_SOCIAL_CIRCLE',
+#                'OBS_30_CNT_SOCIAL_CIRCLE',
+#                'OBS_60_CNT_SOCIAL_CIRCLE',
                 ]
-#        dropcolumn += house_stat_list
+        dropcolumn += house_stat_list
         df = df.drop(dropcolumn, axis=1)
         gc.collect()
         return df
+
+    def fe_application_prev_before(self, df):
+        # add raw sequential information processing fe
+        seq_agg = {
+            'NAME_CONTRACT_STATUS': ['first']
+        }
+        seq_agg = df.groupby('SK_ID_CURR').agg(
+            {**seq_agg})
+        seq_agg.columns = pd.Index(
+            ['PREV_SEQ_' + e[0] + "_" + e[1].upper()
+             for e in seq_agg.columns.tolist()])
+        df, cat_cols = self.onehot_encoding(df, drop_first=False)
+
+        # ===============================
+        # 欠損値埋め
+        # ===============================
+        # Days 365.243 values -> nan
+        df['DAYS_FIRST_DRAWING'].replace(365243, np.nan, inplace=True)
+        df['DAYS_FIRST_DUE'].replace(365243, np.nan, inplace=True)
+        df['DAYS_LAST_DUE_1ST_VERSION'].replace(365243, np.nan, inplace=True)
+        df['DAYS_LAST_DUE'].replace(365243, np.nan, inplace=True)
+        df['DAYS_TERMINATION'].replace(365243, np.nan, inplace=True)
+
+        # Add feature: value ask / value received percentage
+        df['APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
+        # Previous applications numeric features
+        num_aggregations = {
+            'AMT_ANNUITY': ['max', 'mean'],
+            'AMT_APPLICATION': ['max', 'mean'],
+            'AMT_CREDIT': ['max', 'mean'],
+            'APP_CREDIT_PERC': ['max', 'mean'],
+            'AMT_DOWN_PAYMENT': ['max', 'mean'],
+            'AMT_GOODS_PRICE': ['max', 'mean'],
+            'HOUR_APPR_PROCESS_START': ['max', 'mean'],
+            'RATE_DOWN_PAYMENT': ['max', 'mean'],
+            'DAYS_DECISION': ['max', 'mean'],
+            'CNT_PAYMENT': ['mean', 'sum'],
+        }
+        # Previous applications categorical features
+        cat_aggregations = {}
+        for cat in cat_cols:
+            cat_aggregations[cat] = ['mean']
+        df_agg = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
+            groupby('SK_ID_CURR').\
+            agg({**num_aggregations, **cat_aggregations})
+        df_agg.columns = pd.Index(
+            ['PREV_' + e[0] + "_" + e[1].upper()
+             for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+            groupby('SK_ID_CURR').\
+            agg({**num_aggregations, **cat_aggregations})
+        df_agg_pref.columns = pd.Index(
+            ['PREV_PREF_' + e[0] + "_" + e[1].upper()
+             for e in df_agg_pref.columns.tolist()])
+#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
+        # previous Applications: Approved Applications - only numerical features
+        approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
+        approved_agg = approved.groupby('SK_ID_CURR').head(HEAD_SIZE)\
+            .groupby('SK_ID_CURR').\
+            agg(num_aggregations)
+#        app_agg_cols = approved_agg.columns.tolist()
+        approved_agg.columns = pd.Index(
+            ['APPROVED_' + e[0] + "_" + e[1].upper()
+             for e in approved_agg.columns.tolist()])
+        df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
+        # dfious Applications: Refused Applications - only numerical features
+        refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
+        refused_agg = refused.groupby('SK_ID_CURR').head(HEAD_SIZE)\
+            .groupby('SK_ID_CURR')\
+            .agg(num_aggregations)
+        refused_agg.columns = pd.Index(
+            ['REFUSED_' + e[0] + "_" + e[1].upper()
+             for e in refused_agg.columns.tolist()])
+#        df_agg = df_agg.join(refused_agg, how='left', on='SK_ID_CURR')
+        df_agg['PREV_CNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg['PREV_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
+        df_agg['PREV_REFUSED_RATIO'] = df_agg['PREV_CNT'] /\
+            df_agg['PREV_REFUSED_CNT']
+        df_agg = df_agg.merge(seq_agg, how='left', on='SK_ID_CURR')
+        del refused, refused_agg, approved, approved_agg, df
+
+#        for e in app_agg_cols:
+#            df_agg['NEW_RATIO_PREV_' + e[0] + "_" + e[1].upper()] = \
+#                    df_agg['APPROVED_' + e[0] + "_" + e[1].upper()] /\
+#                    df_agg['REFUSED_' + e[0] + "_" + e[1].upper()]
+
+        gc.collect()
+        return df_agg
 
     def fe_application_prev(self, df):
         # add raw sequential information processing fe
@@ -291,15 +423,17 @@ class HomeCreditPreprocessor(Preprocessor):
             ['PREV_SEQ_' + e[0] + "_" + e[1].upper()
              for e in seq_agg.columns.tolist()])
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
-        self.logger.info(
-            'categorial features of previous application are... {}'
-            .format(cat_cols))
+
+        # ===============================
+        # 欠損値埋め
+        # ===============================
         # Days 365.243 values -> nan
         df['DAYS_FIRST_DRAWING'].replace(365243, np.nan, inplace=True)
         df['DAYS_FIRST_DUE'].replace(365243, np.nan, inplace=True)
         df['DAYS_LAST_DUE_1ST_VERSION'].replace(365243, np.nan, inplace=True)
         df['DAYS_LAST_DUE'].replace(365243, np.nan, inplace=True)
         df['DAYS_TERMINATION'].replace(365243, np.nan, inplace=True)
+
         # Add feature: value ask / value received percentage
         df['APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
         # Previous applications numeric features

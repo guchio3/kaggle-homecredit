@@ -26,7 +26,7 @@ def main():
     logger.info('loading dfs...')
     train_df = pd.read_csv('../inputs/application_train.csv')
     test_df = pd.read_csv('../inputs/application_test.csv')
-#    prev_df = pd.read_csv('../inputs/previous_application.csv')
+    prev_df = pd.read_csv('../inputs/previous_application.csv')
 #    bureau_df = pd.read_csv('../inputs/bureau.csv')
 #    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
 #    pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
@@ -50,7 +50,7 @@ def main():
 #                'ACTIVE_RATE_CREDIT_MAX',
 #                ])
 #    train_and_test_df = prep.auto_impute(train_and_test_df)
-#    prev_df = prep.fe_application_prev(prev_df)
+    prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
@@ -72,8 +72,8 @@ def main():
 #    cred_df = prep.auto_impute(cred_df)
 
     logger.info('merge and splitting fes and train, test df...')
-#    train_and_test_df = train_and_test_df.merge(
-#            prev_df, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            prev_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            bureau_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
