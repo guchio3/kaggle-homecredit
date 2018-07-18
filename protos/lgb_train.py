@@ -13,6 +13,8 @@ from sklearn.utils.class_weight import compute_class_weight
 from sklearn import metrics
 from sklearn.feature_selection import VarianceThreshold
 
+#from sklearn.category_encoders.targetencoder import TargetEncoder
+
 from keras.utils import plot_model
 from keras.backend import tensorflow_backend as backend
 from keras import backend as K
@@ -36,44 +38,6 @@ from scipy.special import erfinv
 
 np.random.seed(100)
 plt.switch_backend('agg')
-
-
-class GaussRankScaler():
-
-    def __init__(self):
-        self.epsilon = 0.001
-        self.lower = -1 + self.epsilon
-        self.upper = 1 - self.epsilon
-        self.range = self.upper - self.lower
-
-    def fit_transform(self, X):
-
-        i = np.argsort(X, axis=0)
-        j = np.argsort(i, axis=0)
-
-        assert (j.min() == 0).all()
-        assert (j.max() == len(j) - 1).all()
-
-        j_range = len(j) - 1
-        self.divider = j_range / self.range
-
-        transformed = j / self.divider
-        transformed = transformed - self.upper
-        transformed = erfinv(transformed)
-
-        return transformed
-
-
-def continuousNormalization(target_df, scaler):
-    for column in tqdm(target_df.columns.values):
-        # minmax normalization for continuous data
-        if target_df[column].dtype != 'object'\
-                and column != 'SK_ID_CURR'\
-                and target_df[column].nunique() > 100:
-            if target_df[column].max() > 0:
-                target_df[column] = \
-                    scaler.fit_transform(target_df[column])
-    return target_df
 
 
 def remove_train_only_category(train_df, test_df):
