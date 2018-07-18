@@ -145,7 +145,7 @@ class Preprocessor:
 
         return res_train_df, res_val_df
 
-    def onehot_encoding(self, target_df,
+    def onehot_encoding(self, target_df, special_list=[],
                         additional_features=[], drop_first=True):
         r'''
         Encode the categorical columns of the input df into onehot style.
@@ -173,7 +173,17 @@ class Preprocessor:
             self.logger.info('encoding dataframe as onehot style'.format())
         original_columns = list(target_df.columns)
         for col in tqdm(target_df.columns.values):
-            if target_df[col].dtype == 'object'\
+            if special_list != []:
+                if target_df[col].dtype == 'object'\
+                        and col in special_list:
+                    if self.logger:
+                        self.logger.debug('encoding the category {}'.format(col))
+                    tmp = pd.get_dummies(
+                        target_df[col], col, drop_first=drop_first)
+                    for col2 in tmp.columns.values:
+                        target_df[col2] = tmp[col2].values
+                    target_df.drop(col, axis=1, inplace=True)
+            elif target_df[col].dtype == 'object'\
                     or col in additional_features:
                 if self.logger:
                     self.logger.debug('encoding the category {}'.format(col))

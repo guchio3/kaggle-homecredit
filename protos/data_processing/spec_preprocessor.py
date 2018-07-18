@@ -325,7 +325,17 @@ class HomeCreditPreprocessor(Preprocessor):
         return df
 
     def fe_application_prev(self, df):
-        df, cat_cols = self.onehot_encoding(df, drop_first=False)
+#        df, cat_cols = self.onehot_encoding(df, drop_first=False)
+        df, cat_cols = self.onehot_encoding(df, drop_first=False,
+                special_list=[
+                    'NAME_CONTRACT_TYPE',
+                    'FLAG_LAST_APPL_IN_DAY',
+                    'NAME_CONTRACT_STATUS',
+                    'NAME_PAYMENT_TYPE',
+                    'NAME_PORTFOLIO',
+                    'NAME_YIELD_GROUP',
+                    'PRODUCT_COMBINATION',
+                    ])
 
         # ===============================
         # manual feature engineering
@@ -337,22 +347,9 @@ class HomeCreditPreprocessor(Preprocessor):
         df['NEW_APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
 
 
-        df['PREV_INC_PER_CHLD'] = df['AMT_INCOME_TOTAL'] / \
-            (1 + df['CNT_CHILDREN'])
-        df['NEW_CNT_PARENT_MEMBERS'] = \
-            df['CNT_FAM_MEMBERS'] - df['CNT_CHILDREN']
         # 何歳で register したか -> 少しだけ improve
-        df['NEW_AGE_DAYS_REGISTRATION'] = \
-            df['DAYS_BIRTH'] - df['DAYS_REGISTRATION']
-        # OBS, DEF 系 0.003 程 improve
-        df['NEW_DEF/OBS_60'] = \
-            df['DEF_60_CNT_SOCIAL_CIRCLE'] / df['OBS_60_CNT_SOCIAL_CIRCLE']
-        df['NEW_DEF/OBS_30'] = \
-            df['DEF_30_CNT_SOCIAL_CIRCLE'] / df['OBS_30_CNT_SOCIAL_CIRCLE']
-        df['NEW_60/30_OBS'] = \
-            df['OBS_60_CNT_SOCIAL_CIRCLE'] / df['OBS_30_CNT_SOCIAL_CIRCLE']
-        df['NEW_60/30_DEF'] = \
-            df['DEF_60_CNT_SOCIAL_CIRCLE'] / df['DEF_30_CNT_SOCIAL_CIRCLE']
+#        df['NEW_AGE_DAYS_REGISTRATION'] = \
+#            df['DAYS_BIRTH'] - df['DAYS_REGISTRATION']
 
 
         # Add feature: value ask / value received percentage
@@ -363,25 +360,27 @@ class HomeCreditPreprocessor(Preprocessor):
             'AMT_CREDIT': ['max', 'mean', 'var', 'sum'],
             'AMT_DOWN_PAYMENT': ['max', 'mean'],
             'AMT_GOODS_PRICE': ['max', 'mean', 'var'],
-            'HOUR_APPR_PROCESS_START': ['max', 'mean'],
-            'RATE_DOWN_PAYMENT': ['max', 'mean'],
+            'HOUR_APPR_PROCESS_START': ['max', 'mean', 'var'],
+            'RATE_DOWN_PAYMENT': ['max', 'mean', 'min'],
+            'RATE_INTEREST_PRIMARY': ['max', 'mean', 'min'],
+            'RATE_INTEREST_PRIVILEGED': ['max', 'mean', 'min'],
             'DAYS_DECISION': ['max', 'mean'],
             'CNT_PAYMENT': ['mean', 'sum'],
-            'NEW_APP_CREDIT_PERC': ['max', 'mean'],
+            'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean', 'var', 'min'],
+            'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean', 'var', 'min'],
+            'NEW_APP_CREDIT_PERC': ['max', 'mean', 'var', 'min'],
         }
         # Previous applications categorical features
         cat_aggregations = {}
         for cat in cat_cols:
             cat_aggregations[cat] = ['mean']
-        df_agg = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
-            groupby('SK_ID_CURR').\
-            agg({**num_aggregations, **cat_aggregations})
+        df_agg = df.groupby('SK_ID_CURR')\
+            .agg({**num_aggregations, **cat_aggregations})
         df_agg.columns = pd.Index(
             ['PREV_' + e[0] + "_" + e[1].upper()
              for e in df_agg.columns.tolist()])
 
         df_agg_pref = df.groupby('SK_ID_CURR')\
-            .groupby('SK_ID_CURR')\
             .agg({**num_aggregations, **cat_aggregations})
         df_agg_pref.columns = pd.Index(
             ['PREV_PREF_' + e[0] + "_" + e[1].upper()
@@ -391,18 +390,17 @@ class HomeCreditPreprocessor(Preprocessor):
         # previous Applications: Approved Applications - only numerical features
         approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
         approved_agg = approved.groupby('SK_ID_CURR')\
-            .groupby('SK_ID_CURR')\
             .agg(num_aggregations)
 #        app_agg_cols = approved_agg.columns.tolist()
         approved_agg.columns = pd.Index(
             ['APPROVED_' + e[0] + "_" + e[1].upper()
              for e in approved_agg.columns.tolist()])
-        df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
+        df_agg = approved_agg
+#        df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
 
         # previous Applications: Refused Applications - only numerical features
         refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
         refused_agg = refused.groupby('SK_ID_CURR')\
-            .groupby('SK_ID_CURR')\
             .agg(num_aggregations)
         refused_agg.columns = pd.Index(
             ['REFUSED_' + e[0] + "_" + e[1].upper()
@@ -415,8 +413,8 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg['PREV_NEW_CNT'] = df.groupby('SK_ID_CURR').size()
         df_agg['PREV_NEW_APPROVED_CNT'] = approved.groupby('SK_ID_CURR').size()
         df_agg['PREV_NEW_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
-        df_agg['PREV_NEW_APPROVED_RATIO'] = df['PREV_NEW_APPROVED_CNT'] /\
-            df_agg['PREV_NEW_CNT'] /\
+        df_agg['PREV_NEW_REFUSED_RATIO'] = \
+            df['PREV_NEW_REFUSED_CNT'] / df_agg['PREV_NEW_CNT']
         del refused, refused_agg, approved, approved_agg, df
 
         gc.collect()

@@ -13,7 +13,8 @@ from data_processing.data_io import DataIO
 from utils.my_logging import logInit
 
 
-was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
+was_null_list = pd.read_csv('../importances/importance_2018-07-16-16-51-06.csv')[:100]
+#was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
 
 def main():
     logger = getLogger(__name__)
@@ -27,11 +28,11 @@ def main():
     train_df = pd.read_csv('../inputs/application_train.csv')
     test_df = pd.read_csv('../inputs/application_test.csv')
     prev_df = pd.read_csv('../inputs/previous_application.csv')
-    bureau_df = pd.read_csv('../inputs/bureau.csv')
-    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
-    pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
-    ins_df = pd.read_csv('../inputs/installments_payments.csv')
-    cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
+#    bureau_df = pd.read_csv('../inputs/bureau.csv')
+#    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
+#    pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
+#    ins_df = pd.read_csv('../inputs/installments_payments.csv')
+#    cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
     train_and_test_df = pd.concat([train_df, test_df])
 
     logger.info('fe for application...')
