@@ -357,12 +357,14 @@ class HomeCreditPreprocessor(Preprocessor):
         df['NEW_APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
         df['NEW_RATE_INTEREST_RATE'] = \
             df['RATE_INTEREST_PRIMARY'] / df['RATE_INTEREST_PRIVILEGED']
-        df['NEW_ID_DIFF'] = \
-            df['SK_ID_PREV'] - df['SK_ID_CURR']
         df['NEW_DAYS_FIRST_DUE_DIFF'] = \
             df['DAYS_FIRST_DUE'] - df['DAYS_FIRST_DRAWING']
         df['NEW_DAYS_LAST_DUE_DIFF'] = \
             df['DAYS_LAST_DUE'] - df['DAYS_LAST_DUE_1ST_VERSION']
+        df['NEW_DAYS_FIRST_AND_LAST_DUE_DIFF'] = \
+            df['DAYS_LAST_DUE_1ST_VERSION'] - df['DAYS_FIRST_DUE']
+        df['NEW_CREDIT_SELLERPLACE_RATE'] = \
+            df['AMT_CREDIT'] / df['SELLERPLACE_AREA']
 
 
         # 何歳で register したか -> 少しだけ improve
@@ -392,9 +394,10 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean'],
             'NEW_APP_CREDIT_PERC': ['max', 'mean'],
             'NEW_RATE_INTEREST_RATE': ['max', 'mean'],
-#            'NEW_ID_DIFF': ['min', 'mean'],
-#            'NEW_DAYS_FIRST_DUE_DIFF': ['min', 'mean', 'max'],
-#            'NEW_DAYS_LAST_DUE_DIFF': ['min', 'mean', 'max'],
+            'NEW_DAYS_FIRST_DUE_DIFF': ['min', 'mean', 'max',],
+            'NEW_DAYS_LAST_DUE_DIFF': ['min', 'mean', 'max', ],
+            'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['min', 'mean', 'max'],
+            'NEW_CREDIT_SELLERPLACE_RATE': ['min', 'mean', 'max'],
         }
         # Previous applications categorical features
         cat_aggregations = {}
@@ -442,94 +445,6 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg['PREV_NEW_APPROVED_RATIO'] = \
             df_agg['PREV_NEW_APPROVED_CNT'] / df_agg['PREV_NEW_CNT']
         del refused, refused_agg, approved, approved_agg, df
-
-        gc.collect()
-        return df_agg
-
-    def fe_application_prev_before(self, df):
-        # add raw sequential information processing fe
-        seq_agg = {
-            'NAME_CONTRACT_STATUS': ['first']
-        }
-        seq_agg = df.groupby('SK_ID_CURR').agg(
-            {**seq_agg})
-        seq_agg.columns = pd.Index(
-            ['PREV_SEQ_' + e[0] + "_" + e[1].upper()
-             for e in seq_agg.columns.tolist()])
-        df, cat_cols = self.onehot_encoding(df, drop_first=False)
-
-        # ===============================
-        # 欠損値埋め
-        # ===============================
-        # Days 365.243 values -> nan
-        #df['DAYS_FIRST_DRAWING'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_FIRST_DUE'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_LAST_DUE_1ST_VERSION'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_LAST_DUE'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_TERMINATION'].replace(365243, np.nan, inplace=True)
-
-        # Add feature: value ask / value received percentage
-        df['APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
-        # Previous applications numeric features
-        num_aggregations = {
-            'AMT_ANNUITY': ['max', 'mean'],
-            'AMT_APPLICATION': ['max', 'mean'],
-            'AMT_CREDIT': ['max', 'mean'],
-            'APP_CREDIT_PERC': ['max', 'mean'],
-            'AMT_DOWN_PAYMENT': ['max', 'mean'],
-            'AMT_GOODS_PRICE': ['max', 'mean'],
-            'HOUR_APPR_PROCESS_START': ['max', 'mean'],
-            'RATE_DOWN_PAYMENT': ['max', 'mean'],
-            'DAYS_DECISION': ['max', 'mean'],
-            'CNT_PAYMENT': ['mean', 'sum'],
-        }
-        # Previous applications categorical features
-        cat_aggregations = {}
-        for cat in cat_cols:
-            cat_aggregations[cat] = ['mean']
-        df_agg = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
-            groupby('SK_ID_CURR').\
-            agg({**num_aggregations, **cat_aggregations})
-        df_agg.columns = pd.Index(
-            ['PREV_' + e[0] + "_" + e[1].upper()
-             for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-            groupby('SK_ID_CURR').\
-            agg({**num_aggregations, **cat_aggregations})
-        df_agg_pref.columns = pd.Index(
-            ['PREV_PREF_' + e[0] + "_" + e[1].upper()
-             for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
-        # previous Applications: Approved Applications - only numerical features
-        approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
-        approved_agg = approved.groupby('SK_ID_CURR').head(HEAD_SIZE)\
-            .groupby('SK_ID_CURR').\
-            agg(num_aggregations)
-#        app_agg_cols = approved_agg.columns.tolist()
-        approved_agg.columns = pd.Index(
-            ['APPROVED_' + e[0] + "_" + e[1].upper()
-             for e in approved_agg.columns.tolist()])
-        df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
-        # dfious Applications: Refused Applications - only numerical features
-        refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
-        refused_agg = refused.groupby('SK_ID_CURR').head(HEAD_SIZE)\
-            .groupby('SK_ID_CURR')\
-            .agg(num_aggregations)
-        refused_agg.columns = pd.Index(
-            ['REFUSED_' + e[0] + "_" + e[1].upper()
-             for e in refused_agg.columns.tolist()])
-        df_agg = df_agg.join(refused_agg, how='left', on='SK_ID_CURR')
-        df_agg['PREV_CNT'] = df.groupby('SK_ID_CURR').size()
-        df_agg['PREV_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
-        df_agg['PREV_REFUSED_RATIO'] = df_agg['PREV_CNT'] /\
-            df_agg['PREV_REFUSED_CNT']
-        df_agg = df_agg.merge(seq_agg, how='left', on='SK_ID_CURR')
-        del refused, refused_agg, approved, approved_agg, df
-
-#        for e in app_agg_cols:
-#            df_agg['NEW_RATIO_PREV_' + e[0] + "_" + e[1].upper()] = \
-#                    df_agg['APPROVED_' + e[0] + "_" + e[1].upper()] /\
-#                    df_agg['REFUSED_' + e[0] + "_" + e[1].upper()]
 
         gc.collect()
         return df_agg
@@ -698,116 +613,183 @@ class HomeCreditPreprocessor(Preprocessor):
         gc.collect()
         return df_agg
 
-    def add_impute_required_flg(self, df, null_ratio_thr=0.):
-        '''
-        add imputing column based on the null ratio.
-        default is 0., which means all of the columns which holds NaN
-        are added imputation flag.
-
-        '''
-        self.logger.info('adding imputing flag to')
-        cat_list, dis_num_list, num_list = \
-            self.feature_type_split(df)
-        self.logger.info('Now imputing {}...'.format(cat_list))
-        df = self.impute(
-            #            df, cat_list, strategy='most_frequent')
-            df, cat_list, strategy='fill')
-        self.logger.info('Now imputing {}...'.format(dis_num_list))
-        df = self.impute(
-            df, dis_num_list, strategy='most_frequent')
-        self.logger.info('Now imputing {}...'.format(num_list))
-        df = self.impute(
-            df, num_list, strategy='median')
-        return df
-
-    def impute_train_and_test(self, ):
-        self.logger.info('Now imputing ...')
-        cat_list, dis_num_list, num_list = \
-            self.feature_type_split(self.train_df)
-        self.train_df = self.impute(
-            self.train_df, cat_list, strategy='fill')
-        self.train_df = self.impute(
-            self.train_df, dis_num_list, strategy='most_frequent')
-        self.train_df = self.impute(
-            self.train_df, num_list, strategy='median')
-        cat_list, dis_num_list, num_list = \
-            self.feature_type_split(self.test_df)
-        self.test_df = self.impute(
-            self.test_df, cat_list, strategy='fill')
-        self.test_df = self.impute(
-            self.test_df, dis_num_list, strategy='most_frequent')
-        self.test_df = self.impute(
-            self.test_df, num_list, strategy='median')
-
-    # feature engineering for previous application
-    def add_past_n_raws(self, past_num=5):
-        '''
-        sort by DAYS_DECISION, and use top past_num info.
-
-        '''
-        self.logger.info('adding previous loan nums')
-        targets = [
-            'NAME_CONTRACT_TYPE',
-            'AMT_ANNUITY',
-            'AMT_APPLICATION',
-            'AMT_CREDIT',
-            'AMT_DOWN_PAYMENT',
-            'AMT_GOODS_PRICE',
-            'WEEKDAY_APPR_PROCESS_START',
-            'HOUR_APPR_PROCESS_START',
-            'RATE_DOWN_PAYMENT',
-            'RATE_INTEREST_PRIMARY',
-            'RATE_INTEREST_PRIVILEGED',
-            'NAME_CASH_LOAN_PURPOSE',
-            'NAME_CONTRACT_STATUS',
-            'DAYS_DECISION',
-            'NAME_PAYMENT_TYPE',
-            'CODE_REJECT_REASON',
-            'NAME_TYPE_SUITE',
-            'NAME_CLIENT_TYPE',
-            'NAME_GOODS_CATEGORY',
-            'NAME_PORTFOLIO',
-            'NAME_PRODUCT_TYPE',
-            'CHANNEL_TYPE',
-            'SELLERPLACE_AREA',
-            'NAME_SELLER_INDUSTRY',
-            'CNT_PAYMENT',
-            'NAME_YIELD_GROUP',
-            'PRODUCT_COMBINATION',
-            'DAYS_FIRST_DRAWING',
-            'DAYS_LAST_DUE',
-            'DAYS_TERMINATION',
-            'NFLAG_INSURED_ON_APPROVAL',
-        ]
-
-        special_encodes = {
-            'SELLERPLACE_AREA': 'count',
+    def fe_application_prev_before(self, df):
+        # add raw sequential information processing fe
+        seq_agg = {
+            'NAME_CONTRACT_STATUS': ['first']
         }
+        seq_agg = df.groupby('SK_ID_CURR').agg(
+            {**seq_agg})
+        seq_agg.columns = pd.Index(
+            ['PREV_SEQ_' + e[0] + "_" + e[1].upper()
+             for e in seq_agg.columns.tolist()])
+        df, cat_cols = self.onehot_encoding(df, drop_first=False)
 
-        special_impute = {
-            'CNT_PAYMENT': 'zero',
-            'HOUR_APPR_PROCESS_START': '-1',
+        # ===============================
+        # 欠損値埋め
+        # ===============================
+        # Days 365.243 values -> nan
+        #df['DAYS_FIRST_DRAWING'].replace(365243, np.nan, inplace=True)
+        #df['DAYS_FIRST_DUE'].replace(365243, np.nan, inplace=True)
+        #df['DAYS_LAST_DUE_1ST_VERSION'].replace(365243, np.nan, inplace=True)
+        #df['DAYS_LAST_DUE'].replace(365243, np.nan, inplace=True)
+        #df['DAYS_TERMINATION'].replace(365243, np.nan, inplace=True)
+
+        # Add feature: value ask / value received percentage
+        df['APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
+        # Previous applications numeric features
+        num_aggregations = {
+            'AMT_ANNUITY': ['max', 'mean'],
+            'AMT_APPLICATION': ['max', 'mean'],
+            'AMT_CREDIT': ['max', 'mean'],
+            'APP_CREDIT_PERC': ['max', 'mean'],
+            'AMT_DOWN_PAYMENT': ['max', 'mean'],
+            'AMT_GOODS_PRICE': ['max', 'mean'],
+            'HOUR_APPR_PROCESS_START': ['max', 'mean'],
+            'RATE_DOWN_PAYMENT': ['max', 'mean'],
+            'DAYS_DECISION': ['max', 'mean'],
+            'CNT_PAYMENT': ['mean', 'sum'],
         }
+        # Previous applications categorical features
+        cat_aggregations = {}
+        for cat in cat_cols:
+            cat_aggregations[cat] = ['mean']
+        df_agg = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
+            groupby('SK_ID_CURR').\
+            agg({**num_aggregations, **cat_aggregations})
+        df_agg.columns = pd.Index(
+            ['PREV_' + e[0] + "_" + e[1].upper()
+             for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+            groupby('SK_ID_CURR').\
+            agg({**num_aggregations, **cat_aggregations})
+        df_agg_pref.columns = pd.Index(
+            ['PREV_PREF_' + e[0] + "_" + e[1].upper()
+             for e in df_agg_pref.columns.tolist()])
+#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
+        # previous Applications: Approved Applications - only numerical features
+        approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
+        approved_agg = approved.groupby('SK_ID_CURR').head(HEAD_SIZE)\
+            .groupby('SK_ID_CURR').\
+            agg(num_aggregations)
+#        app_agg_cols = approved_agg.columns.tolist()
+        approved_agg.columns = pd.Index(
+            ['APPROVED_' + e[0] + "_" + e[1].upper()
+             for e in approved_agg.columns.tolist()])
+        df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
+        # dfious Applications: Refused Applications - only numerical features
+        refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
+        refused_agg = refused.groupby('SK_ID_CURR').head(HEAD_SIZE)\
+            .groupby('SK_ID_CURR')\
+            .agg(num_aggregations)
+        refused_agg.columns = pd.Index(
+            ['REFUSED_' + e[0] + "_" + e[1].upper()
+             for e in refused_agg.columns.tolist()])
+        df_agg = df_agg.join(refused_agg, how='left', on='SK_ID_CURR')
+        df_agg['PREV_CNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg['PREV_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
+        df_agg['PREV_REFUSED_RATIO'] = df_agg['PREV_CNT'] /\
+            df_agg['PREV_REFUSED_CNT']
+        df_agg = df_agg.merge(seq_agg, how='left', on='SK_ID_CURR')
+        del refused, refused_agg, approved, approved_agg, df
 
-        self.logger.info('targets are {}'.format(targets))
+#        for e in app_agg_cols:
+#            df_agg['NEW_RATIO_PREV_' + e[0] + "_" + e[1].upper()] = \
+#                    df_agg['APPROVED_' + e[0] + "_" + e[1].upper()] /\
+#                    df_agg['REFUSED_' + e[0] + "_" + e[1].upper()]
 
-        self.train_df = self.train_df.merge(prev_loan_cnt_df, on='SK_ID_CURR')
-        self.train_df.SK_ID_PREV_CNT.fillna(0, inplace=True)
-        self.test_df = self.test_df.merge(prev_loan_cnt_df, on='SK_ID_CURR')
-        self.test_df.SK_ID_PREV_CNT.fillna(0, inplace=True)
+        gc.collect()
+        return df_agg
 
-    def add_prev_loan_cnt(self, ):
-        self.logger.info('adding previous loan nums')
-        prev_loan_cnt_df = self.prev_app_df.groupby(
-            'SK_ID_CURR', as_index=False).\
-            SK_ID_PREV.count().\
-            astype(int).\
-            rename(columns={'SK_ID_PREV': 'SK_ID_PREV_CNT'})
-        self.train_df = self.train_df.merge(prev_loan_cnt_df, on='SK_ID_CURR')
-        self.train_df.SK_ID_PREV_CNT.fillna(0, inplace=True)
-        self.test_df = self.test_df.merge(prev_loan_cnt_df, on='SK_ID_CURR')
-        self.test_df.SK_ID_PREV_CNT.fillna(0, inplace=True)
+    # Preprocess credit_card_balance.csv
+    def fe_credit_card_balance_before(self, df):
+        df, cat_cols = self.onehot_encoding(df, drop_first=False)
+        # General aggregations
+        df.drop(['SK_ID_PREV'], axis=1, inplace=True)
+        df_agg = df.groupby('SK_ID_CURR').agg(
+            ['min', 'max', 'mean', 'sum', 'var'])
+        df_agg.columns = pd.Index(
+            ['CC_' + e[0] + "_" + e[1].upper()
+                for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+                groupby('SK_ID_CURR').agg(['min', 'max', 'mean', 'sum', 'var'])
+        df_agg_pref.columns = pd.Index(
+            ['CC_PREF_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_pref.columns.tolist()])
+#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
+        # Count credit card lines
+        df_agg['CC_COUNT'] = df.groupby('SK_ID_CURR').size()
+        del df
+        gc.collect()
+        return df_agg
 
-    def add_prev_app_diff_features():
-        [['AMT_APPLICATION', 'AMT_CREDIT'],
-         ]
+    # Preprocess POS_CASH_balance.csv
+    def fe_pos_cash_before(self, df):
+        df, cat_cols = self.onehot_encoding(df, drop_first=False)
+        # Features
+        aggregations = {
+            'MONTHS_BALANCE': ['max', 'mean', 'size'],
+            'SK_DPD': ['max', 'mean'],
+            'SK_DPD_DEF': ['max', 'mean']
+        }
+#        for cat in cat_cols:
+#            aggregations[cat] = ['mean']
+
+        df_agg = df.groupby('SK_ID_CURR').agg(aggregations)
+        df_agg.columns = pd.Index(
+            ['POS_' + e[0] + "_" + e[1].upper()
+                for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+                groupby('SK_ID_CURR').agg(aggregations)
+        df_agg_pref.columns = pd.Index(
+            ['POS_PREF_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_pref.columns.tolist()])
+#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
+        # Count df cash accounts
+        df_agg['POS_COUNT'] = df.groupby('SK_ID_CURR').size()
+        del df
+        gc.collect()
+        return df_agg
+
+    # Preprocess installments_payments.csv
+    def fe_installments_payments_before(self, df):
+        df, cat_cols = self.onehot_encoding(df, drop_first=False)
+        # Percentage and difference paid in each dftallment (amount paid and
+        # dftallment value)
+        df['PAYMENT_PERC'] = df['AMT_PAYMENT'] / df['AMT_INSTALMENT']
+        df['PAYMENT_DIFF'] = df['AMT_INSTALMENT'] - df['AMT_PAYMENT']
+        # Days past due and days before due (no negative values)
+        df['DPD'] = df['DAYS_ENTRY_PAYMENT'] - df['DAYS_INSTALMENT']
+        df['DBD'] = df['DAYS_INSTALMENT'] - df['DAYS_ENTRY_PAYMENT']
+        df['DPD'] = df['DPD'].apply(lambda x: x if x > 0 else 0)
+        df['DBD'] = df['DBD'].apply(lambda x: x if x > 0 else 0)
+        # Features: Perform aggregations
+        aggregations = {
+            'NUM_INSTALMENT_VERSION': ['nunique'],
+            'DPD': ['max', 'mean', 'sum'],
+            'DBD': ['max', 'mean', 'sum'],
+            'PAYMENT_PERC': ['mean', 'var'],
+            'PAYMENT_DIFF': ['mean', 'var'],
+            'AMT_INSTALMENT': ['max', 'mean', 'sum'],
+            'AMT_PAYMENT': ['min', 'max', 'mean', 'sum'],
+            'DAYS_ENTRY_PAYMENT': ['max', 'mean', 'sum']
+        }
+        for cat in cat_cols:
+            aggregations[cat] = ['mean']
+        df_agg = df.groupby('SK_ID_CURR').agg(aggregations)
+        df_agg.columns = pd.Index(
+            ['INSTAL_' + e[0] + "_" + e[1].upper()
+                for e in df_agg.columns.tolist()])
+        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
+                groupby('SK_ID_CURR').agg(aggregations)
+        df_agg_pref.columns = pd.Index(
+            ['INSTAL_PREF_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_pref.columns.tolist()])
+#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
+        # Count dftallments accounts
+        df_agg['INSTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
+        del df
+        gc.collect()
+        return df_agg
+
+
