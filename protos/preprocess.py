@@ -55,7 +55,7 @@ def main():
     prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
-    prev_df = prep.add_was_null(prev_df)
+#    prev_df = prep.add_was_null(prev_df)
 #    prev_df = prep.auto_impute(prev_df)
 
 #    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
@@ -84,6 +84,7 @@ def main():
 #    cred_df = prep.auto_impute(cred_df)
 
     logger.info('merge and splitting fes and train, test df...')
+    train_and_test_df = train_and_test_df[['TARGET', 'SK_ID_CURR']]
     train_and_test_df = train_and_test_df.merge(
             prev_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(

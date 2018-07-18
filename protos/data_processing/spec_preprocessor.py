@@ -338,6 +338,16 @@ class HomeCreditPreprocessor(Preprocessor):
 #                    ])
 
         # ===============================
+        # 欠損値埋め
+        # ===============================
+        # Days 365.243 values -> nan
+        df['DAYS_FIRST_DRAWING'].replace(365243, np.nan, inplace=True)
+        df['DAYS_FIRST_DUE'].replace(365243, np.nan, inplace=True)
+        df['DAYS_LAST_DUE_1ST_VERSION'].replace(365243, np.nan, inplace=True)
+        df['DAYS_LAST_DUE'].replace(365243, np.nan, inplace=True)
+        df['DAYS_TERMINATION'].replace(365243, np.nan, inplace=True)
+
+        # ===============================
         # manual feature engineering
         # ===============================
         df['NEW_CREDIT_TO_ANNUITY_RATIO'] = \
@@ -347,8 +357,12 @@ class HomeCreditPreprocessor(Preprocessor):
         df['NEW_APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
         df['NEW_RATE_INTEREST_RATE'] = \
             df['RATE_INTEREST_PRIMARY'] / df['RATE_INTEREST_PRIVILEGED']
-#        df['NEW_DAYS_LAST_DUE_DIFF_MODIFIED'] = \
-#            df['DAYS_LAST_DUE'] - df['DAYS_LAST_DUE_1ST_VERSION']
+        df['NEW_ID_DIFF'] = \
+            df['SK_ID_PREV'] - df['SK_ID_CURR']
+        df['NEW_DAYS_FIRST_DUE_DIFF'] = \
+            df['DAYS_FIRST_DUE'] - df['DAYS_FIRST_DRAWING']
+        df['NEW_DAYS_LAST_DUE_DIFF'] = \
+            df['DAYS_LAST_DUE'] - df['DAYS_LAST_DUE_1ST_VERSION']
 
 
         # 何歳で register したか -> 少しだけ improve
@@ -365,15 +379,22 @@ class HomeCreditPreprocessor(Preprocessor):
             'AMT_DOWN_PAYMENT': ['max', 'mean'],
             'AMT_GOODS_PRICE': ['max', 'mean'],
             'HOUR_APPR_PROCESS_START': ['max', 'mean'],
+            'NFLAG_LAST_APPL_IN_DAY': ['mean'],
             'RATE_DOWN_PAYMENT': ['max', 'mean'],
             'RATE_INTEREST_PRIMARY': ['max', 'mean'],
             'RATE_INTEREST_PRIVILEGED': ['max', 'mean'],
             'DAYS_DECISION': ['max', 'mean', 'min'],
-            'CNT_PAYMENT': ['mean', 'sum'],
+            'DAYS_TERMINATION': ['max', 'mean', 'min'],
+            'SELLERPLACE_AREA': ['max', 'mean', 'min'],
+            'CNT_PAYMENT': ['mean'],
+            'NFLAG_INSURED_ON_APPROVAL': ['mean'],
             'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean'],
             'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean'],
             'NEW_APP_CREDIT_PERC': ['max', 'mean'],
             'NEW_RATE_INTEREST_RATE': ['max', 'mean'],
+#            'NEW_ID_DIFF': ['min', 'mean'],
+#            'NEW_DAYS_FIRST_DUE_DIFF': ['min', 'mean', 'max'],
+#            'NEW_DAYS_LAST_DUE_DIFF': ['min', 'mean', 'max'],
         }
         # Previous applications categorical features
         cat_aggregations = {}
