@@ -345,6 +345,8 @@ class HomeCreditPreprocessor(Preprocessor):
         df['NEW_CREDIT_TO_GOODS_RATIO'] = \
             df['AMT_CREDIT'] / df['AMT_GOODS_PRICE']
         df['NEW_APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
+        df['NEW_RATE_INTEREST_RATE'] = \
+            df['RATE_INTEREST_PRIMARY'] / df['RATE_INTEREST_PRIVILEGED']
 #        df['NEW_DAYS_LAST_DUE_DIFF_MODIFIED'] = \
 #            df['DAYS_LAST_DUE'] - df['DAYS_LAST_DUE_1ST_VERSION']
 
@@ -371,6 +373,7 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean'],
             'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean'],
             'NEW_APP_CREDIT_PERC': ['max', 'mean'],
+            'NEW_RATE_INTEREST_RATE': ['max', 'mean'],
         }
         # Previous applications categorical features
         cat_aggregations = {}
