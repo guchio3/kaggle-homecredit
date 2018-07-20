@@ -525,30 +525,46 @@ class HomeCreditPreprocessor(Preprocessor):
     # Preprocess POS_CASH_balance.csv
     def fe_pos_cash(self, df):
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
-        # Features
-        aggregations = {
-            'MONTHS_BALANCE': ['max', 'mean', 'size'],
-            'SK_DPD': ['max', 'mean'],
-            'SK_DPD_DEF': ['max', 'mean']
-        }
-#        for cat in cat_cols:
-#            aggregations[cat] = ['mean']
 
-        df_agg = df.groupby('SK_ID_CURR').agg(aggregations)
-        df_agg.columns = pd.Index(
+        # ===============================
+        # manual feature engineering
+        # ===============================
+        df['NEW_SK_DPD_DIFF'] = \
+            df['SK_DPD'] - df['SK_DPD_DEF']
+
+        # Features
+        aggregations_curr = {
+            'MONTHS_BALANCE': ['max', 'mean', 'size', 'min'],
+            'SK_DPD': ['max', 'mean'],
+            'SK_DPD_DEF': ['max', 'mean'],
+            'NEW_SK_DPD_DIFF': ['max', 'mean']
+        }
+
+        aggregations_prev = {
+            'MONTHS_BALANCE': ['max', 'mean', 'size'],
+        }
+
+        for cat in cat_cols:
+            aggregations_curr[cat] = ['mean']
+            aggregations_prev[cat] = ['mean']
+
+        df_agg_curr = df.groupby('SK_ID_CURR').agg(aggregations_curr)
+        df_agg_curr.columns = pd.Index(
             ['POS_' + e[0] + "_" + e[1].upper()
-                for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-                groupby('SK_ID_CURR').agg(aggregations)
-        df_agg_pref.columns = pd.Index(
-            ['POS_PREF_' + e[0] + "_" + e[1].upper()
-                for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
+                for e in df_agg_curr.columns.tolist()])
         # Count df cash accounts
-        df_agg['POS_COUNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg_curr['POS_NEW_COUNT'] = df.groupby('SK_ID_CURR').size()
+
+        df_agg_prev = df.groupby('SK_ID_PREV').agg(aggregations_curr)
+        df_agg_prev.columns = pd.Index(
+            ['POS_PREV_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_prev.columns.tolist()])
+        # Count df cash accounts
+        df_agg_prev['POS_PREV_NEW_COUNT'] = df.groupby('SK_ID_PREV').size()
+
         del df
         gc.collect()
-        return df_agg
+        return df_agg_curr, df_agg_prev
 
     # Preprocess installments_payments.csv
     def fe_installments_payments(self, df):

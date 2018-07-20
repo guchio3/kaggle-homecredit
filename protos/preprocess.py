@@ -28,11 +28,11 @@ def main():
     train_df = pd.read_csv('../inputs/application_train.csv')
     test_df = pd.read_csv('../inputs/application_test.csv')
     prev_df = pd.read_csv('../inputs/previous_application.csv')
-    bureau_df = pd.read_csv('../inputs/bureau.csv')
-    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
+#    bureau_df = pd.read_csv('../inputs/bureau.csv')
+#    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
     pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
-    ins_df = pd.read_csv('../inputs/installments_payments.csv')
-    cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
+#    ins_df = pd.read_csv('../inputs/installments_payments.csv')
+#    cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
     train_and_test_df = pd.concat([train_df, test_df])
 
     logger.info('fe for application...')
@@ -51,50 +51,54 @@ def main():
 #                'ACTIVE_RATE_CREDIT_MAX',
 #                ])
 #    train_and_test_df = prep.auto_impute(train_and_test_df)
+
+#    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
+#    bureau_df = prep.add_was_null(bureau_df, 
+#            special_list=was_null_list.feature.tolist())
+#    bureau_df = prep.add_was_null(bureau_df)
+#    bureau_df = prep.auto_impute(bureau_df)
+
+    pos_df = prep.fe_pos_cash(pos_df)
+#    pos_df = prep.add_was_null(pos_df, 
+#            special_list=was_null_list.feature.tolist())
+#    pos_df = prep.add_was_null(pos_df)
+#    pos_df = prep.auto_impute(pos_df)
+
+#    ins_df = prep.fe_installments_payments(ins_df)
+#    ins_df = prep.add_was_null(ins_df,
+#            special_list=was_null_list.feature.tolist())
+#    ins_df = prep.add_was_null(ins_df)
+#    ins_df = prep.auto_impute(ins_df)
+
+#    cred_df = prep.fe_credit_card_balance(cred_df)
+#    cred_df = prep.add_was_null(cred_df, 
+#            special_list=was_null_list.feature.tolist())
+#    cred_df = prep.add_was_null(cred_df)
+#    cred_df = prep.add_was_null(cred_df)
+#    cred_df = prep.auto_impute(cred_df)
+
 #    prev_df = prep.fe_application_prev(prev_df)
+    prev_df = prev_df.merge(
+            pos_df, on='SK_ID_PREV', how='left')
     prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
 #    prev_df = prep.add_was_null(prev_df)
 #    prev_df = prep.auto_impute(prev_df)
 
-    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
-    bureau_df = prep.add_was_null(bureau_df, 
-            special_list=was_null_list.feature.tolist())
-#    bureau_df = prep.add_was_null(bureau_df)
-#    bureau_df = prep.auto_impute(bureau_df)
-
-    pos_df = prep.fe_pos_cash(pos_df)
-    pos_df = prep.add_was_null(pos_df, 
-            special_list=was_null_list.feature.tolist())
-#    pos_df = prep.add_was_null(pos_df)
-#    pos_df = prep.auto_impute(pos_df)
-
-    ins_df = prep.fe_installments_payments(ins_df)
-    ins_df = prep.add_was_null(ins_df,
-            special_list=was_null_list.feature.tolist())
-#    ins_df = prep.add_was_null(ins_df)
-#    ins_df = prep.auto_impute(ins_df)
-
-    cred_df = prep.fe_credit_card_balance(cred_df)
-    cred_df = prep.add_was_null(cred_df, 
-            special_list=was_null_list.feature.tolist())
-#    cred_df = prep.add_was_null(cred_df)
-#    cred_df = prep.add_was_null(cred_df)
-#    cred_df = prep.auto_impute(cred_df)
 
     logger.info('merge and splitting fes and train, test df...')
 #    train_and_test_df = train_and_test_df[['TARGET', 'SK_ID_CURR']]
     train_and_test_df = train_and_test_df.merge(
             prev_df, on='SK_ID_CURR', how='left')
-    train_and_test_df = train_and_test_df.merge(
-            bureau_df, on='SK_ID_CURR', how='left')
-    train_and_test_df = train_and_test_df.merge(
-            pos_df, on='SK_ID_CURR', how='left')
-    train_and_test_df = train_and_test_df.merge(
-            ins_df, on='SK_ID_CURR', how='left')
-    train_and_test_df = train_and_test_df.merge(
-            cred_df, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            bureau_df, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            pos_df, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            ins_df, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            cred_df, on='SK_ID_CURR', how='left')
 
 #    train_and_test_df = prep.auto_impute(
 #            train_and_test_df, mode='min')
