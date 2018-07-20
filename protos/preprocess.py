@@ -58,7 +58,7 @@ def main():
 #    bureau_df = prep.add_was_null(bureau_df)
 #    bureau_df = prep.auto_impute(bureau_df)
 
-    pos_df = prep.fe_pos_cash(pos_df)
+    pos_df_curr, pos_df_prev = prep.fe_pos_cash(pos_df)
 #    pos_df = prep.add_was_null(pos_df, 
 #            special_list=was_null_list.feature.tolist())
 #    pos_df = prep.add_was_null(pos_df)
@@ -79,7 +79,7 @@ def main():
 
 #    prev_df = prep.fe_application_prev(prev_df)
     prev_df = prev_df.merge(
-            pos_df, on='SK_ID_PREV', how='left')
+            pos_df_prev, on='SK_ID_PREV', how='left')
     prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
@@ -91,10 +91,10 @@ def main():
 #    train_and_test_df = train_and_test_df[['TARGET', 'SK_ID_CURR']]
     train_and_test_df = train_and_test_df.merge(
             prev_df, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            pos_df_curr, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            bureau_df, on='SK_ID_CURR', how='left')
-#    train_and_test_df = train_and_test_df.merge(
-#            pos_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            ins_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(

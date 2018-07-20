@@ -534,14 +534,16 @@ class HomeCreditPreprocessor(Preprocessor):
 
         # Features
         aggregations_curr = {
-            'MONTHS_BALANCE': ['max', 'mean', 'size', 'min'],
+            'MONTHS_BALANCE': ['mean', lambda x: np.min(np.diff(x))],
             'SK_DPD': ['max', 'mean'],
             'SK_DPD_DEF': ['max', 'mean'],
-            'NEW_SK_DPD_DIFF': ['max', 'mean']
+            'NEW_SK_DPD_DIFF': ['max', 'mean', 'sum']
         }
 
         aggregations_prev = {
-            'MONTHS_BALANCE': ['max', 'mean', 'size'],
+            'MONTHS_BALANCE': ['max', 'size', 'min', lambda x: np.min(np.diff(x))],
+            'CNT_INSTALMENT': ['nunique'],
+            'CNT_INSTALMENT_FUTURE': ['size', 'max'],
         }
 
         for cat in cat_cols:
@@ -553,14 +555,14 @@ class HomeCreditPreprocessor(Preprocessor):
             ['POS_' + e[0] + "_" + e[1].upper()
                 for e in df_agg_curr.columns.tolist()])
         # Count df cash accounts
-        df_agg_curr['POS_NEW_COUNT'] = df.groupby('SK_ID_CURR').size()
+        #df_agg_curr['POS_NEW_COUNT'] = df.groupby('SK_ID_CURR').size()
 
         df_agg_prev = df.groupby('SK_ID_PREV').agg(aggregations_curr)
         df_agg_prev.columns = pd.Index(
             ['POS_PREV_' + e[0] + "_" + e[1].upper()
                 for e in df_agg_prev.columns.tolist()])
         # Count df cash accounts
-        df_agg_prev['POS_PREV_NEW_COUNT'] = df.groupby('SK_ID_PREV').size()
+        #df_agg_prev['POS_PREV_NEW_COUNT'] = df.groupby('SK_ID_PREV').size()
 
         del df
         gc.collect()
