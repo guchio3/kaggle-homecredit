@@ -58,6 +58,7 @@ def main():
 #    bureau_df = prep.add_was_null(bureau_df)
 #    bureau_df = prep.auto_impute(bureau_df)
 
+    logger.info('fe for pos_cash...')
     pos_df_curr, pos_df_prev = prep.fe_pos_cash(pos_df)
 #    pos_df = prep.add_was_null(pos_df, 
 #            special_list=was_null_list.feature.tolist())
@@ -80,6 +81,7 @@ def main():
 #    prev_df = prep.fe_application_prev(prev_df)
     prev_df = prev_df.merge(
             pos_df_prev, on='SK_ID_PREV', how='left')
+    logger.info('fe for application_prev...')
     prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
