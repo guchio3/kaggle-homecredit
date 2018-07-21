@@ -43,12 +43,12 @@ def remove_train_only_category(train_df, test_df):
 def display_importances(feature_importance_df_, filename='importance_application'):
     cols = feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).index
     feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).to_csv(filename + '.csv')
-    best_features = feature_importance_df_.loc[feature_importance_df_.feature.isin(cols)]
-    plt.figure(figsize=(8, 10))
-    sns.barplot(x="importance", y="feature", data=best_features.sort_values(by="importance", ascending=False))
-    plt.title('LightGBM Features (avg over folds)')
-    plt.tight_layout()
-    plt.savefig(filename + '.png')
+#    best_features = feature_importance_df_.loc[feature_importance_df_.feature.isin(cols)]
+#    plt.figure(figsize=(8, 10))
+#    sns.barplot(x="importance", y="feature", data=best_features.sort_values(by="importance", ascending=False))
+#    plt.title('LightGBM Features (avg over folds)')
+#    plt.tight_layout()
+#    plt.savefig(filename + '.png')
 
 
 def main():

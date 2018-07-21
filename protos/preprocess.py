@@ -98,8 +98,8 @@ def main():
             prev_df, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             pos_df_curr, on='SK_ID_CURR', how='left')
-    train_and_test_df = train_and_test_df.merge(
-            ins_df_curr, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            ins_df_curr, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            bureau_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(

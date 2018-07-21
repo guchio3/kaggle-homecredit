@@ -370,22 +370,26 @@ class HomeCreditPreprocessor(Preprocessor):
             df['POS_PREV_CNT_INSTALMENT_FUTURE_SIZE'] /\
             df['POS_PREV_CNT_INSTALMENT_FUTURE_MAX']
 
+        tail_0_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL == 0
+        tail_1_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL == 1
+        tail_2_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL == 2
+        tail_others_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL > 2
         df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 0 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_0_mask
         df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 1 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_1_mask
         df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 2 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_2_mask
         df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] < 3 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_others_mask
         df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 0 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_0_mask
         df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 1 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_1_mask
         df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 2 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_2_mask
         df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS'] = \
-            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] < 3 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_others_mask
         df['NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF'] = \
             df['INSTAL_PREV_AMT_INSTALMENT_SUM'] - df['INSTAL_PREV_AMT_PAYMENT_SUM']
         df['NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO'] = \
@@ -578,7 +582,8 @@ class HomeCreditPreprocessor(Preprocessor):
         }
 
         aggregations_prev = {
-            'NUM_INSTALMENT_VERSION': ['median', lambda x: x.tail()],
+            'NUM_INSTALMENT_VERSION': ['median'],
+            #'NUM_INSTALMENT_VERSION': ['median', lambda x: x.tail(1)],
             'AMT_INSTALMENT': ['max', 'mean', 'sum'],
             'AMT_PAYMENT': ['max', 'mean', 'sum'],
             'DAYS_INSTALMENT': ['max', 'min'],
@@ -599,6 +604,7 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg_prev.columns = pd.Index(
             ['INSTAL_PREV_' + e[0] + "_" + e[1].upper()
                 for e in df_agg_prev.columns.tolist()])
+        df_agg_prev['INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL'] = df.groupby('SK_ID_PREV').NUM_INSTALMENT_VERSION.tail(1).astype('int')
 #        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
         # Count dftallments accounts
 #        df_agg_curr['INSTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
