@@ -508,11 +508,10 @@ class HomeCreditPreprocessor(Preprocessor):
         #df_agg_curr['POS_NEW_COUNT'] = df.groupby('SK_ID_CURR').size()
 
         self.logger.info('aggregating for SK_ID_PREV_...')
-        df_agg_prev = df.groupby('SK_ID_PREV').agg(aggregations_curr)
+        df_agg_prev = df.groupby('SK_ID_PREV').agg(aggregations_prev)
         df_agg_prev.columns = pd.Index(
             ['POS_PREV_' + e[0] + "_" + e[1].upper()
                 for e in df_agg_prev.columns.tolist()])
-        self.logger.info(df_agg_prev.columns.tolist())
         # Count df cash accounts
         #df_agg_prev['POS_PREV_NEW_COUNT'] = df.groupby('SK_ID_PREV').size()
 
