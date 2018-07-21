@@ -365,15 +365,31 @@ class HomeCreditPreprocessor(Preprocessor):
             df['DAYS_LAST_DUE_1ST_VERSION'] - df['DAYS_FIRST_DUE']
         df['NEW_CREDIT_SELLERPLACE_RATE'] = \
             df['AMT_CREDIT'] / df['SELLERPLACE_AREA']
+
         df['NEW_POS_PREV_INSTALMENT_SPEED'] = \
             df['POS_PREV_CNT_INSTALMENT_FUTURE_SIZE'] /\
             df['POS_PREV_CNT_INSTALMENT_FUTURE_MAX']
 
-
-        # 何歳で register したか -> 少しだけ improve
-#        df['NEW_AGE_DAYS_REGISTRATION'] = \
-#            df['DAYS_BIRTH'] - df['DAYS_REGISTRATION']
-
+        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 0 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 1 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 2 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] < 3 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 0 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 1 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] != 2 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS'] = \
+            df.apply(lambda x: 0 if x['INSTAL_PREV_NUM_INSTALMENT_VERSION_<LAMBDA>'] < 3 else x.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX)
+        df['NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF'] = \
+            df['INSTAL_PREV_AMT_INSTALMENT_SUM'] - df['INSTAL_PREV_AMT_PAYMENT_SUM']
+        df['NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO'] = \
+            df['INSTAL_PREV_AMT_PAYMENT_SUM'] / df['INSTAL_PREV_AMT_INSTALMENT_SUM']
 
         # Add feature: value ask / value received percentage
         # Previous applications numeric features
@@ -401,6 +417,7 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_DAYS_LAST_DUE_DIFF': ['min', 'mean', 'max'],
             'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['min', 'mean', 'max'],
             'NEW_CREDIT_SELLERPLACE_RATE': ['min', 'mean', 'max'],
+
             'POS_PREV_MONTHS_BALANCE_MAX': ['max', 'mean'],
             'POS_PREV_MONTHS_BALANCE_SIZE': ['max', 'mean'],
             'POS_PREV_MONTHS_BALANCE_MIN': ['min', 'max'],
@@ -416,24 +433,42 @@ class HomeCreditPreprocessor(Preprocessor):
             'POS_PREV_NEW_SK_DPD_DIFF_MEAN': ['mean'],
             'POS_PREV_NEW_SK_DPD_DIFF_SUM': ['mean', 'sum'],
             'NEW_POS_PREV_INSTALMENT_SPEED': ['mean', 'max', 'min'],
+
+            'INSTAL_PREV_NUM_INSTALMENT_VERSION_MEDIAN': ['median'],
+            'INSTAL_PREV_AMT_INSTALMENT_MEAN': ['max', 'mean', ],
+            'INSTAL_PREV_AMT_PAYMENT_MEAN': ['max', 'mean', ],
+            'INSTAL_PREV_DAYS_INSTALMENT_MAX': ['max', 'mean', 'min'],
+            'INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX': ['max', 'mean', 'min'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_MEAN': ['mean', 'min'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_MIN': ['max', 'mean', 'min'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_VAR': ['mean'],
+            'INSTAL_PREV_NEW_PAYMENT_DIFF_MEAN': ['mean', 'min'],
+            'INSTAL_PREV_NEW_PAYMENT_DIFF_VAR': ['mean'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MAX': ['max', 'mean'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MEAN': ['mean'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MIN': ['min', 'max'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0': ['mean', 'min'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['mean', 'min'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2': ['mean', 'min'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['mean', 'min'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0': ['mean', 'min'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['mean', 'min'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2': ['mean', 'min'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['mean', 'min'],
+            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['max', 'mean', 'sum'],
+            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean', 'min'],
         }
 
         # Previous applications categorical features
         cat_aggregations = {}
         for cat in cat_cols:
             cat_aggregations[cat] = ['mean']
+        self.logger.info('aggregating for SK_ID_CURR...')
         df_agg = df.groupby('SK_ID_CURR')\
             .agg({**num_aggregations, **cat_aggregations})
         df_agg.columns = pd.Index(
             ['PREV_' + e[0] + "_" + e[1].upper()
              for e in df_agg.columns.tolist()])
-
-        df_agg_pref = df.groupby('SK_ID_CURR')\
-            .agg({**num_aggregations, **cat_aggregations})
-        df_agg_pref.columns = pd.Index(
-            ['PREV_PREF_' + e[0] + "_" + e[1].upper()
-             for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
 
         # previous Applications: Approved Applications - only numerical features
         approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
@@ -447,12 +482,12 @@ class HomeCreditPreprocessor(Preprocessor):
         df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
 
         # previous Applications: Refused Applications - only numerical features
-        refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
-        refused_agg = refused.groupby('SK_ID_CURR')\
-            .agg(num_aggregations)
-        refused_agg.columns = pd.Index(
-            ['REFUSED_' + e[0] + "_" + e[1].upper()
-             for e in refused_agg.columns.tolist()])
+#        refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
+#        refused_agg = refused.groupby('SK_ID_CURR')\
+#            .agg(num_aggregations)
+#        refused_agg.columns = pd.Index(
+#            ['REFUSED_' + e[0] + "_" + e[1].upper()
+#             for e in refused_agg.columns.tolist()])
 #        df_agg = df_agg.join(refused_agg, how='left', on='SK_ID_CURR')
 
         # ===============================
@@ -460,10 +495,11 @@ class HomeCreditPreprocessor(Preprocessor):
         # ===============================
         df_agg['PREV_NEW_CNT'] = df.groupby('SK_ID_CURR').size()
         df_agg['PREV_NEW_APPROVED_CNT'] = approved.groupby('SK_ID_CURR').size()
-        df_agg['PREV_NEW_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
+#        df_agg['PREV_NEW_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
         df_agg['PREV_NEW_APPROVED_RATIO'] = \
             df_agg['PREV_NEW_APPROVED_CNT'] / df_agg['PREV_NEW_CNT']
-        del refused, refused_agg, approved, approved_agg, df
+#        del refused, refused_agg, approved, approved_agg, df
+        del approved, approved_agg, df
 
         gc.collect()
         return df_agg
@@ -471,6 +507,7 @@ class HomeCreditPreprocessor(Preprocessor):
     # Preprocess POS_CASH_balance.csv
     def fe_pos_cash(self, df):
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
+        df = df.sort_values(['SK_ID_PREV', 'MONTHS_BALANCE'])
 
         # ===============================
         # manual feature engineering
@@ -522,43 +559,52 @@ class HomeCreditPreprocessor(Preprocessor):
     # Preprocess installments_payments.csv
     def fe_installments_payments(self, df):
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
+        df = df.sort_values(['SK_ID_PREV', 'NUM_INSTALMENT_NUMBER'])
+
+        # ===============================
+        # manual feature engineering
+        # ===============================
         # Percentage and difference paid in each dftallment (amount paid and
         # dftallment value)
-        df['PAYMENT_PERC'] = df['AMT_PAYMENT'] / df['AMT_INSTALMENT']
-        df['PAYMENT_DIFF'] = df['AMT_INSTALMENT'] - df['AMT_PAYMENT']
-        # Days past due and days before due (no negative values)
-        df['DPD'] = df['DAYS_ENTRY_PAYMENT'] - df['DAYS_INSTALMENT']
-        df['DBD'] = df['DAYS_INSTALMENT'] - df['DAYS_ENTRY_PAYMENT']
-        df['DPD'] = df['DPD'].apply(lambda x: x if x > 0 else 0)
-        df['DBD'] = df['DBD'].apply(lambda x: x if x > 0 else 0)
+        # 最後の version とその時の金額は大事っぽい
+        # version 2, 3 は一括返済?
+        df['NEW_PAYMENT_PERC'] = df['AMT_PAYMENT'] / df['AMT_INSTALMENT']
+        df['NEW_PAYMENT_DIFF'] = df['AMT_INSTALMENT'] - df['AMT_PAYMENT']
+        df['NEW_DAYS_PAYMENT_DIFF'] = \
+            df['DAYS_ENTRY_PAYMENT'] - df['DAYS_INSTALMENT']
+
         # Features: Perform aggregations
-        aggregations = {
-            'NUM_INSTALMENT_VERSION': ['nunique'],
-            'DPD': ['max', 'mean', 'sum'],
-            'DBD': ['max', 'mean', 'sum'],
-            'PAYMENT_PERC': ['mean', 'var'],
-            'PAYMENT_DIFF': ['mean', 'var'],
-            'AMT_INSTALMENT': ['max', 'mean', 'sum'],
-            'AMT_PAYMENT': ['min', 'max', 'mean', 'sum'],
-            'DAYS_ENTRY_PAYMENT': ['max', 'mean', 'sum']
+        aggregations_curr = {
         }
+
+        aggregations_prev = {
+            'NUM_INSTALMENT_VERSION': ['median', lambda x: x.tail()],
+            'AMT_INSTALMENT': ['max', 'mean', 'sum'],
+            'AMT_PAYMENT': ['max', 'mean', 'sum'],
+            'DAYS_INSTALMENT': ['max', 'min'],
+            'DAYS_ENTRY_PAYMENT': ['max', 'min'],
+            'NEW_PAYMENT_PERC': ['mean', 'min', 'var'],
+            'NEW_PAYMENT_DIFF': ['mean', 'var'],
+            'NEW_DAYS_PAYMENT_DIFF': ['max', 'mean', 'min'],
+        }
+
         for cat in cat_cols:
-            aggregations[cat] = ['mean']
-        df_agg = df.groupby('SK_ID_CURR').agg(aggregations)
-        df_agg.columns = pd.Index(
+            aggregations_curr[cat] = ['mean']
+            aggregations_prev[cat] = ['mean']
+        df_agg_curr = df.groupby('SK_ID_CURR').agg(aggregations_curr)
+        df_agg_curr.columns = pd.Index(
             ['INSTAL_' + e[0] + "_" + e[1].upper()
-                for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-                groupby('SK_ID_CURR').agg(aggregations)
-        df_agg_pref.columns = pd.Index(
-            ['INSTAL_PREF_' + e[0] + "_" + e[1].upper()
-                for e in df_agg_pref.columns.tolist()])
+                for e in df_agg_curr.columns.tolist()])
+        df_agg_prev = df.groupby('SK_ID_PREV').agg(aggregations_prev)
+        df_agg_prev.columns = pd.Index(
+            ['INSTAL_PREV_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_prev.columns.tolist()])
 #        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
         # Count dftallments accounts
-        df_agg['INSTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
+#        df_agg_curr['INSTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
         del df
         gc.collect()
-        return df_agg
+        return df_agg_curr, df_agg_prev
 
     # Preprocess credit_card_balance.csv
     def fe_credit_card_balance(self, df):

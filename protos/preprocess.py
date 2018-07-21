@@ -21,18 +21,18 @@ def main():
     logInit(logger)
     logger.info('start')
 
-    dataio = DataIO(logger=logger)
+#    dataio = DataIO(logger=logger)
 
     prep = HomeCreditPreprocessor(logger=logger)
     logger.info('loading dfs...')
     train_df = pd.read_csv('../inputs/application_train.csv')
     test_df = pd.read_csv('../inputs/application_test.csv')
-    prev_df = pd.read_csv('../inputs/previous_application.csv')
+    pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
+    ins_df = pd.read_csv('../inputs/installments_payments.csv')
 #    bureau_df = pd.read_csv('../inputs/bureau.csv')
 #    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
-    pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
-#    ins_df = pd.read_csv('../inputs/installments_payments.csv')
 #    cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
+    prev_df = pd.read_csv('../inputs/previous_application.csv')
     train_and_test_df = pd.concat([train_df, test_df])
 
     logger.info('fe for application...')
@@ -65,7 +65,8 @@ def main():
 #    pos_df = prep.add_was_null(pos_df)
 #    pos_df = prep.auto_impute(pos_df)
 
-#    ins_df = prep.fe_installments_payments(ins_df)
+    logger.info('fe for instalment...')
+    ins_df_curr, ins_df_prev = prep.fe_installments_payments(ins_df)
 #    ins_df = prep.add_was_null(ins_df,
 #            special_list=was_null_list.feature.tolist())
 #    ins_df = prep.add_was_null(ins_df)
@@ -81,6 +82,8 @@ def main():
 #    prev_df = prep.fe_application_prev(prev_df)
     prev_df = prev_df.merge(
             pos_df_prev, on='SK_ID_PREV', how='left')
+    prev_df = prev_df.merge(
+            ins_df_prev, on='SK_ID_PREV', how='left')
     logger.info('fe for application_prev...')
     prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
@@ -95,10 +98,10 @@ def main():
             prev_df, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             pos_df_curr, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            ins_df_curr, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            bureau_df, on='SK_ID_CURR', how='left')
-#    train_and_test_df = train_and_test_df.merge(
-#            ins_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            cred_df, on='SK_ID_CURR', how='left')
 
