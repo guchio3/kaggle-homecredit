@@ -33,8 +33,9 @@ from data_processing.data_io import DataIO
 from data_processing.spec_preprocessor import HomeCreditPreprocessor
 from models.my_mlp import myMLPClassifier
 
-
 from scipy.special import erfinv
+
+import preprocess
 
 np.random.seed(100)
 plt.switch_backend('agg')
@@ -69,15 +70,18 @@ def main():
     dataio = DataIO(logger=logger)
     prep = HomeCreditPreprocessor(logger=logger)
 
-    dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train.csv',
-        'test': '../inputs/my_test.csv'})
+#    dfs_dict = dataio.read_csvs({
+#        'train': '../inputs/my_train.csv',
+#        'test': '../inputs/my_test.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
 #    dfs_dict['train'] = prep.down_sampling(dfs_dict['train'], 'TARGET')
-    train_df = dfs_dict['train']
-    test_df = dfs_dict['test']
+#    train_df = dfs_dict['train']
+#    test_df = dfs_dict['test']
+
+    train_df, test_df = preprocess.main()
+
     logger.info('removing the categorical features which\
                 are contained only by training set...')
 #    train_df = remove_train_only_category(train_df, test_df)
