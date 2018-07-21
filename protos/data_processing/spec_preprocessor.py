@@ -365,6 +365,9 @@ class HomeCreditPreprocessor(Preprocessor):
             df['DAYS_LAST_DUE_1ST_VERSION'] - df['DAYS_FIRST_DUE']
         df['NEW_CREDIT_SELLERPLACE_RATE'] = \
             df['AMT_CREDIT'] / df['SELLERPLACE_AREA']
+        df['NEW_POS_PREV_INSTALMENT_SPEED'] = \
+            df['POS_PREV_CNT_INSTALMENT_FUTURE_SIZE'] /\
+            df['POS_PREV_CNT_INSTALMENT_FUTURE_MAX']
 
 
         # 何歳で register したか -> 少しだけ improve
@@ -394,18 +397,26 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean'],
             'NEW_APP_CREDIT_PERC': ['max', 'mean'],
             'NEW_RATE_INTEREST_RATE': ['max', 'mean'],
-            'NEW_DAYS_FIRST_DUE_DIFF': ['min', 'mean', 'max',],
-            'NEW_DAYS_LAST_DUE_DIFF': ['min', 'mean', 'max', ],
+            'NEW_DAYS_FIRST_DUE_DIFF': ['min', 'mean', 'max'],
+            'NEW_DAYS_LAST_DUE_DIFF': ['min', 'mean', 'max'],
             'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['min', 'mean', 'max'],
             'NEW_CREDIT_SELLERPLACE_RATE': ['min', 'mean', 'max'],
-#            'POS_PREV_MONTH': [],
+            'POS_PREV_MONTHS_BALANCE_MAX': ['max', 'mean'],
+            'POS_PREV_MONTHS_BALANCE_SIZE': ['max', 'mean'],
+            'POS_PREV_MONTHS_BALANCE_MIN': ['min', 'max'],
+            'POS_PREV_MONTHS_BALANCE_<LAMBDA>': ['max', 'mean'],
+            'POS_PREV_SK_DPD_MAX': ['max', 'mean'],
+            'POS_PREV_SK_DPD_MEAN': ['max', 'mean', 'min'],
+            'POS_PREV_SK_DPD_DEF_MAX': ['max', 'mean'],
+            'POS_PREV_SK_DPD_DEF_MEAN': ['max', 'mean', 'min'],
+            'POS_PREV_CNT_INSTALMENT_NUNIQUE': ['max', 'mean', 'min'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_SIZE': ['mean'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_MAX': ['max'],
+            'POS_PREV_NEW_SK_DPD_DIFF_MAX': ['max', 'mean'],
+            'POS_PREV_NEW_SK_DPD_DIFF_MEAN': ['mean'],
+            'POS_PREV_NEW_SK_DPD_DIFF_SUM': ['mean', 'sum'],
+            'NEW_POS_PREV_INSTALMENT_SPEED': ['mean', 'max', 'min'],
         }
-#            'MONTHS_BALANCE': ['max', 'size', 'min', lambda x: x.diff().max()],
-#            'SK_DPD': ['max', 'mean'],
-#            'SK_DPD_DEF': ['max', 'mean'],
-#            'CNT_INSTALMENT': ['nunique'],
-#            'CNT_INSTALMENT_FUTURE': ['size', 'max'],
-#            'NEW_SK_DPD_DIFF': ['max', 'mean', 'sum']
 
         # Previous applications categorical features
         cat_aggregations = {}

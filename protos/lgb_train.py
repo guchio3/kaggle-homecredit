@@ -13,17 +13,6 @@ from sklearn.utils.class_weight import compute_class_weight
 from sklearn import metrics
 from sklearn.feature_selection import VarianceThreshold
 
-#from sklearn.category_encoders.targetencoder import TargetEncoder
-
-from keras.utils import plot_model
-from keras.backend import tensorflow_backend as backend
-from keras import backend as K
-K.set_session(K.tf.Session(
-    config=K.tf.ConfigProto(
-        #        intra_op_parallelism_threads=2,
-        #        inter_op_parallelism_threads=2)))
-        device_count={'CPU': 8})))
-
 from tqdm import tqdm
 from logging import getLogger
 import argparse
@@ -247,4 +236,4 @@ if __name__ == '__main__':
     # Exception ignored in: <bound method BaseSession.__del__ of
     # <tensorflow.python.client.session.Session object at 0x1248ba668>>
     # の対策
-    backend.clear_session()
+    #backend.clear_session()
