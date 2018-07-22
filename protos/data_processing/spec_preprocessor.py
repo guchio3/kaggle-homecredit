@@ -463,6 +463,23 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean', 'min'],
         }
 
+            'MONTHS_BALANCE': ['min'],
+            'AMT_BALANCE': ['max', 'mean', 'min'], # max - min, max or min - head and tail
+            'AMT_CREDIT_LIMIT_ACTUAL': ['max', 'mean', 'min', 'nunique', 'size'], # max - min, max or min - head and tail, size / nunique, balance / limit
+            'AMT_DRAWINGS_ATM_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_DRAWINGS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'], # この sum と atm sum の ratio
+            'AMT_DRAWINGS_OTHER_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_DRAWINGS_POS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_INST_MIN_REGULARITY': ['min', 'mean', 'max'], # これらの間の差分等
+            'AMT_PAYMENT_CURRENT': ['max', 'mean', 'min', 'var'], # これと totol の差分等
+            'AMT_PAYMENT_TOTAL_CURRENT': ['max', 'mean', 'min', 'var'], # これと balance の ratio
+            'AMT_RECEIVABLE_PRINCIPAL': ['min', 'max'],
+            'NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+
+
         # Previous applications categorical features
         cat_aggregations = {}
         for cat in cat_cols:
@@ -629,11 +646,11 @@ class HomeCreditPreprocessor(Preprocessor):
         # manual feature engineering
         # ===============================
         df['NEW_AMT_RECEIVABLE_DIFF_W_PRINCIPAL'] = df['AMT_RECEIVABLE'] - df['AMT_RECEIVABLE_PRINCIPAL']
-        df['NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL'] = df['AMT_RECEIVABLE_PRINCIPAL'] / df['AMT_RECEIVABLE']
+        df['NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL'] = df['AMT_RECEIVABLE_PRINCIPAL'] / (df['AMT_RECEIVABLE'] + 1)
         df['NEW_AMT_RECEIVABLE_DIFF_W_TOTAL'] = df['AMT_RECEIVABLE'] - df['AMT_TOTAL_RECEIVABLE']
-        df['NEW_AMT_RECEIVABLE_RATIO_W_TOTAL'] = df['AMT_RECEIVABLE'] / df['AMT_TOTAL_RECEIVABLE']
+        df['NEW_AMT_RECEIVABLE_RATIO_W_TOTAL'] = df['AMT_RECEIVABLE'] / (df['AMT_TOTAL_RECEIVABLE'] + 1)
         df['NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] - df['AMT_PAYMENT_CURRENT']
-        df['NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] / df['AMT_PAYMENT_CURRENT']
+        df['NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] / (df['AMT_PAYMENT_CURRENT'] + 1)
         df['NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_ATM_CURRENT'] / (df['CNT_DRAWINGS_ATM_CURRENT'] + 1)
         df['NEW_AMT_DRAWINGS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_CURRENT'] / (df['CNT_DRAWINGS_CURRENT'] + 1)
         df['NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_POS_CURRENT'] / (df['CNT_DRAWINGS_POS_CURRENT'] + 1)
