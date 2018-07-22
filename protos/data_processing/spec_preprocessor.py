@@ -510,6 +510,10 @@ class HomeCreditPreprocessor(Preprocessor):
 
     # Preprocess POS_CASH_balance.csv
     def fe_pos_cash(self, df):
+        '''
+        months balance の tail で status 等の agg
+
+        '''
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
         df = df.sort_values(['SK_ID_PREV', 'MONTHS_BALANCE'])
 
@@ -614,25 +618,91 @@ class HomeCreditPreprocessor(Preprocessor):
 
     # Preprocess credit_card_balance.csv
     def fe_credit_card_balance(self, df):
+        '''
+        謎が多いので後で書き直す
+
+        '''
+        df_for_cat_tail = df[['SK_ID_PREV', 'NAME_CONTRACT_STATUS']]
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
-        # General aggregations
-        df.drop(['SK_ID_PREV'], axis=1, inplace=True)
-        df_agg = df.groupby('SK_ID_CURR').agg(
-            ['min', 'max', 'mean', 'sum', 'var'])
-        df_agg.columns = pd.Index(
-            ['CC_' + e[0] + "_" + e[1].upper()
-                for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-                groupby('SK_ID_CURR').agg(['min', 'max', 'mean', 'sum', 'var'])
-        df_agg_pref.columns = pd.Index(
-            ['CC_PREF_' + e[0] + "_" + e[1].upper()
-                for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
+        df = df.sort_values(['SK_ID_PREV', 'MONTHS_BALANCE'])
+        # ===============================
+        # manual feature engineering
+        # ===============================
+        df['NEW_AMT_RECEIVABLE_DIFF_W_PRINCIPAL'] = df['AMT_RECEIVABLE'] - df['AMT_RECEIVABLE_PRINCIPAL']
+        df['NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL'] = df['AMT_RECEIVABLE_PRINCIPAL'] / df['AMT_RECEIVABLE']
+        df['NEW_AMT_RECEIVABLE_DIFF_W_TOTAL'] = df['AMT_RECEIVABLE'] - df['AMT_TOTAL_RECEIVABLE']
+        df['NEW_AMT_RECEIVABLE_RATIO_W_TOTAL'] = df['AMT_RECEIVABLE'] / df['AMT_TOTAL_RECEIVABLE']
+        df['NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] - df['AMT_PAYMENT_CURRENT']
+        df['NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] / df['AMT_PAYMENT_CURRENT']
+        df['NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_ATM_CURRENT'] / (df['CNT_DRAWINGS_ATM_CURRENT'] + 1)
+        df['NEW_AMT_DRAWINGS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_CURRENT'] / (df['CNT_DRAWINGS_CURRENT'] + 1)
+        df['NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_POS_CURRENT'] / (df['CNT_DRAWINGS_POS_CURRENT'] + 1)
+        df['NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_OTHER_CURRENT'] / (df['CNT_DRAWINGS_OTHER_CURRENT'] + 1)
+        df['NEW_SK_DPD_DIFF'] = df['SK_DPD'] - df['SK_DPD_DEF']
+
+        aggregations_curr = {
+            'CNT_DRAWINGS_ATM_CURRENT': ['max', 'mean', 'var'],
+            'CNT_DRAWINGS_CURRENT': ['max', 'mean', 'var'],
+            'CNT_DRAWINGS_OTHER_CURRENT': ['max', 'mean', 'var'],
+            'CNT_DRAWINGS_POS_CURRENT': ['max', 'mean', 'var'],
+            'SK_DPD': ['max', 'mean', 'var'],
+            'SK_DPD_DEF': ['max', 'mean', 'var'],
+            'NEW_AMT_RECEIVABLE_DIFF_W_PRINCIPAL': ['max', 'mean', 'min'],
+            'NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL': ['max', 'mean', 'min'],
+            'NEW_AMT_RECEIVABLE_DIFF_W_TOTAL': ['max', 'mean', 'min'],
+            'NEW_AMT_RECEIVABLE_RATIO_W_TOTAL': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT': ['max', 'mean', 'min'],
+            'NEW_SK_DPD_DIFF': ['max', 'mean', 'var'],
+        }
+
+        aggregations_prev = {
+            'MONTHS_BALANCE': ['min'],
+            'AMT_BALANCE': ['max', 'mean', 'min'], # max - min, max or min - head and tail
+            'AMT_CREDIT_LIMIT_ACTUAL': ['max', 'mean', 'min', 'nunique', 'size'], # max - min, max or min - head and tail, size / nunique, balance / limit
+            'AMT_DRAWINGS_ATM_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_DRAWINGS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'], # この sum と atm sum の ratio
+            'AMT_DRAWINGS_OTHER_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_DRAWINGS_POS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_INST_MIN_REGULARITY': ['min', 'mean', 'max'], # これらの間の差分等
+            'AMT_PAYMENT_CURRENT': ['max', 'mean', 'min', 'var'], # これと totol の差分等
+            'AMT_PAYMENT_TOTAL_CURRENT': ['max', 'mean', 'min', 'var'], # これと balance の ratio
+            'AMT_RECEIVABLE_PRINCIPAL': ['min', 'max'],
+            'NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+            'NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+        }
+
+        for cat in cat_cols:
+            aggregations_curr[cat] = ['mean']
+            aggregations_prev[cat] = ['mean']
+
+        df_agg_curr = df.groupby('SK_ID_CURR').agg(aggregations_curr)
+        df_agg_curr.columns = pd.Index(
+            ['CC' + e[0] + "_" + e[1].upper()
+                for e in df_agg_curr.columns.tolist()])
+        df_agg_prev = df.groupby('SK_ID_PREV').agg(aggregations_prev)
+        df_agg_prev.columns = pd.Index(
+            ['CC_PREV_' + e[0] + "_" + e[1].upper()
+                for e in df_agg_prev.columns.tolist()])
+
         # Count credit card lines
-        df_agg['CC_COUNT'] = df.groupby('SK_ID_CURR').size()
+        #df_agg['CC_COUNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg_prev['CC_PREV_MONTHS_BALANCE_TAIL'] = df.groupby('SK_ID_PREV')\
+            .MONTHS_BALANCE.tail(1).astype('int')
+        df_agg_prev['CC_PREV_AMT_BALANCE_HEAD'] = df.groupby('SK_ID_PREV')\
+            .MONTHS_BALANCE.head(1)
+        df_agg_prev['CC_PREV_AMT_BALANCE_TAIL'] = df.groupby('SK_ID_PREV')\
+            .MONTHS_BALANCE.tail(1)
+        df_agg_prev['CC_PREV_CNT_INSTALMENT_MATURE_CUM_TAIL'] = df.groupby('SK_ID_PREV')\
+            .CNT_INSTALMENT_MATURE_CUM.tail(1)
+        df_agg_prev['CC_PREV_NAME_CONTRACT_STATUS_TAIL'] = df_for_cat_tail.groupby('SK_ID_PREV')\
+            .NAME_CONTRACT_STATUS.tail(1)
+
         del df
         gc.collect()
-        return df_agg
+        return df_agg_curr, df_agg_prev
 
     # Preprocess bureau.csv and bureau_balance.csv
     def fe_bureau_and_balance(self, bureau, bb):
