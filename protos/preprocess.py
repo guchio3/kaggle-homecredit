@@ -14,14 +14,15 @@ from utils.my_logging import logInit
 
 
 #was_null_list = pd.read_csv('../importances/importance_2018-07-16-16-51-06.csv')[:100]
-was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
+#was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
+was_null_list = []
 
 def main():
     logger = getLogger(__name__)
     logInit(logger)
     logger.info('start')
 
-#    dataio = DataIO(logger=logger)
+    dataio = DataIO(logger=logger)
 
     prep = HomeCreditPreprocessor(logger=logger)
     logger.info('loading dfs...')
@@ -30,8 +31,8 @@ def main():
     pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
     ins_df = pd.read_csv('../inputs/installments_payments.csv')
     cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
-    bureau_df = pd.read_csv('../inputs/bureau.csv')
-    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
+#    bureau_df = pd.read_csv('../inputs/bureau.csv')
+#    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
     prev_df = pd.read_csv('../inputs/previous_application.csv')
     train_and_test_df = pd.concat([train_df, test_df])
 
@@ -52,7 +53,7 @@ def main():
 #                ])
 #    train_and_test_df = prep.auto_impute(train_and_test_df)
 
-    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
+#    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
 #    bureau_df = prep.add_was_null(bureau_df, 
 #            special_list=was_null_list.feature.tolist())
 #    bureau_df = prep.add_was_null(bureau_df)
@@ -105,8 +106,8 @@ def main():
 #            ins_df_curr, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             cred_df_curr, on='SK_ID_CURR', how='left')
-    train_and_test_df = train_and_test_df.merge(
-            bureau_df, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            bureau_df, on='SK_ID_CURR', how='left')
 
 #    train_and_test_df = prep.auto_impute(
 #            train_and_test_df, mode='min')
@@ -117,8 +118,8 @@ def main():
 #    prep.add_prev_loan_cnt()
 
     logger.info('saving train and test dfs...')
-#    dataio.save_csv(train_df, '../inputs/my_train.csv', index=False)
-#    dataio.save_csv(test_df, '../inputs/my_test.csv', index=False)
+    dataio.save_csv(train_df, '../inputs/my_train.csv', index=False)
+    dataio.save_csv(test_df, '../inputs/my_test.csv', index=False)
 
     logger.info('end')
 

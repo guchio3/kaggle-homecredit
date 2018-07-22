@@ -830,7 +830,8 @@ class HomeCreditPreprocessor(Preprocessor):
 
     # Preprocess bureau.csv and bureau_balance.csv
     def fe_bureau_and_balance(self, bureau, bb):
-        bureau, bureau_cat = self.onehot_encoding(bureau, drop_first=False)
+        bb = bb.sort_values(['SK_ID_BUREAU', 'MONTHS_BALANCE'])
+        bb_for_cat_tail = bb[['SK_ID_BUREAU', 'STATUS']]
         bb, bb_cat = self.onehot_encoding(bb, drop_first=False)
 
         # Bureau balance: Perform aggregations and merge with bureau.csv
@@ -840,47 +841,104 @@ class HomeCreditPreprocessor(Preprocessor):
         bb_agg = bb.groupby('SK_ID_BUREAU').agg(bb_aggregations)
         bb_agg.columns = pd.Index([e[0] + "_" + e[1].upper()
                                    for e in bb_agg.columns.tolist()])
+        bb_agg['BB_STATUS_HEAD'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).head(1).STATUS
+        bb_agg['BB_STATUS_TAIL'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).tail(1).STATUS
+
         bureau = bureau.join(bb_agg, how='left', on='SK_ID_BUREAU')
+        bureau, bureau_cat = self.onehot_encoding(bureau, drop_first=False)
         bureau.drop(['SK_ID_BUREAU'], axis=1, inplace=True)
         del bb, bb_agg
         gc.collect()
 
+        # ===============================
+        # manual feature engineering
+        # ===============================
+        bureau['NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF'] = \
+            bureau['DAYS_CREDIT'] - bureau['DAYS_CREDIT_ENDDATE']
+        bureau['NEW_BURO_DAYS_CREDIT_DAYS_ENDDATE_FACT_DIFF'] = \
+            bureau['DAYS_CREDIT'] - bureau['DAYS_ENDDATE_FACT']
+        bureau['NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF'] = \
+            bureau['DAYS_ENDDATE_FACT'] - bureau['DAYS_CREDIT_ENDDATE']
+        bureau['NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CREDIT_DAY_OVERDUE_PROD'] = \
+            bureau['AMT_CREDIT_MAX_OVERDUE'] * bureau['CREDIT_DAY_OVERDUE']
+        bureau['NEW_BURO_CNT_CREDIT_PROLONG_CREDIT_DAY_OVERDUE_PROD'] = \
+            bureau['CNT_CREDIT_PROLONG'] * bureau['CREDIT_DAY_OVERDUE']
+        bureau['NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CNT_CREDIT_PROLONG_PROD'] = \
+            bureau['AMT_CREDIT_MAX_OVERDUE'] * bureau['CNT_CREDIT_PROLONG']
+        bureau['NEW_BURO_AMT_CREDIT_SUM_CREDIT_DAY_OVERDUE_PROD'] = \
+            bureau['AMT_CREDIT_SUM'] * bureau['CREDIT_DAY_OVERDUE']
+        bureau['NEW_BURO_AMT_CREDIT_SUM_CNT_CREDIT_PROLONG_PROD'] = \
+            bureau['AMT_CREDIT_SUM'] * bureau['CNT_CREDIT_PROLONG']
+        bureau['NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_RATIO'] = \
+            bureau['AMT_CREDIT_SUM_DEBT'] / bureau['AMT_CREDIT_SUM']
+        bureau['NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_LIMIT_RATIO'] = \
+            bureau['AMT_CREDIT_SUM_DEBT'] / bureau['AMT_CREDIT_SUM_LIMIT']
+        bureau['NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_LIMIT_RATIO'] = \
+            bureau['AMT_CREDIT_SUM'] / bureau['AMT_CREDIT_SUM_LIMIT']
+        bureau['NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_OVERDUE_PROD'] = \
+            bureau['AMT_CREDIT_SUM'] * bureau['AMT_CREDIT_SUM_OVERDUE']
+        bureau['NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_RATIO'] = \
+            bureau['AMT_ANNUITY'] / (bureau['AMT_CREDIT_SUM'] + 1)
+        bureau['NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_DEBT_RATIO'] = \
+            bureau['AMT_ANNUITY'] / (bureau['AMT_CREDIT_SUM_DEBT'] + 1)
+        bureau['NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_LIMIT_RATIO'] = \
+            bureau['AMT_ANNUITY'] / (bureau['AMT_CREDIT_SUM_LIMIT'] + 1)
+        bureau['NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_DIFF'] = \
+            bureau['DAYS_CREDIT_UPDATE'] - bureau['DAYS_CREDIT']
+        bureau['NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_ENDDATE_DIFF'] = \
+            bureau['DAYS_CREDIT_UPDATE'] - bureau['DAYS_CREDIT_ENDDATE']
+        bureau['NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_ENDDATE_FACT_DIFF'] = \
+            bureau['DAYS_CREDIT_UPDATE'] - bureau['DAYS_ENDDATE_FACT']
+
         # Bureau and bureau_balance numeric features
         num_aggregations = {
-            'DAYS_CREDIT': ['mean', 'var'],
+            'DAYS_CREDIT': ['max', 'mean', 'min', 'var', 'size'],
+            'CREDIT_DAY_OVERDUE': ['max', 'mean', 'var'],
             'DAYS_CREDIT_ENDDATE': ['mean'],
-            'DAYS_CREDIT_UPDATE': ['mean'],
-            'CREDIT_DAY_OVERDUE': ['mean'],
-            'AMT_CREDIT_MAX_OVERDUE': ['mean'],
-            'AMT_CREDIT_SUM': ['mean', 'sum'],
-            'AMT_CREDIT_SUM_DEBT': ['mean', 'sum'],
-            'AMT_CREDIT_SUM_OVERDUE': ['mean'],
-            'AMT_CREDIT_SUM_LIMIT': ['mean', 'sum'],
-            'AMT_ANNUITY': ['max', 'mean'],
-            'CNT_CREDIT_PROLONG': ['sum'],
-            'MONTHS_BALANCE_MIN': ['min'],
-            'MONTHS_BALANCE_MAX': ['max'],
-            'MONTHS_BALANCE_SIZE': ['mean', 'sum']
+            'DAYS_ENDDATE_FACT': ['mean'],
+            'AMT_CREDIT_MAX_OVERDUE': ['max', 'mean', 'min'],
+            'CNT_CREDIT_PROLONG': ['max', 'mean', 'sum'],
+            'AMT_CREDIT_SUM': ['max', 'mean', 'min', 'sum'],
+            'AMT_CREDIT_SUM_DEBT': ['max', 'mean', 'min', 'sum'],
+            'AMT_CREDIT_SUM_LIMIT': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_CREDIT_SUM_OVERDUE': ['max', 'mean', ],
+            'AMT_ANNUITY': ['max', 'mean', 'min'],
+            'DAYS_CREDIT_UPDATE': ['max', 'mean', 'min'],
+            'MONTHS_BALANCE_MIN': ['max', 'min'],
+            'MONTHS_BALANCE_MAX': ['max', 'min'],
+            'MONTHS_BALANCE_SIZE': ['max', 'mean', 'min', 'sum']
+            'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],
+            'NEW_BURO_DAYS_CREDIT_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'var'],
+            'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],
+            'NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min'],
+            'NEW_BURO_CNT_CREDIT_PROLONG_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CNT_CREDIT_PROLONG_PROD': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_CREDIT_SUM_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_CREDIT_SUM_CNT_CREDIT_PROLONG_PROD': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_RATIO': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_OVERDUE_PROD': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_RATIO': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_DEBT_RATIO': ['max', 'mean', 'min'],
+            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min'],
+            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_DIFF': ['max', 'mean', 'min', 'var'],
+            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],
+            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'var'],
         }
+
         # Bureau and bureau_balance categorical features
         cat_aggregations = {}
         for cat in bureau_cat:
             cat_aggregations[cat] = ['mean']
-        for cat in bb_cat:
-            cat_aggregations[cat + "_MEAN"] = ['mean']
+        #for cat in bb_cat:
+        #    cat_aggregations[cat + "_MEAN"] = ['mean']
 
         bureau_agg = bureau.groupby('SK_ID_CURR').agg(
             {**num_aggregations, **cat_aggregations})
         bureau_agg.columns = pd.Index(
             ['BURO_' + e[0] + "_" + e[1].upper()
                 for e in bureau_agg.columns.tolist()])
-        bureau_agg_pref = bureau.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-            groupby('SK_ID_CURR').\
-            agg({**num_aggregations, **cat_aggregations})
-        bureau_agg_pref.columns = pd.Index(
-            ['BURO_PREF' + e[0] + "_" + e[1].upper()
-                for e in bureau_agg_pref.columns.tolist()])
-#        bureau_agg = bureau_agg.join(bureau_agg_pref, how='left', on='SK_ID_CURR')
         # Bureau: Active credits - using only numerical aggregations
         active = bureau[bureau['CREDIT_ACTIVE_Active'] == 1]
         active_agg = active.groupby('SK_ID_CURR').agg(num_aggregations)
