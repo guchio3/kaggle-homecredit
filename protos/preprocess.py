@@ -30,8 +30,8 @@ def main():
     pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
     ins_df = pd.read_csv('../inputs/installments_payments.csv')
     cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
-#    bureau_df = pd.read_csv('../inputs/bureau.csv')
-#    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
+    bureau_df = pd.read_csv('../inputs/bureau.csv')
+    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
     prev_df = pd.read_csv('../inputs/previous_application.csv')
     train_and_test_df = pd.concat([train_df, test_df])
 
@@ -52,7 +52,7 @@ def main():
 #                ])
 #    train_and_test_df = prep.auto_impute(train_and_test_df)
 
-#    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
+    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
 #    bureau_df = prep.add_was_null(bureau_df, 
 #            special_list=was_null_list.feature.tolist())
 #    bureau_df = prep.add_was_null(bureau_df)
@@ -105,8 +105,8 @@ def main():
 #            ins_df_curr, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             cred_df_curr, on='SK_ID_CURR', how='left')
-#    train_and_test_df = train_and_test_df.merge(
-#            bureau_df, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            bureau_df, on='SK_ID_CURR', how='left')
 
 #    train_and_test_df = prep.auto_impute(
 #            train_and_test_df, mode='min')

@@ -325,6 +325,7 @@ class HomeCreditPreprocessor(Preprocessor):
         return df
 
     def fe_application_prev(self, df):
+        df_for_cat_tail = df[['CC_PREV_NAME_CONTRACT_STATUS_TAIL']]
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
 #        df, cat_cols = self.onehot_encoding(df, drop_first=False,
 #                special_list=[
@@ -398,8 +399,8 @@ class HomeCreditPreprocessor(Preprocessor):
             df['INSTAL_PREV_AMT_PAYMENT_SUM'] / df['INSTAL_PREV_AMT_INSTALMENT_SUM']
 
         # prev features from cc
-        tail_completed_mask = df.CC_PREV_NAME_CONTRACT_STATUS_TAIL == 'Completed'
-        tail_active_mask = df.CC_PREV_NAME_CONTRACT_STATUS_TAIL == 'Active'
+        tail_completed_mask = df_for_cat_tail.CC_PREV_NAME_CONTRACT_STATUS_TAIL == 'Completed'
+        tail_active_mask = df_for_cat_tail.CC_PREV_NAME_CONTRACT_STATUS_TAIL == 'Active'
         df['NEW_CC_PREV_AMT_BALANCE_MAX_MIN_DIFF'] = \
             df['CC_PREV_AMT_BALANCE_MAX'] - df['CC_PREV_AMT_BALANCE_MIN']
         df['NEW_CC_PREV_AMT_BALANCE_MAX_HEAD_DIFF'] = \
@@ -542,9 +543,9 @@ class HomeCreditPreprocessor(Preprocessor):
             'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_VAR': ['max', 'mean', 'min'],
             'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_MIN': ['max', 'mean', 'min'],
             'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MIN': ['max', 'mean', 'min'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MAX': ['max', 'mean', 'min'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MEAN': ['max', 'mean', 'min'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MIN': ['max', 'mean', 'min'],
             'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min'],
             'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min'],
             'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min'],
@@ -786,7 +787,7 @@ class HomeCreditPreprocessor(Preprocessor):
             'AMT_PAYMENT_CURRENT': ['max', 'mean', 'min', 'var'], # これと totol の差分等
             'AMT_PAYMENT_TOTAL_CURRENT': ['max', 'mean', 'min', 'var'], # これと balance の ratio
             'AMT_RECEIVABLE_PRINCIPAL': ['min', 'max'],
-            'NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF', ['max', 'mean', 'min'],
+            'NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF': ['max', 'mean', 'min'],
             'NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT': ['max', 'mean', 'min'],
             'NEW_AMT_DRAWINGS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
             'NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
