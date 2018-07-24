@@ -187,6 +187,13 @@ class HomeCreditPreprocessor(Preprocessor):
 #           df.apply(lambda x: x.str.extract('FLAG_DOCUMENT_(.+)').sum(), axis=1)
            #df[df.str.extract('FLAG_DOCUMENT_(.+)')].sum()
 
+#        df['NEW_PREV_DAYS_TERMINATION_MAX_DAYS_EMPLOYED_DIFF'] =\
+#            df['PREV_DAYS_TERMINATION_MAX'] - df['DAYS_EMPLOYED']
+#        df['NEW_PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX_DAYS_EMPLOYED_DIFF'] =\
+#            df['PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX'] - df['DAYS_EMPLOYED']
+#        df['NEW_PREV_DAYS_DECISION_MAX_DAYS_EMPLOYED_DIFF'] =\
+#            df['PREV_DAYS_DECISION_MAX'] - df['DAYS_EMPLOYED']
+
         # 人口密度に対する家に関する統計量
         house_stat_list = [
 #                'APARTMENTS_AVG',

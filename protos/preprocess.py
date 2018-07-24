@@ -36,23 +36,6 @@ def main():
     prev_df = pd.read_csv('../inputs/previous_application.csv')
     train_and_test_df = pd.concat([train_df, test_df])
 
-    logger.info('fe for application...')
-    train_and_test_df = prep.fe_application(train_and_test_df)
-    # add the info whether the features were null or not
-#    train_and_test_df = prep.add_was_null(
-#            train_and_test_df, null_rat_th=0.1,
-#            special_list=[
-#                'EXT_SOURCE_1',
-#                'EXT_SOURCE_2',
-#                'EXT_SOURCE_3',
-#                'PAYMENT_RATE',
-#                'DAYS_BIRTH',
-#                'DAYS_EMPLOYED',
-#                'ANNUITY_INCOME_PERC',
-#                'ACTIVE_RATE_CREDIT_MAX',
-#                ])
-#    train_and_test_df = prep.auto_impute(train_and_test_df)
-
     logger.info('fe for bureau...')
     bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
 #    bureau_df = prep.add_was_null(bureau_df, 
@@ -108,6 +91,9 @@ def main():
             cred_df_curr, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             bureau_df, on='SK_ID_CURR', how='left')
+
+    logger.info('fe for application...')
+    train_and_test_df = prep.fe_application(train_and_test_df)
 
 #    train_and_test_df = prep.auto_impute(
 #            train_and_test_df, mode='min')
