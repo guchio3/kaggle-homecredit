@@ -906,7 +906,7 @@ class HomeCreditPreprocessor(Preprocessor):
             'DAYS_CREDIT_UPDATE': ['max', 'mean', 'min'],
             'MONTHS_BALANCE_MIN': ['max', 'min'],
             'MONTHS_BALANCE_MAX': ['max', 'min'],
-            'MONTHS_BALANCE_SIZE': ['max', 'mean', 'min', 'sum']
+            'MONTHS_BALANCE_SIZE': ['max', 'mean', 'min', 'sum'],
             'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],
             'NEW_BURO_DAYS_CREDIT_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'var'],
             'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],

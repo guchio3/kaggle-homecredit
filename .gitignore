@@ -1,4 +1,6 @@
 ./inputs/
 ./log/
+./submits
+./importances
 
 *.pyc
