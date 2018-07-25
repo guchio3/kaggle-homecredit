@@ -84,11 +84,17 @@ def main():
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
-    n_splits = 5
+    n_splits = 7
+    #n_splits = 5
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=71)
 #    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=777)
 
 #    x_train = train_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
+#    train_df = train_df[(train_df.SK_ID_CURR < 360000) | (train_df.SK_ID_CURR > 430000)]
+#    train_df = train_df[(train_df.SK_ID_CURR < 401000) | (train_df.SK_ID_CURR > 415000)]
+#    train_df = train_df[(train_df.SK_ID_CURR < 370000)]
+#    train_df = train_df[(train_df.SK_ID_CURR < 390000) | (train_df.SK_ID_CURR > 410000)]
+#    train_df = train_df[(train_df.SK_ID_CURR < 370000) | ((train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 410000)) | (train_df.SK_ID_CURR > 430000)]
     x_train = train_df.drop([
         'TARGET', 
         'SK_ID_CURR', 
@@ -121,19 +127,19 @@ def main():
         # is_unbalance=True,
 #        'boosting_type': ['goss'],
         'n_estimators': [10000],
+#        'learning_rates': [lambda iter: 0.1 * (0.995 ** iter)],
         'learning_rate': [0.02],
-#        'learning_rate': [0.02],
+#        'max_bin': [100],
+#        'min_data_in_bin': [50],
 ##        'num_leaves': [32],
         'num_leaves': [48],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-##        'max_depth': [16],
         'max_depth': [16],
-#        'max_depth': [16],
-#        'reg_alpha': [0.04],
-#        'reg_lambda': [0.073],
+        'reg_alpha': [0.04],
+        'reg_lambda': [0.073],
 #        'reg_lambda': [0.0, 0.1, 0.2],
-        'min_split_gain': [0.0222415],
+#        'min_split_gain': [0.0222415],
         'min_child_weight': [60],
 ##        'min_child_weight': [40],
         'silent': [-1],

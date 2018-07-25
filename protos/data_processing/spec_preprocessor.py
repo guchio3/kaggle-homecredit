@@ -152,16 +152,16 @@ class HomeCreditPreprocessor(Preprocessor):
         # 就職後どれくらいで車を買ったか (金遣いの粗さ?)
 ###        df['NEW_CAR_AGE_MINUS_EMPLOYED'] = \
 ###            df['OWN_CAR_AGE'] - df['DAYS_EMPLOYED']
-        df['NEW_CAR_AGE_DAYS_BIRTH_DIFF'] = \
-            df['OWN_CAR_AGE'] * 365 + df['DAYS_BIRTH']
-        df['NEW_CAR_AGE_EMPLOYED_DIFF'] = \
-            df['OWN_CAR_AGE'] * 365 + df['DAYS_EMPLOYED']
-        df['NEW_CAR_AGE_DAYS_REGISTRATION_DIFF'] = \
-            df['OWN_CAR_AGE'] * 365 + df['DAYS_REGISTRATION']
-        df['NEW_CAR_AGE_DAYS_REGISTRATION_DIFF'] = \
-            df['OWN_CAR_AGE'] * 365 + df['DAYS_REGISTRATION']
-        df['NEW_ID_PUBLISH_REGISTRATION_DIFF'] = \
-            df['DAYS_ID_PUBLISH'] - df['DAYS_REGISTRATION']
+#        df['NEW_CAR_AGE_DAYS_BIRTH_DIFF'] = \
+#            df['OWN_CAR_AGE'] * 365 + df['DAYS_BIRTH']
+#        df['NEW_CAR_AGE_EMPLOYED_DIFF'] = \
+#            df['OWN_CAR_AGE'] * 365 + df['DAYS_EMPLOYED']
+#        df['NEW_CAR_AGE_DAYS_REGISTRATION_DIFF'] = \
+#            df['OWN_CAR_AGE'] * 365 + df['DAYS_REGISTRATION']
+#        df['NEW_CAR_AGE_DAYS_REGISTRATION_DIFF'] = \
+#            df['OWN_CAR_AGE'] * 365 + df['DAYS_REGISTRATION']
+#        df['NEW_ID_PUBLISH_REGISTRATION_DIFF'] = \
+#            df['DAYS_ID_PUBLISH'] - df['DAYS_REGISTRATION']
 
         # OBS, DEF 系 0.003 程 improve
         df['NEW_DEF/OBS_60'] = \
@@ -204,42 +204,42 @@ class HomeCreditPreprocessor(Preprocessor):
 #            df['PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX'] - df['DAYS_EMPLOYED']
 #        df['NEW_PREV_DAYS_DECISION_MAX_DAYS_EMPLOYED_DIFF'] =\
 #            df['PREV_DAYS_DECISION_MAX'] - df['DAYS_EMPLOYED']
-        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_EMPLOYED_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_EMPLOYED']
-        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_BIRTH_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_BIRTH']
-        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_LAST_PHONE_CHANGE']
-        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_ID_PUBLISH_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_ID_PUBLISH']
-        df['NEW_BURO_DAYS_CREDIT_MAX_OWN_CAR_AGE_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MAX'] + df['OWN_CAR_AGE'] * 365
-        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_DAYS_REGISTRATION_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_REGISTRATION']
-        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_EMPLOYED_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_EMPLOYED']
-        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_BIRTH_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_BIRTH']
-        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_LAST_PHONE_CHANGE']
-        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_ID_PUBLISH_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_ID_PUBLISH']
-        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_DAYS_REGISTRATION_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_REGISTRATION']
-        df['NEW_BURO_DAYS_CREDIT_MEAN_OWN_CAR_AGE_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MEAN'] + df['OWN_CAR_AGE'] * 365
-        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_EMPLOYED_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_EMPLOYED']
-        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_BIRTH_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_BIRTH']
-        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_LAST_PHONE_CHANGE']
-        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_ID_PUBLISH_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_ID_PUBLISH']
-        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_DAYS_REGISTRATION_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_REGISTRATION']
-        df['NEW_BURO_DAYS_CREDIT_MIN_OWN_CAR_AGE_DIFF'] = \
-            df['BURO_DAYS_CREDIT_MIN'] + df['OWN_CAR_AGE'] * 365
+#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_EMPLOYED_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_EMPLOYED']
+#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_BIRTH_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_BIRTH']
+#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_LAST_PHONE_CHANGE']
+#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_ID_PUBLISH_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_ID_PUBLISH']
+#        df['NEW_BURO_DAYS_CREDIT_MAX_OWN_CAR_AGE_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MAX'] + df['OWN_CAR_AGE'] * 365
+#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_DAYS_REGISTRATION_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_REGISTRATION']
+#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_EMPLOYED_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_EMPLOYED']
+#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_BIRTH_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_BIRTH']
+#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_LAST_PHONE_CHANGE']
+#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_ID_PUBLISH_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_ID_PUBLISH']
+#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_DAYS_REGISTRATION_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_REGISTRATION']
+#        df['NEW_BURO_DAYS_CREDIT_MEAN_OWN_CAR_AGE_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MEAN'] + df['OWN_CAR_AGE'] * 365
+#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_EMPLOYED_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_EMPLOYED']
+#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_BIRTH_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_BIRTH']
+#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_LAST_PHONE_CHANGE']
+#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_ID_PUBLISH_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_ID_PUBLISH']
+#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_DAYS_REGISTRATION_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_REGISTRATION']
+#        df['NEW_BURO_DAYS_CREDIT_MIN_OWN_CAR_AGE_DIFF'] = \
+#            df['BURO_DAYS_CREDIT_MIN'] + df['OWN_CAR_AGE'] * 365
 
         # 人口密度に対する家に関する統計量
         house_stat_list = [
