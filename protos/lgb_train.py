@@ -29,6 +29,26 @@ import preprocess
 np.random.seed(100)
 plt.switch_backend('agg')
 
+drop_cols = [
+#        'NEW_CREDIT_TO_ANNUITY_RATIO',
+#        'NEW_CREDIT_TO_GOODS_RATIO',
+#        'EXT_SOURCE_3',
+#        'EXT_SOURCE_1',
+#        'EXT_SOURCE_2',
+#        'AMT_ANNUITY',
+#        'DAYS_BIRTH',
+#        'DAYS_ID_PUBLISH',
+#        'BURO_MONTHS_BALANCE_MAX_MIN',
+#        'CLOSED_DAYS_CREDIT_UPDATE_MAX',
+#        'PREV_DAYS_TERMINATION_MAX',
+#        'DAYS_LAST_PHONE_CHANGE',
+#        'PREV_DAYS_DECISION_MAX',
+#        'DAYS_EMPLOYED',
+#        'ACTIVE_DAYS_CREDIT_UPDATE_MIN',
+        ]
+#best_features = pd.read_csv('../importances/importance_2018-07-25-15-27-35.csv')
+#drop_cols += best_features.feature.tail(1300).tolist()
+
 
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
@@ -41,8 +61,12 @@ def remove_train_only_category(train_df, test_df):
 
 # Display/plot feature importance
 def display_importances(feature_importance_df_, filename='importance_application'):
-    cols = feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).index
-    feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).to_csv(filename + '.csv')
+#    cols = feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).index
+    csv_df = feature_importance_df_[["feature", "importance"]].groupby("feature").agg({'importance': ['mean', 'var']})
+    csv_df.columns = pd.Index(
+        [e[0] + "_" + e[1].upper()
+            for e in csv_df.columns.tolist()])
+    csv_df.sort_values(by="importance_MEAN", ascending=False).to_csv(filename + '.csv')
 #    best_features = feature_importance_df_.loc[feature_importance_df_.feature.isin(cols)]
 #    plt.figure(figsize=(8, 10))
 #    sns.barplot(x="importance", y="feature", data=best_features.sort_values(by="importance", ascending=False))
@@ -59,23 +83,25 @@ def main():
     dataio = DataIO(logger=logger)
     prep = HomeCreditPreprocessor(logger=logger)
 
-#    dfs_dict = dataio.read_csvs({
-#        'train': '../inputs/my_train.csv',
-#        'test': '../inputs/my_test.csv'})
+    dfs_dict = dataio.read_csvs({
+        'train': '../inputs/my_train.csv',
+        'test': '../inputs/my_test.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
 #    dfs_dict['train'] = prep.down_sampling(dfs_dict['train'], 'TARGET')
-#    train_df = dfs_dict['train']
-#    test_df = dfs_dict['test']
+    train_df = dfs_dict['train']
+    test_df = dfs_dict['test']
 
-    train_df, test_df = preprocess.main()
+#    train_df, test_df = preprocess.main()
 
     logger.info('removing the categorical features which\
                 are contained only by training set...')
 #    train_df = remove_train_only_category(train_df, test_df)
     train_and_test_df = pd.concat([train_df, test_df], axis=0)
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
+#    train_and_test_df['NEW_EXT_SOURCES_MEAN'] = train_and_test_df[['EXT_SOURCE_1', 'EXT_SOURCE_2','EXT_SOURCE_3']].mean(axis=1)
+    train_and_test_df = train_and_test_df.drop(drop_cols, axis=1)
 
 #    importance_list = pd.read_csv('../importances/importance_2018-07-11-08-58-40.csv')
 #    train_and_test_df = train_and_test_df[importance_list.feature[:150].tolist() + ['SK_ID_CURR', 'TARGET']]
@@ -84,8 +110,8 @@ def main():
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
-    n_splits = 7
-    #n_splits = 5
+#    n_splits = 7
+    n_splits = 5
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=71)
 #    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=777)
 
@@ -95,6 +121,13 @@ def main():
 #    train_df = train_df[(train_df.SK_ID_CURR < 370000)]
 #    train_df = train_df[(train_df.SK_ID_CURR < 390000) | (train_df.SK_ID_CURR > 410000)]
 #    train_df = train_df[(train_df.SK_ID_CURR < 370000) | ((train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 410000)) | (train_df.SK_ID_CURR > 430000)]
+    
+#    train_and_test_df.iloc[:train_df.shape[0]].TARGET = 0
+#    train_and_test_df.iloc[:train_df.shape[0]].TARGET = train_and_test_df.iloc[:train_df.shape[0]].TARGET.fillna(0)
+#    train_and_test_df.iloc[train_df.shape[0]:].TARGET = 1
+#    train_and_test_df.iloc[train_df.shape[0]:].TARGET = train_and_test_df.iloc[train_df.shape[0]:].TARGET.fillna(1)
+#    print(train_and_test_df[train_and_test_df.TARGET.isnull()].TARGET)
+#    train_df = train_and_test_df
     x_train = train_df.drop([
         'TARGET', 
         'SK_ID_CURR', 
@@ -124,22 +157,23 @@ def main():
         'nthread': [-1],
 #        'boosting': ['gbdt', 'gbrt', 'rf', 
 #            'random_forest', 'dart', 'goss'],
-        # is_unbalance=True,
-#        'boosting_type': ['goss'],
+#        'is_unbalance':[True],
         'n_estimators': [10000],
 #        'learning_rates': [lambda iter: 0.1 * (0.995 ** iter)],
         'learning_rate': [0.02],
 #        'max_bin': [100],
 #        'min_data_in_bin': [50],
 ##        'num_leaves': [32],
-        'num_leaves': [48],
+        'num_leaves': [15],
+#        'num_leaves': [48],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-        'max_depth': [16],
+        'max_depth': [4],
+#        'max_depth': [16],
+#        'subsample_freq': [1],
         'reg_alpha': [0.04],
         'reg_lambda': [0.073],
-#        'reg_lambda': [0.0, 0.1, 0.2],
-#        'min_split_gain': [0.0222415],
+        'min_split_gain': [0.0222415],
         'min_child_weight': [60],
 ##        'min_child_weight': [40],
         'silent': [-1],
