@@ -45,10 +45,13 @@ drop_cols = [
 #        'PREV_DAYS_DECISION_MAX',
 #        'DAYS_EMPLOYED',
 #        'ACTIVE_DAYS_CREDIT_UPDATE_MIN',
+#        'ACTIVE_NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_ENDDATE_DIFF_MAX',
+#        'PREV_NEW_CREDIT_SELLERPLACE_RATE_MAX',
         ]
-#best_features = pd.read_csv('../importances/importance_2018-07-25-15-27-35.csv')
-#drop_cols += best_features.feature.tail(1300).tolist()
-
+best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
+#drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
+#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(800).tolist()
+#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
@@ -62,10 +65,11 @@ def remove_train_only_category(train_df, test_df):
 # Display/plot feature importance
 def display_importances(feature_importance_df_, filename='importance_application'):
 #    cols = feature_importance_df_[["feature", "importance"]].groupby("feature").mean().sort_values(by="importance", ascending=False).index
-    csv_df = feature_importance_df_[["feature", "importance"]].groupby("feature").agg({'importance': ['mean', 'var']})
+    csv_df = feature_importance_df_[["feature", "importance"]].groupby("feature").agg({'importance': ['mean', 'std']})
     csv_df.columns = pd.Index(
         [e[0] + "_" + e[1].upper()
             for e in csv_df.columns.tolist()])
+    csv_df['importance_RAT'] = csv_df['importance_STD'] / csv_df['importance_MEAN']
     csv_df.sort_values(by="importance_MEAN", ascending=False).to_csv(filename + '.csv')
 #    best_features = feature_importance_df_.loc[feature_importance_df_.feature.isin(cols)]
 #    plt.figure(figsize=(8, 10))
@@ -83,17 +87,16 @@ def main():
     dataio = DataIO(logger=logger)
     prep = HomeCreditPreprocessor(logger=logger)
 
-    dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train.csv',
-        'test': '../inputs/my_test.csv'})
+#    dfs_dict = dataio.read_csvs({
+#        'train': '../inputs/my_train.csv',
+#        'test': '../inputs/my_test.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
-#    dfs_dict['train'] = prep.down_sampling(dfs_dict['train'], 'TARGET')
-    train_df = dfs_dict['train']
-    test_df = dfs_dict['test']
+#    train_df = dfs_dict['train']
+#    test_df = dfs_dict['test']
 
-#    train_df, test_df = preprocess.main()
+    train_df, test_df = preprocess.main()
 
     logger.info('removing the categorical features which\
                 are contained only by training set...')
@@ -164,11 +167,13 @@ def main():
 #        'max_bin': [100],
 #        'min_data_in_bin': [50],
 ##        'num_leaves': [32],
-        'num_leaves': [15],
+        'num_leaves': [24],
+#        'num_leaves': [15],
 #        'num_leaves': [48],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-        'max_depth': [4],
+        'max_depth': [5],
+#        'max_depth': [4],
 #        'max_depth': [16],
 #        'subsample_freq': [1],
         'reg_alpha': [0.04],
@@ -196,7 +201,7 @@ def main():
 
             clf = LGBMClassifier(**params)
             clf.fit(x_trn, y_trn, eval_set=[(x_trn, y_trn), (x_val, y_val)],
-                    eval_metric='auc', verbose=100, early_stopping_rounds=200)
+                    eval_metric='auc', verbose=100, early_stopping_rounds=300)
 
             pred_prob = clf.predict_proba(
                     x_val, num_iteration=clf.best_iteration_)[:, 1]
