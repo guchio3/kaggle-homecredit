@@ -174,16 +174,16 @@ class HomeCreditPreprocessor(Preprocessor):
             df['DEF_60_CNT_SOCIAL_CIRCLE'] / df['DEF_30_CNT_SOCIAL_CIRCLE']
 
         # REGION_POPULATION_RELATIVE -> POPRAT で割る系は微妙そう
-###        df['NEW_AMT_GOODS_PRICE_POPRAT'] = \
-###            df['AMT_GOODS_PRICE'] / df['REGION_POPULATION_RELATIVE']
-###        df['NEW_AMT_CREDIT_POPRAT'] = \
-###            df['AMT_CREDIT'] * df['REGION_POPULATION_RELATIVE']
-###        df['NEW_AMT_ANNUITY_POPRAT'] = \
-###            df['AMT_ANNUITY'] * df['REGION_POPULATION_RELATIVE']
-###        df['NEW_AMT_GOODS_PRICE_POPRAT'] = \
-###            df['AMT_GOODS_PRICE'] * df['REGION_POPULATION_RELATIVE']
-#        df['NEW_AMT_INCOME_TOTAL_POPRAT'] = \
-#            df['AMT_INCOME_TOTAL'] / df['REGION_RATING_CLIENT']
+        df['NEW_AMT_GOODS_PRICE_POPRAT'] = \
+            df['AMT_GOODS_PRICE'] / df['REGION_POPULATION_RELATIVE']
+        df['NEW_AMT_CREDIT_POPRAT'] = \
+            df['AMT_CREDIT'] * df['REGION_POPULATION_RELATIVE']
+        df['NEW_AMT_ANNUITY_POPRAT'] = \
+            df['AMT_ANNUITY'] * df['REGION_POPULATION_RELATIVE']
+        df['NEW_AMT_GOODS_PRICE_POPRAT'] = \
+            df['AMT_GOODS_PRICE'] * df['REGION_POPULATION_RELATIVE']
+        df['NEW_AMT_INCOME_TOTAL_POPRAT'] = \
+            df['AMT_INCOME_TOTAL'] / df['REGION_RATING_CLIENT']
 
         # DOCUMENT 数 -> 割と improve
         df['NEW_NUM_DOCS'] = \
@@ -198,48 +198,48 @@ class HomeCreditPreprocessor(Preprocessor):
 #           df.apply(lambda x: x.str.extract('FLAG_DOCUMENT_(.+)').sum(), axis=1)
            #df[df.str.extract('FLAG_DOCUMENT_(.+)')].sum()
 
-#        df['NEW_PREV_DAYS_TERMINATION_MAX_DAYS_EMPLOYED_DIFF'] =\
-#            df['PREV_DAYS_TERMINATION_MAX'] - df['DAYS_EMPLOYED']
-#        df['NEW_PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX_DAYS_EMPLOYED_DIFF'] =\
-#            df['PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX'] - df['DAYS_EMPLOYED']
-#        df['NEW_PREV_DAYS_DECISION_MAX_DAYS_EMPLOYED_DIFF'] =\
-#            df['PREV_DAYS_DECISION_MAX'] - df['DAYS_EMPLOYED']
-#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_EMPLOYED_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_EMPLOYED']
-#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_BIRTH_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_BIRTH']
-#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_LAST_PHONE_CHANGE']
-#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_ID_PUBLISH_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_ID_PUBLISH']
-#        df['NEW_BURO_DAYS_CREDIT_MAX_OWN_CAR_AGE_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MAX'] + df['OWN_CAR_AGE'] * 365
-#        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_DAYS_REGISTRATION_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_REGISTRATION']
-#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_EMPLOYED_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_EMPLOYED']
-#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_BIRTH_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_BIRTH']
-#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_LAST_PHONE_CHANGE']
-#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_ID_PUBLISH_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_ID_PUBLISH']
-#        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_DAYS_REGISTRATION_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_REGISTRATION']
-#        df['NEW_BURO_DAYS_CREDIT_MEAN_OWN_CAR_AGE_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MEAN'] + df['OWN_CAR_AGE'] * 365
-#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_EMPLOYED_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_EMPLOYED']
-#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_BIRTH_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_BIRTH']
-#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_LAST_PHONE_CHANGE']
-#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_ID_PUBLISH_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_ID_PUBLISH']
-#        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_DAYS_REGISTRATION_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_REGISTRATION']
-#        df['NEW_BURO_DAYS_CREDIT_MIN_OWN_CAR_AGE_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MIN'] + df['OWN_CAR_AGE'] * 365
+        df['NEW_PREV_DAYS_TERMINATION_MAX_DAYS_EMPLOYED_DIFF'] =\
+            df['PREV_DAYS_TERMINATION_MAX'] - df['DAYS_EMPLOYED']
+        df['NEW_PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX_DAYS_EMPLOYED_DIFF'] =\
+            df['PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX'] - df['DAYS_EMPLOYED']
+        df['NEW_PREV_DAYS_DECISION_MAX_DAYS_EMPLOYED_DIFF'] =\
+            df['PREV_DAYS_DECISION_MAX'] - df['DAYS_EMPLOYED']
+        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_EMPLOYED_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_EMPLOYED']
+        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_BIRTH_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_BIRTH']
+        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_LAST_PHONE_CHANGE']
+        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_ID_PUBLISH_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_ID_PUBLISH']
+        df['NEW_BURO_DAYS_CREDIT_MAX_OWN_CAR_AGE_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MAX'] + df['OWN_CAR_AGE'] * 365
+        df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_DAYS_REGISTRATION_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_REGISTRATION']
+        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_EMPLOYED_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_EMPLOYED']
+        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_BIRTH_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_BIRTH']
+        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_LAST_PHONE_CHANGE']
+        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_ID_PUBLISH_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_ID_PUBLISH']
+        df['NEW_BURO_DAYS_CREDIT_MEAN_DAYS_DAYS_REGISTRATION_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MEAN'] - df['DAYS_REGISTRATION']
+        df['NEW_BURO_DAYS_CREDIT_MEAN_OWN_CAR_AGE_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MEAN'] + df['OWN_CAR_AGE'] * 365
+        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_EMPLOYED_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_EMPLOYED']
+        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_BIRTH_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_BIRTH']
+        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_LAST_PHONE_CHANGE']
+        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_ID_PUBLISH_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_ID_PUBLISH']
+        df['NEW_BURO_DAYS_CREDIT_MIN_DAYS_DAYS_REGISTRATION_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MIN'] - df['DAYS_REGISTRATION']
+        df['NEW_BURO_DAYS_CREDIT_MIN_OWN_CAR_AGE_DIFF'] = \
+            df['BURO_DAYS_CREDIT_MIN'] + df['OWN_CAR_AGE'] * 365
 
         # 人口密度に対する家に関する統計量
         house_stat_list = [
@@ -497,140 +497,197 @@ class HomeCreditPreprocessor(Preprocessor):
         # Add feature: value ask / value received percentage
         # Previous applications numeric features
         num_aggregations = {
-            'AMT_ANNUITY': ['max', 'mean'],
-            'AMT_APPLICATION': ['max', 'mean'],
-            'AMT_CREDIT': ['max', 'mean'],
-            'AMT_DOWN_PAYMENT': ['max', 'mean'],
-            'AMT_GOODS_PRICE': ['max', 'mean'],
-            'HOUR_APPR_PROCESS_START': ['max', 'mean'],
-            'NFLAG_LAST_APPL_IN_DAY': ['mean'],
-            'RATE_DOWN_PAYMENT': ['max', 'mean'],
-            'RATE_INTEREST_PRIMARY': ['max', 'mean'],
-            'RATE_INTEREST_PRIVILEGED': ['max', 'mean'],
-            'DAYS_DECISION': ['max', 'mean', 'min'],
-            'DAYS_TERMINATION': ['max', 'mean', 'min'],
-            'SELLERPLACE_AREA': ['max', 'mean', 'min'],
-            'CNT_PAYMENT': ['mean'],
-            'NFLAG_INSURED_ON_APPROVAL': ['mean'],
-            'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean'],
-            'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean'],
-            'NEW_APP_CREDIT_PERC': ['max', 'mean'],
-            'NEW_RATE_INTEREST_RATE': ['max', 'mean'],
-            'NEW_DAYS_FIRST_DUE_DIFF': ['min', 'mean', 'max'],
-            'NEW_DAYS_LAST_DUE_DIFF': ['min', 'mean', 'max'],
-            'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['min', 'mean', 'max'],
-            'NEW_CREDIT_SELLERPLACE_RATE': ['min', 'mean', 'max'],
+            'AMT_ANNUITY': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_APPLICATION': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_CREDIT': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_DOWN_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_GOODS_PRICE': ['max', 'mean', 'min', 'sum', 'var'],
+            'HOUR_APPR_PROCESS_START': ['max', 'mean', 'min', 'sum', 'var'],
+            'NFLAG_LAST_APPL_IN_DAY': ['max', 'mean', 'min', 'sum', 'var'],
+            'RATE_DOWN_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'RATE_INTEREST_PRIMARY': ['max', 'mean', 'min', 'sum', 'var'],
+            'RATE_INTEREST_PRIVILEGED': ['max', 'mean', 'min', 'sum', 'var'],
+            'DAYS_DECISION': ['max', 'mean', 'min', 'sum', 'var'],
+            'DAYS_TERMINATION': ['max', 'mean', 'min', 'sum', 'var'],
+            'SELLERPLACE_AREA': ['max', 'mean', 'min', 'sum', 'var'],
+            'CNT_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NFLAG_INSURED_ON_APPROVAL': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_APP_CREDIT_PERC': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_RATE_INTEREST_RATE': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_DAYS_FIRST_DUE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_DAYS_LAST_DUE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CREDIT_SELLERPLACE_RATE': ['max', 'mean', 'min', 'sum', 'var'],
 
-            'POS_PREV_MONTHS_BALANCE_MAX': ['max', 'mean'],
-            'POS_PREV_MONTHS_BALANCE_SIZE': ['max', 'mean'],
-            'POS_PREV_MONTHS_BALANCE_MIN': ['min', 'max'],
-            'POS_PREV_MONTHS_BALANCE_<LAMBDA>': ['max', 'mean'],
-            'POS_PREV_SK_DPD_MAX': ['max', 'mean'],
-            'POS_PREV_SK_DPD_MEAN': ['max', 'mean', 'min'],
-            'POS_PREV_SK_DPD_DEF_MAX': ['max', 'mean'],
-            'POS_PREV_SK_DPD_DEF_MEAN': ['max', 'mean', 'min'],
-            'POS_PREV_CNT_INSTALMENT_NUNIQUE': ['max', 'mean', 'min'],
-            'POS_PREV_CNT_INSTALMENT_FUTURE_SIZE': ['mean'],
-            'POS_PREV_CNT_INSTALMENT_FUTURE_MAX': ['max'],
-            'POS_PREV_NEW_SK_DPD_DIFF_MAX': ['max', 'mean'],
-            'POS_PREV_NEW_SK_DPD_DIFF_MEAN': ['mean'],
-            'POS_PREV_NEW_SK_DPD_DIFF_SUM': ['mean', 'sum'],
-            'NEW_POS_PREV_INSTALMENT_SPEED': ['mean', 'max', 'min'],
+            'POS_PREV_MONTHS_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_MONTHS_BALANCE_SIZE': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_MONTHS_BALANCE_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_MONTHS_BALANCE_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_MONTHS_BALANCE_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_MONTHS_BALANCE_<LAMBDA>': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_DEF_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_DEF_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_DEF_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_DEF_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_SK_DPD_DEF_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_CNT_INSTALMENT_NUNIQUE': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_SIZE': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_NEW_SK_DPD_DIFF_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_NEW_SK_DPD_DIFF_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_NEW_SK_DPD_DIFF_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_NEW_SK_DPD_DIFF_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'POS_PREV_NEW_SK_DPD_DIFF_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_POS_PREV_INSTALMENT_SPEED': ['max', 'mean', 'min', 'sum', 'var'],
 
-            'INSTAL_PREV_NUM_INSTALMENT_VERSION_MEDIAN': ['median'],
-            'INSTAL_PREV_AMT_INSTALMENT_MEAN': ['max', 'mean', ],
-            'INSTAL_PREV_AMT_PAYMENT_MEAN': ['max', 'mean', ],
-            'INSTAL_PREV_DAYS_INSTALMENT_MAX': ['max', 'mean', 'min'],
-            'INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX': ['max', 'mean', 'min'],
-            'INSTAL_PREV_NEW_PAYMENT_PERC_MEAN': ['mean', 'min'],
-            'INSTAL_PREV_NEW_PAYMENT_PERC_MIN': ['max', 'mean', 'min'],
-            'INSTAL_PREV_NEW_PAYMENT_PERC_VAR': ['mean'],
-            'INSTAL_PREV_NEW_PAYMENT_DIFF_MEAN': ['mean', 'min'],
-            'INSTAL_PREV_NEW_PAYMENT_DIFF_VAR': ['mean'],
-            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MAX': ['max', 'mean'],
-            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MEAN': ['mean'],
-            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MIN': ['min', 'max'],
-            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0': ['mean', 'min'],
-            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['mean', 'min'],
-            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2': ['mean', 'min'],
-            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['mean', 'min'],
-            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0': ['mean', 'min'],
-            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['mean', 'min'],
-            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2': ['mean', 'min'],
-            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['mean', 'min'],
-            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['max', 'mean', 'sum'],
-            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean', 'min'],
-            'CC_PREV_MONTHS_BALANCE_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_BALANCE_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_BALANCE_MEAN': ['mean'],
-            'CC_PREV_AMT_BALANCE_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_NUNIQUE': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_VAR': ['max', 'mean', ],
-            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_SUM': ['mean', 'sum'],
-            'CC_PREV_AMT_DRAWINGS_CURRENT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_CURRENT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_CURRENT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_CURRENT_VAR': ['max', 'mean', ],
-            'CC_PREV_AMT_DRAWINGS_CURRENT_SUM': ['mean', 'sum', ],
-            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_VAR': ['max', 'mean', ],
-            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_SUM': ['mean', 'sum', ],
-            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_VAR': ['max', 'mean', ],
-            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_SUM': ['mean', 'sum', ],
-            'CC_PREV_AMT_INST_MIN_REGULARITY_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_INST_MIN_REGULARITY_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_INST_MIN_REGULARITY_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_VAR': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min'],
-            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_BALANCE_MAX_MIN_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_BALANCE_MAX_HEAD_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_BALANCE_MAX_TAIL_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_BALANCE_MIN_HEAD_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_BALANCE_MIN_TAIL_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX_MIN_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX_HEAD_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX_TAIL_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MIN_HEAD_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MIN_TAIL_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_SIZE_AND_NUNIQUE_RATIO': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_DRAWINGS_SUM_RATIO': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_INST_MIN_REGULARITY_MAX_MIN_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_PAYMENT_CURRENT_AND_TOTAL_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_BALANCE_PAYMENT_TOTAL_CURRENT_DIFF': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_BALANCE_PAYMENT_TOTAL_CURRENT_RATIO': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_COMPLETED_TAIL_MONTHS_BALANCE': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_ACTIVE_TAIL_MONTHS_BALANCE': ['max', 'mean', 'min'],
-            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_SIZE_INS_MATURE_CUM_TAIL_RATIO': ['max', 'mean', 'min'],
+            'INSTAL_PREV_NUM_INSTALMENT_VERSION_MEDIAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_INSTALMENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_INSTALMENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_INSTALMENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_INSTALMENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_INSTALMENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_PAYMENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_PAYMENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_PAYMENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_PAYMENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_AMT_PAYMENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_DAYS_INSTALMENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_DAYS_INSTALMENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_DAYS_ENTRY_PAYMENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_DAYS_ENTRY_PAYMENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_DAYS_ENTRY_PAYMENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_PERC_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_DIFF_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_DIFF_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_DIFF_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_DIFF_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_PAYMENT_DIFF_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+
+            'CC_PREV_MONTHS_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_MONTHS_BALANCE_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_MONTHS_BALANCE_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_MONTHS_BALANCE_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_MONTHS_BALANCE_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_BALANCE_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_BALANCE_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_BALANCE_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_BALANCE_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_NUNIQUE': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_ATM_CURRENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_CURRENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_CURRENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_CURRENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_CURRENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_CURRENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_OTHER_CURRENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_DRAWINGS_POS_CURRENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_INST_MIN_REGULARITY_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_INST_MIN_REGULARITY_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_INST_MIN_REGULARITY_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_INST_MIN_REGULARITY_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_INST_MIN_REGULARITY_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_PAYMENT_TOTAL_CURRENT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_AMT_RECEIVABLE_PRINCIPAL_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_CURRENT_PER_CNT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'CC_PREV_NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_BALANCE_MAX_MIN_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_BALANCE_MAX_HEAD_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_BALANCE_MAX_TAIL_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_BALANCE_MIN_HEAD_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_BALANCE_MIN_TAIL_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX_MIN_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX_HEAD_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX_TAIL_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MIN_HEAD_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MIN_TAIL_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_SIZE_AND_NUNIQUE_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_DRAWINGS_SUM_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_INST_MIN_REGULARITY_MAX_MIN_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_PAYMENT_CURRENT_AND_TOTAL_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_BALANCE_PAYMENT_TOTAL_CURRENT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_BALANCE_PAYMENT_TOTAL_CURRENT_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_COMPLETED_TAIL_MONTHS_BALANCE': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_ACTIVE_TAIL_MONTHS_BALANCE': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_SIZE_INS_MATURE_CUM_TAIL_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
         # Previous applications categorical features
@@ -695,19 +752,19 @@ class HomeCreditPreprocessor(Preprocessor):
 
         # Features
         aggregations_curr = {
-            'MONTHS_BALANCE': ['mean', ],
-            'SK_DPD': ['mean'],
-            'SK_DPD_DEF': ['mean'],
-            'NEW_SK_DPD_DIFF': ['max', 'mean', 'sum']
+            'MONTHS_BALANCE': ['max', 'mean', 'min', 'sum', 'var'],
+            'SK_DPD': ['max', 'mean', 'min', 'sum', 'var'],
+            'SK_DPD_DEF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_SK_DPD_DIFF': ['max', 'mean', 'min', 'sum', 'var']
         }
 
         aggregations_prev = {
-            'MONTHS_BALANCE': ['max', 'size', 'min', lambda x: x.diff().max()],
-            'SK_DPD': ['max', 'mean'],
-            'SK_DPD_DEF': ['max', 'mean'],
-            'CNT_INSTALMENT': ['nunique'],
-            'CNT_INSTALMENT_FUTURE': ['size', 'max'],
-            'NEW_SK_DPD_DIFF': ['max', 'mean', 'sum']
+            'MONTHS_BALANCE': ['max', 'size', 'min', 'sum', 'var', lambda x: x.diff().max()],
+            'SK_DPD': ['max', 'mean', 'min', 'sum', 'var'],
+            'SK_DPD_DEF': ['max', 'mean', 'min', 'sum', 'var'],
+            'CNT_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var', 'nunique'],
+            'CNT_INSTALMENT_FUTURE': ['max', 'mean', 'min', 'sum', 'var', 'size'],
+            'NEW_SK_DPD_DIFF': ['max', 'mean', 'min', 'sum', 'var']
         }
 
         for cat in cat_cols:
@@ -756,15 +813,15 @@ class HomeCreditPreprocessor(Preprocessor):
         }
 
         aggregations_prev = {
-            'NUM_INSTALMENT_VERSION': ['median'],
+            'NUM_INSTALMENT_VERSION': ['max', 'mean', 'min', 'sum', 'var', 'median'],
             #'NUM_INSTALMENT_VERSION': ['median', lambda x: x.tail(1)],
-            'AMT_INSTALMENT': ['max', 'mean', 'sum'],
-            'AMT_PAYMENT': ['max', 'mean', 'sum'],
-            'DAYS_INSTALMENT': ['max', 'min'],
-            'DAYS_ENTRY_PAYMENT': ['max', 'min'],
-            'NEW_PAYMENT_PERC': ['mean', 'min', 'var'],
-            'NEW_PAYMENT_DIFF': ['mean', 'var'],
-            'NEW_DAYS_PAYMENT_DIFF': ['max', 'mean', 'min'],
+            'AMT_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'DAYS_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'DAYS_ENTRY_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_PAYMENT_PERC': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_PAYMENT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_DAYS_PAYMENT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
         for cat in cat_cols:
@@ -813,39 +870,39 @@ class HomeCreditPreprocessor(Preprocessor):
         df['NEW_SK_DPD_DIFF'] = df['SK_DPD'] - df['SK_DPD_DEF']
 
         aggregations_curr = {
-            'CNT_DRAWINGS_ATM_CURRENT': ['max', 'mean', 'var'],
-            'CNT_DRAWINGS_CURRENT': ['max', 'mean', 'var'],
-            'CNT_DRAWINGS_OTHER_CURRENT': ['max', 'mean', 'var'],
-            'CNT_DRAWINGS_POS_CURRENT': ['max', 'mean', 'var'],
-            'SK_DPD': ['max', 'mean', 'var'],
-            'SK_DPD_DEF': ['max', 'mean', 'var'],
-            'NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_RATIO': ['min', 'mean', 'max'],
-            'NEW_AMT_RECEIVABLE_DIFF_W_PRINCIPAL': ['max', 'mean', 'min'],
-            'NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL': ['max', 'mean', 'min'],
-            'NEW_AMT_RECEIVABLE_DIFF_W_TOTAL': ['max', 'mean', 'min'],
-            'NEW_AMT_RECEIVABLE_RATIO_W_TOTAL': ['max', 'mean', 'min'],
-            'NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT': ['max', 'mean', 'min'],
-            'NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT': ['max', 'mean', 'min'],
-            'NEW_SK_DPD_DIFF': ['max', 'mean', 'var'],
+            'CNT_DRAWINGS_ATM_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'CNT_DRAWINGS_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'CNT_DRAWINGS_OTHER_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'CNT_DRAWINGS_POS_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'SK_DPD': ['max', 'mean', 'min', 'sum', 'var'],
+            'SK_DPD_DEF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_RECEIVABLE_DIFF_W_PRINCIPAL': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_RECEIVABLE_DIFF_W_TOTAL': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_RECEIVABLE_RATIO_W_TOTAL': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_SK_DPD_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
         aggregations_prev = {
-            'MONTHS_BALANCE': ['min'],
-            'AMT_BALANCE': ['max', 'mean', 'min'], # max - min, max or min - head and tail
-            'AMT_CREDIT_LIMIT_ACTUAL': ['max', 'mean', 'min', 'nunique', 'size'], # max - min, max or min - head and tail, size / nunique, balance / limit
+            'MONTHS_BALANCE': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_BALANCE': ['max', 'mean', 'min', 'sum', 'var'], # max - min, max or min - head and tail
+            'AMT_CREDIT_LIMIT_ACTUAL': ['max', 'mean', 'min', 'nunique', 'size', 'var', 'sum'], # max - min, max or min - head and tail, size / nunique, balance / limit
             'AMT_DRAWINGS_ATM_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
             'AMT_DRAWINGS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'], # この sum と atm sum の ratio
             'AMT_DRAWINGS_OTHER_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
             'AMT_DRAWINGS_POS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
-            'AMT_INST_MIN_REGULARITY': ['min', 'mean', 'max'], # これらの間の差分等
-            'AMT_PAYMENT_CURRENT': ['max', 'mean', 'min', 'var'], # これと totol の差分等
-            'AMT_PAYMENT_TOTAL_CURRENT': ['max', 'mean', 'min', 'var'], # これと balance の ratio
-            'AMT_RECEIVABLE_PRINCIPAL': ['min', 'max'],
-            'NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF': ['max', 'mean', 'min'],
-            'NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT': ['max', 'mean', 'min'],
-            'NEW_AMT_DRAWINGS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
-            'NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT': ['max', 'mean', 'min'],
-            'NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT': ['max', 'mean', 'min'],
+            'AMT_INST_MIN_REGULARITY': ['max', 'mean', 'min', 'sum', 'var'], # これらの間の差分等
+            'AMT_PAYMENT_CURRENT': ['max', 'mean', 'min', 'sum', 'var'], # これと totol の差分等
+            'AMT_PAYMENT_TOTAL_CURRENT': ['max', 'mean', 'min', 'sum', 'var'], # これと balance の ratio
+            'AMT_RECEIVABLE_PRINCIPAL': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
         for cat in cat_cols:
@@ -947,38 +1004,38 @@ class HomeCreditPreprocessor(Preprocessor):
         # Bureau and bureau_balance numeric features
         num_aggregations = {
             'DAYS_CREDIT': ['max', 'mean', 'min', 'var', 'size'],
-            'CREDIT_DAY_OVERDUE': ['max', 'mean', 'var'],
-            'DAYS_CREDIT_ENDDATE': ['mean'],
-            'DAYS_ENDDATE_FACT': ['mean'],
-            'AMT_CREDIT_MAX_OVERDUE': ['max', 'mean', 'min'],
-            'CNT_CREDIT_PROLONG': ['max', 'mean', 'sum'],
-            'AMT_CREDIT_SUM': ['max', 'mean', 'min', 'sum'],
-            'AMT_CREDIT_SUM_DEBT': ['max', 'mean', 'min', 'sum'],
+            'CREDIT_DAY_OVERDUE': ['max', 'mean', 'min', 'sum', 'var'],
+            'DAYS_CREDIT_ENDDATE': ['max', 'mean', 'min', 'sum', 'var'],
+            'DAYS_ENDDATE_FACT': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_CREDIT_MAX_OVERDUE': ['max', 'mean', 'min', 'sum', 'var'],
+            'CNT_CREDIT_PROLONG': ['max', 'mean', 'min', 'sum'],
+            'AMT_CREDIT_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_CREDIT_SUM_DEBT': ['max', 'mean', 'min', 'sum', 'var'],
             'AMT_CREDIT_SUM_LIMIT': ['max', 'mean', 'min', 'sum', 'var'],
-            'AMT_CREDIT_SUM_OVERDUE': ['max', 'mean', ],
-            'AMT_ANNUITY': ['max', 'mean', 'min'],
-            'DAYS_CREDIT_UPDATE': ['max', 'mean', 'min'],
-            'MONTHS_BALANCE_MIN': ['max', 'min'],
-            'MONTHS_BALANCE_MAX': ['max', 'min'],
-            'MONTHS_BALANCE_SIZE': ['max', 'mean', 'min', 'sum'],
-            'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],
-            'NEW_BURO_DAYS_CREDIT_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'var'],
-            'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],
-            'NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min'],
-            'NEW_BURO_CNT_CREDIT_PROLONG_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CNT_CREDIT_PROLONG_PROD': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_CREDIT_SUM_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_CREDIT_SUM_CNT_CREDIT_PROLONG_PROD': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_RATIO': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_OVERDUE_PROD': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_RATIO': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_DEBT_RATIO': ['max', 'mean', 'min'],
-            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min'],
-            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_DIFF': ['max', 'mean', 'min', 'var'],
-            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'var'],
-            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'var'],
+            'AMT_CREDIT_SUM_OVERDUE': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_ANNUITY': ['max', 'mean', 'min', 'sum', 'var'],
+            'DAYS_CREDIT_UPDATE': ['max', 'mean', 'min', 'sum', 'var'],
+            'MONTHS_BALANCE_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'MONTHS_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'MONTHS_BALANCE_SIZE': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_DAYS_CREDIT_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_DAYS_CREDIT_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_CNT_CREDIT_PROLONG_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_MAX_OVERDUE_CNT_CREDIT_PROLONG_PROD': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_SUM_CREDIT_DAY_OVERDUE_PROD': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_SUM_CNT_CREDIT_PROLONG_PROD': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_SUM_DEBT_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_CREDIT_SUM_AMT_CREDIT_SUM_OVERDUE_PROD': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_DEBT_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_AMT_ANNUITY_AMT_CREDIT_SUM_LIMIT_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
         # Bureau and bureau_balance categorical features
@@ -1012,184 +1069,3 @@ class HomeCreditPreprocessor(Preprocessor):
         del closed, closed_agg, bureau
         gc.collect()
         return bureau_agg
-
-    def fe_application_prev_before(self, df):
-        # add raw sequential information processing fe
-        seq_agg = {
-            'NAME_CONTRACT_STATUS': ['first']
-        }
-        seq_agg = df.groupby('SK_ID_CURR').agg(
-            {**seq_agg})
-        seq_agg.columns = pd.Index(
-            ['PREV_SEQ_' + e[0] + "_" + e[1].upper()
-             for e in seq_agg.columns.tolist()])
-        df, cat_cols = self.onehot_encoding(df, drop_first=False)
-
-        # ===============================
-        # 欠損値埋め
-        # ===============================
-        # Days 365.243 values -> nan
-        #df['DAYS_FIRST_DRAWING'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_FIRST_DUE'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_LAST_DUE_1ST_VERSION'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_LAST_DUE'].replace(365243, np.nan, inplace=True)
-        #df['DAYS_TERMINATION'].replace(365243, np.nan, inplace=True)
-
-        # Add feature: value ask / value received percentage
-        df['APP_CREDIT_PERC'] = df['AMT_APPLICATION'] / df['AMT_CREDIT']
-        # Previous applications numeric features
-        num_aggregations = {
-            'AMT_ANNUITY': ['max', 'mean'],
-            'AMT_APPLICATION': ['max', 'mean'],
-            'AMT_CREDIT': ['max', 'mean'],
-            'APP_CREDIT_PERC': ['max', 'mean'],
-            'AMT_DOWN_PAYMENT': ['max', 'mean'],
-            'AMT_GOODS_PRICE': ['max', 'mean'],
-            'HOUR_APPR_PROCESS_START': ['max', 'mean'],
-            'RATE_DOWN_PAYMENT': ['max', 'mean'],
-            'DAYS_DECISION': ['max', 'mean'],
-            'CNT_PAYMENT': ['mean', 'sum'],
-        }
-        # Previous applications categorical features
-        cat_aggregations = {}
-        for cat in cat_cols:
-            cat_aggregations[cat] = ['mean']
-        df_agg = df.groupby('SK_ID_CURR').head(HEAD_SIZE).\
-            groupby('SK_ID_CURR').\
-            agg({**num_aggregations, **cat_aggregations})
-        df_agg.columns = pd.Index(
-            ['PREV_' + e[0] + "_" + e[1].upper()
-             for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-            groupby('SK_ID_CURR').\
-            agg({**num_aggregations, **cat_aggregations})
-        df_agg_pref.columns = pd.Index(
-            ['PREV_PREF_' + e[0] + "_" + e[1].upper()
-             for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
-        # previous Applications: Approved Applications - only numerical features
-        approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
-        approved_agg = approved.groupby('SK_ID_CURR').head(HEAD_SIZE)\
-            .groupby('SK_ID_CURR').\
-            agg(num_aggregations)
-#        app_agg_cols = approved_agg.columns.tolist()
-        approved_agg.columns = pd.Index(
-            ['APPROVED_' + e[0] + "_" + e[1].upper()
-             for e in approved_agg.columns.tolist()])
-        df_agg = df_agg.merge(approved_agg, how='left', on='SK_ID_CURR')
-        # dfious Applications: Refused Applications - only numerical features
-        refused = df[df['NAME_CONTRACT_STATUS_Refused'] == 1]
-        refused_agg = refused.groupby('SK_ID_CURR').head(HEAD_SIZE)\
-            .groupby('SK_ID_CURR')\
-            .agg(num_aggregations)
-        refused_agg.columns = pd.Index(
-            ['REFUSED_' + e[0] + "_" + e[1].upper()
-             for e in refused_agg.columns.tolist()])
-        df_agg = df_agg.join(refused_agg, how='left', on='SK_ID_CURR')
-        df_agg['PREV_CNT'] = df.groupby('SK_ID_CURR').size()
-        df_agg['PREV_REFUSED_CNT'] = refused.groupby('SK_ID_CURR').size()
-        df_agg['PREV_REFUSED_RATIO'] = df_agg['PREV_CNT'] /\
-            df_agg['PREV_REFUSED_CNT']
-        df_agg = df_agg.merge(seq_agg, how='left', on='SK_ID_CURR')
-        del refused, refused_agg, approved, approved_agg, df
-
-#        for e in app_agg_cols:
-#            df_agg['NEW_RATIO_PREV_' + e[0] + "_" + e[1].upper()] = \
-#                    df_agg['APPROVED_' + e[0] + "_" + e[1].upper()] /\
-#                    df_agg['REFUSED_' + e[0] + "_" + e[1].upper()]
-
-        gc.collect()
-        return df_agg
-
-    # Preprocess credit_card_balance.csv
-    def fe_credit_card_balance_before(self, df):
-        df, cat_cols = self.onehot_encoding(df, drop_first=False)
-        # General aggregations
-        df.drop(['SK_ID_PREV'], axis=1, inplace=True)
-        df_agg = df.groupby('SK_ID_CURR').agg(
-            ['min', 'max', 'mean', 'sum', 'var'])
-        df_agg.columns = pd.Index(
-            ['CC_' + e[0] + "_" + e[1].upper()
-                for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-                groupby('SK_ID_CURR').agg(['min', 'max', 'mean', 'sum', 'var'])
-        df_agg_pref.columns = pd.Index(
-            ['CC_PREF_' + e[0] + "_" + e[1].upper()
-                for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
-        # Count credit card lines
-        df_agg['CC_COUNT'] = df.groupby('SK_ID_CURR').size()
-        del df
-        gc.collect()
-        return df_agg
-
-    # Preprocess POS_CASH_balance.csv
-    def fe_pos_cash_before(self, df):
-        df, cat_cols = self.onehot_encoding(df, drop_first=False)
-        # Features
-        aggregations = {
-            'MONTHS_BALANCE': ['max', 'mean', 'size'],
-            'SK_DPD': ['max', 'mean'],
-            'SK_DPD_DEF': ['max', 'mean']
-        }
-#        for cat in cat_cols:
-#            aggregations[cat] = ['mean']
-
-        df_agg = df.groupby('SK_ID_CURR').agg(aggregations)
-        df_agg.columns = pd.Index(
-            ['POS_' + e[0] + "_" + e[1].upper()
-                for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-                groupby('SK_ID_CURR').agg(aggregations)
-        df_agg_pref.columns = pd.Index(
-            ['POS_PREF_' + e[0] + "_" + e[1].upper()
-                for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
-        # Count df cash accounts
-        df_agg['POS_COUNT'] = df.groupby('SK_ID_CURR').size()
-        del df
-        gc.collect()
-        return df_agg
-
-    # Preprocess installments_payments.csv
-    def fe_installments_payments_before(self, df):
-        df, cat_cols = self.onehot_encoding(df, drop_first=False)
-        # Percentage and difference paid in each dftallment (amount paid and
-        # dftallment value)
-        df['PAYMENT_PERC'] = df['AMT_PAYMENT'] / df['AMT_INSTALMENT']
-        df['PAYMENT_DIFF'] = df['AMT_INSTALMENT'] - df['AMT_PAYMENT']
-        # Days past due and days before due (no negative values)
-        df['DPD'] = df['DAYS_ENTRY_PAYMENT'] - df['DAYS_INSTALMENT']
-        df['DBD'] = df['DAYS_INSTALMENT'] - df['DAYS_ENTRY_PAYMENT']
-        df['DPD'] = df['DPD'].apply(lambda x: x if x > 0 else 0)
-        df['DBD'] = df['DBD'].apply(lambda x: x if x > 0 else 0)
-        # Features: Perform aggregations
-        aggregations = {
-            'NUM_INSTALMENT_VERSION': ['nunique'],
-            'DPD': ['max', 'mean', 'sum'],
-            'DBD': ['max', 'mean', 'sum'],
-            'PAYMENT_PERC': ['mean', 'var'],
-            'PAYMENT_DIFF': ['mean', 'var'],
-            'AMT_INSTALMENT': ['max', 'mean', 'sum'],
-            'AMT_PAYMENT': ['min', 'max', 'mean', 'sum'],
-            'DAYS_ENTRY_PAYMENT': ['max', 'mean', 'sum']
-        }
-        for cat in cat_cols:
-            aggregations[cat] = ['mean']
-        df_agg = df.groupby('SK_ID_CURR').agg(aggregations)
-        df_agg.columns = pd.Index(
-            ['INSTAL_' + e[0] + "_" + e[1].upper()
-                for e in df_agg.columns.tolist()])
-        df_agg_pref = df.groupby('SK_ID_CURR').head(SUB_HEAD_SIZE).\
-                groupby('SK_ID_CURR').agg(aggregations)
-        df_agg_pref.columns = pd.Index(
-            ['INSTAL_PREF_' + e[0] + "_" + e[1].upper()
-                for e in df_agg_pref.columns.tolist()])
-#        df_agg = df_agg.join(df_agg_pref, how='left', on='SK_ID_CURR')
-        # Count dftallments accounts
-        df_agg['INSTAL_COUNT'] = df.groupby('SK_ID_CURR').size()
-        del df
-        gc.collect()
-        return df_agg
-
-

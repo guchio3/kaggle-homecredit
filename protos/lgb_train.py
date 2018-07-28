@@ -48,10 +48,14 @@ drop_cols = [
 #        'ACTIVE_NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_ENDDATE_DIFF_MAX',
 #        'PREV_NEW_CREDIT_SELLERPLACE_RATE_MAX',
         ]
-best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
+best_features = pd.read_csv('../importances/importance_2018-07-28-05-53-25.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-28-04-21-33.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-28-02-05-07.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(800).tolist()
-#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(650).tolist()
+drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
@@ -87,16 +91,24 @@ def main():
     dataio = DataIO(logger=logger)
     prep = HomeCreditPreprocessor(logger=logger)
 
-#    dfs_dict = dataio.read_csvs({
-#        'train': '../inputs/my_train.csv',
-#        'test': '../inputs/my_test.csv'})
+    dfs_dict = dataio.read_csvs({
+        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv',
+        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv'})
+#        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000.csv',
+#        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000.csv'})
+#        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1300.csv',
+#        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1300.csv'})
+#        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1500.csv',
+#        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1500.csv'})
+#        'train': '../inputs/my_train_all.csv',
+#        'test': '../inputs/my_test_all.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
-#    train_df = dfs_dict['train']
-#    test_df = dfs_dict['test']
+    train_df = dfs_dict['train']
+    test_df = dfs_dict['test']
 
-    train_df, test_df = preprocess.main()
+#    train_df, test_df = preprocess.main()
 
     logger.info('removing the categorical features which\
                 are contained only by training set...')
@@ -111,6 +123,10 @@ def main():
 
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
+
+#    train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_650.csv')
+#    test_df.to_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_650.csv')
+
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
 #    n_splits = 7
@@ -167,13 +183,13 @@ def main():
 #        'max_bin': [100],
 #        'min_data_in_bin': [50],
 ##        'num_leaves': [32],
-        'num_leaves': [24],
-#        'num_leaves': [15],
+#        'num_leaves': [24],
+        'num_leaves': [15],
 #        'num_leaves': [48],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-        'max_depth': [5],
-#        'max_depth': [4],
+#        'max_depth': [5],
+        'max_depth': [4],
 #        'max_depth': [16],
 #        'subsample_freq': [1],
         'reg_alpha': [0.04],
