@@ -14,8 +14,8 @@ from utils.my_logging import logInit
 
 
 #was_null_list = pd.read_csv('../importances/importance_2018-07-16-16-51-06.csv')[:100]
-was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
-#was_null_list = []
+#was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
+was_null_list = []
 
 def main():
     logger = getLogger(__name__)
