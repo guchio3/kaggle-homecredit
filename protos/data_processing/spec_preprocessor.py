@@ -582,6 +582,11 @@ class HomeCreditPreprocessor(Preprocessor):
             'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MIN': ['max', 'mean', 'min', 'sum', 'var'],
             'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_VAR': ['max', 'mean', 'min', 'sum', 'var'],
             'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_SUM': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MAX': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MIN': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_VAR': ['max', 'mean', 'min', 'sum', 'var'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_SUM': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2': ['max', 'mean', 'min', 'sum', 'var'],
@@ -807,6 +812,8 @@ class HomeCreditPreprocessor(Preprocessor):
         df['NEW_PAYMENT_DIFF'] = df['AMT_INSTALMENT'] - df['AMT_PAYMENT']
         df['NEW_DAYS_PAYMENT_DIFF'] = \
             df['DAYS_ENTRY_PAYMENT'] - df['DAYS_INSTALMENT']
+        df['NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD'] = \
+            df['NEW_DAYS_PAYMENT_DIFF'] * df['NEW_PAYMENT_DIFF']
 
         # Features: Perform aggregations
         aggregations_curr = {
@@ -822,6 +829,7 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_PAYMENT_PERC': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_PAYMENT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_DAYS_PAYMENT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
         for cat in cat_cols:
@@ -946,19 +954,19 @@ class HomeCreditPreprocessor(Preprocessor):
         bb, bb_cat = self.onehot_encoding(bb, drop_first=False)
 
         # Bureau balance: Perform aggregations and merge with bureau.csv
-        bb_aggregations = {'MONTHS_BALANCE': ['min', 'max', 'size']}
+        bb_aggregations = {'MONTHS_BALANCE': ['min', 'max', 'size', 'var', 'mean']}
         for col in bb_cat:
             bb_aggregations[col] = ['mean']
         bb_agg = bb.groupby('SK_ID_BUREAU').agg(bb_aggregations)
-        bb_agg.columns = pd.Index([e[0] + "_" + e[1].upper()
-                                   for e in bb_agg.columns.tolist()])
         bb_agg['BB_STATUS_HEAD'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).head(1).STATUS
         bb_agg['BB_STATUS_TAIL'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).tail(1).STATUS
+        bb_agg.columns = pd.Index([e[0] + "_" + e[1].upper()
+                                   for e in bb_agg.columns.tolist()])
 
         bureau = bureau.join(bb_agg, how='left', on='SK_ID_BUREAU')
         bureau, bureau_cat = self.onehot_encoding(bureau, drop_first=False)
         bureau.drop(['SK_ID_BUREAU'], axis=1, inplace=True)
-        del bb, bb_agg
+#        del bb, bb_agg
         gc.collect()
 
         # ===============================
@@ -1037,6 +1045,11 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_CREDIT_ENDDATE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_BURO_DAYS_CREDIT_UPDATE_DAYS_ENDDATE_FACT_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
         }
+
+        for bb_col in bb_agg.columns:
+            if bb_col in ['BB_STATUS_HEAD', 'BB_STATUS_TAIL']:
+                continue
+            num_aggregations[bb_col] = ['max', 'mean', 'min', 'sum', 'var']
 
         # Bureau and bureau_balance categorical features
         cat_aggregations = {}
