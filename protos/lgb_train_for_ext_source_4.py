@@ -71,18 +71,23 @@ def main():
 
     ins_df = pd.read_csv('../inputs/installments_payments.csv').sort_values(['SK_ID_PREV', 'NUM_INSTALMENT_NUMBER'])
     ins_df['DIFF'] = ins_df.DAYS_ENTRY_PAYMENT - ins_df.DAYS_INSTALMENT
-    ins_df = ins_df.groupby('SK_ID_PREV').head(3).groupby('SK_ID_PREV').DIFF.max().reset_index()
-    #ins_df = ins_df.groupby('SK_ID_PREV').head(12).groupby('SK_ID_PREV').DIFF.max().reset_index()
+#    ins_df = ins_df.groupby('SK_ID_PREV').head(3).groupby('SK_ID_PREV').DIFF.max().reset_index()
+    ins_df = ins_df.groupby('SK_ID_PREV').head(12).groupby('SK_ID_PREV').DIFF.max().reset_index()
 
 #    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
 #    bureau_df = pd.read_csv('../inputs/bureau.csv')
 #    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
+    base_train_df = pd.read_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv')
+    base_test_df = pd.read_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv')
+    base_df = pd.concat([base_train_df, base_test_df], axis=0).drop(['TARGET'], axis=1)
 
     train_and_test_df = pd.concat([prev_df, train_df, test_df], axis=0)
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
     train_and_test_df['NEW_CREDIT_TO_ANNUITY_RATIO'] = train_and_test_df['AMT_CREDIT'] / train_and_test_df['AMT_ANNUITY']
     train_and_test_df['NEW_CREDIT_TO_GOODS_RATIO'] = train_and_test_df['AMT_CREDIT'] / train_and_test_df['AMT_GOODS_PRICE']
     train_and_test_df['NEW_ANNUITY_GOODS_TO_RATIO'] = train_and_test_df['AMT_ANNUITY'] / train_and_test_df['AMT_GOODS_PRICE']
+    train_and_test_df = train_and_test_df.merge(base_df, on='SK_ID_CURR', how='left')
+    del base_df
 
 #    train_and_test_df = train_and_test_df.merge(
 #            bureau_df, on='SK_ID_CURR', how='left')
@@ -90,7 +95,8 @@ def main():
     train_df = train_and_test_df.iloc[:prev_df.shape[0]]
     test_df = train_and_test_df.iloc[prev_df.shape[0]:]
     train_df = train_df.merge(ins_df, on='SK_ID_PREV')
-    train_df['TARGET'] = (train_df.DIFF > 3).apply(lambda x: 1 if x else 0)
+    train_df['TARGET'] = (train_df.DIFF > 10).apply(lambda x: 1 if x else 0)
+    #train_df['TARGET'] = (train_df.DIFF > 3).apply(lambda x: 1 if x else 0)
     #train_df['TARGET'] = (train_df.DIFF > 0).apply(lambda x: 1 if x else 0)
     train_df['TARGET'] = train_df['TARGET'].fillna(0)
 

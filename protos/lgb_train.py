@@ -30,6 +30,7 @@ np.random.seed(100)
 plt.switch_backend('agg')
 
 drop_cols = [
+        'Unnamed: 0',
 #        'NEW_PREV_DAYS_TERMINATION_MAX_DAYS_EMPLOYED_DIFF',
 #        'NEW_PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX_DAYS_EMPLOYED_DIFF',
 #        'NEW_BURO_DAYS_CREDIT_MAX_DAYS_EMPLOYED_DIFF',
@@ -121,6 +122,7 @@ def main():
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
 #    train_and_test_df['NEW_EXT_SOURCES_MEAN'] = train_and_test_df[['EXT_SOURCE_1', 'EXT_SOURCE_2','EXT_SOURCE_3']].mean(axis=1)
     train_and_test_df = train_and_test_df.drop(drop_cols, axis=1)
+#    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-04-46-46.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-02-38-58.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-29-11-28-13.csv'), on='SK_ID_CURR', how='left')
 
