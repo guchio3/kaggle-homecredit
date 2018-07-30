@@ -44,19 +44,22 @@ drop_cols = [
 #        'NEW_BURO_DAYS_CREDIT_MEAN_DAYS_LAST_PHONE_CHANGE_DIFF',
 #        'NEW_BURO_DAYS_CREDIT_MEAN_DAYS_DAYS_REGISTRATION_DIFF',
 #        'NEW_BURO_DAYS_CREDIT_MEAN_OWN_CAR_AGE_DIFF',
-        'NEW_AMT_ANNUITY_POPRAT',
-        'NEW_AMT_INCOME_TOTAL_POPRAT',
-        'NEW_AMT_GOODS_PRICE_POPRAT',
-        'NEW_AMT_CREDIT_POPRAT',
+#        'NEW_AMT_ANNUITY_POPRAT',
+#        'NEW_AMT_INCOME_TOTAL_POPRAT',
+#        'NEW_AMT_GOODS_PRICE_POPRAT',
+#        'NEW_AMT_CREDIT_POPRAT',
         ]
-best_features = pd.read_csv('../importances/importance_2018-07-28-05-53-25.csv')
+
+best_features = pd.read_csv('../importances/importance_2018-07-29-13-03-22.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-28-05-53-25.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-04-21-33.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-02-05-07.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(650).tolist()
-drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
+#drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
+#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
@@ -118,15 +121,14 @@ def main():
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
 #    train_and_test_df['NEW_EXT_SOURCES_MEAN'] = train_and_test_df[['EXT_SOURCE_1', 'EXT_SOURCE_2','EXT_SOURCE_3']].mean(axis=1)
     train_and_test_df = train_and_test_df.drop(drop_cols, axis=1)
-
-#    importance_list = pd.read_csv('../importances/importance_2018-07-11-08-58-40.csv')
-#    train_and_test_df = train_and_test_df[importance_list.feature[:150].tolist() + ['SK_ID_CURR', 'TARGET']]
+#    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-02-38-58.csv'), on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-29-11-28-13.csv'), on='SK_ID_CURR', how='left')
 
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
-#    train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_650.csv')
-#    test_df.to_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_650.csv')
+#    train_df.to_csv('../inputs/my_train_all_2000.csv')
+#    test_df.to_csv('../inputs/my_test_all_2000.csv')
 
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))

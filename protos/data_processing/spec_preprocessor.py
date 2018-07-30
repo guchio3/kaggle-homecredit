@@ -958,11 +958,10 @@ class HomeCreditPreprocessor(Preprocessor):
         for col in bb_cat:
             bb_aggregations[col] = ['mean']
         bb_agg = bb.groupby('SK_ID_BUREAU').agg(bb_aggregations)
-        bb_agg['BB_STATUS_HEAD'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).head(1).STATUS
-        bb_agg['BB_STATUS_TAIL'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).tail(1).STATUS
         bb_agg.columns = pd.Index([e[0] + "_" + e[1].upper()
                                    for e in bb_agg.columns.tolist()])
-
+        bb_agg['BB_STATUS_HEAD'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).head(1).STATUS
+        bb_agg['BB_STATUS_TAIL'] = bb_for_cat_tail.groupby(['SK_ID_BUREAU']).tail(1).STATUS
         bureau = bureau.join(bb_agg, how='left', on='SK_ID_BUREAU')
         bureau, bureau_cat = self.onehot_encoding(bureau, drop_first=False)
         bureau.drop(['SK_ID_BUREAU'], axis=1, inplace=True)

@@ -71,22 +71,28 @@ def main():
 
     ins_df = pd.read_csv('../inputs/installments_payments.csv').sort_values(['SK_ID_PREV', 'NUM_INSTALMENT_NUMBER'])
     ins_df['DIFF'] = ins_df.DAYS_ENTRY_PAYMENT - ins_df.DAYS_INSTALMENT
-    ins_df = ins_df.groupby('SK_ID_PREV').head(12).groupby('SK_ID_PREV').DIFF.max().reset_index()
+    ins_df = ins_df.groupby('SK_ID_PREV').head(3).groupby('SK_ID_PREV').DIFF.max().reset_index()
+    #ins_df = ins_df.groupby('SK_ID_PREV').head(12).groupby('SK_ID_PREV').DIFF.max().reset_index()
+
+#    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
+#    bureau_df = pd.read_csv('../inputs/bureau.csv')
+#    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
 
     train_and_test_df = pd.concat([prev_df, train_df, test_df], axis=0)
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
+    train_and_test_df['NEW_CREDIT_TO_ANNUITY_RATIO'] = train_and_test_df['AMT_CREDIT'] / train_and_test_df['AMT_ANNUITY']
+    train_and_test_df['NEW_CREDIT_TO_GOODS_RATIO'] = train_and_test_df['AMT_CREDIT'] / train_and_test_df['AMT_GOODS_PRICE']
+    train_and_test_df['NEW_ANNUITY_GOODS_TO_RATIO'] = train_and_test_df['AMT_ANNUITY'] / train_and_test_df['AMT_GOODS_PRICE']
+
+#    train_and_test_df = train_and_test_df.merge(
+#            bureau_df, on='SK_ID_CURR', how='left')
+
     train_df = train_and_test_df.iloc[:prev_df.shape[0]]
     test_df = train_and_test_df.iloc[prev_df.shape[0]:]
-
     train_df = train_df.merge(ins_df, on='SK_ID_PREV')
-    train_df['TARGET'] = (train_df.DIFF > 0).apply(lambda x: 1 if x else 0)
+    train_df['TARGET'] = (train_df.DIFF > 3).apply(lambda x: 1 if x else 0)
+    #train_df['TARGET'] = (train_df.DIFF > 0).apply(lambda x: 1 if x else 0)
     train_df['TARGET'] = train_df['TARGET'].fillna(0)
-    train_df['NEW_CREDIT_TO_ANNUITY_RATIO'] = train_df['AMT_CREDIT'] / train_df['AMT_ANNUITY']
-    train_df['NEW_CREDIT_TO_GOODS_RATIO'] = train_df['AMT_CREDIT'] / train_df['AMT_GOODS_PRICE']
-    train_df['NEW_ANNUITY_GOODS_TO_RATIO'] = train_df['AMT_ANNUITY'] / train_df['AMT_GOODS_PRICE']
-    test_df['NEW_CREDIT_TO_ANNUITY_RATIO'] = test_df['AMT_CREDIT'] / test_df['AMT_ANNUITY']
-    test_df['NEW_CREDIT_TO_GOODS_RATIO'] = test_df['AMT_CREDIT'] / test_df['AMT_GOODS_PRICE']
-    test_df['NEW_ANNUITY_GOODS_TO_RATIO'] = test_df['AMT_ANNUITY'] / test_df['AMT_GOODS_PRICE']
 
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
@@ -106,12 +112,13 @@ def main():
     y_train = train_df['TARGET'].values
     x_test = test_df.drop([
         'SK_ID_CURR',
+        'SK_ID_PREV',
         ], axis=1).values
 
     all_params = {
         'nthread': [-1],
         'n_estimators': [10000],
-        'learning_rate': [0.1],
+        'learning_rate': [0.2],
         'num_leaves': [8],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
@@ -195,7 +202,7 @@ def main():
     logger.info('formatting the test result...')
     res_df = pd.DataFrame({
         'SK_ID_CURR': test_df.SK_ID_CURR,
-        'TARGET': res
+        'EXT_SOURCE_4': res
     })
 
     dataio.save_csv(res_df, '../inputs/ext_sources_4.csv', index=False, withtime=True)
