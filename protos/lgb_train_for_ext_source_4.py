@@ -72,7 +72,8 @@ def main():
     ins_df = pd.read_csv('../inputs/installments_payments.csv').sort_values(['SK_ID_PREV', 'NUM_INSTALMENT_NUMBER'])
     ins_df['DIFF'] = ins_df.DAYS_ENTRY_PAYMENT - ins_df.DAYS_INSTALMENT
 #    ins_df = ins_df.groupby('SK_ID_PREV').head(3).groupby('SK_ID_PREV').DIFF.max().reset_index()
-    ins_df = ins_df.groupby('SK_ID_PREV').head(12).groupby('SK_ID_PREV').DIFF.max().reset_index()
+    #ins_df = ins_df.groupby('SK_ID_PREV').head(12).groupby('SK_ID_PREV').DIFF.max().reset_index()
+    ins_df = ins_df[ins_df.NUM_INSTALMENT_NUMBER <= 12].groupby('SK_ID_PREV').DIFF.max().reset_index()
 
 #    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
 #    bureau_df = pd.read_csv('../inputs/bureau.csv')
@@ -95,7 +96,7 @@ def main():
     train_df = train_and_test_df.iloc[:prev_df.shape[0]]
     test_df = train_and_test_df.iloc[prev_df.shape[0]:]
     train_df = train_df.merge(ins_df, on='SK_ID_PREV')
-    train_df['TARGET'] = (train_df.DIFF > 10).apply(lambda x: 1 if x else 0)
+    train_df['TARGET'] = (train_df.DIFF > 90).apply(lambda x: 1 if x else 0)
     #train_df['TARGET'] = (train_df.DIFF > 3).apply(lambda x: 1 if x else 0)
     #train_df['TARGET'] = (train_df.DIFF > 0).apply(lambda x: 1 if x else 0)
     train_df['TARGET'] = train_df['TARGET'].fillna(0)
