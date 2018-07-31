@@ -33,7 +33,7 @@ def main():
 #    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
     prev_df = pd.read_csv('../inputs/previous_application.csv')
     train_and_test_df = pd.concat([train_df, test_df])
-    train_and_test_df = train_and_test_df['SK_ID_CURR']
+    train_and_test_df = pd.DataFrame(train_and_test_df[['SK_ID_CURR']])
 
 #    logger.info('fe for bureau...')
 #    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)

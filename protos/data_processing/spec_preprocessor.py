@@ -1089,7 +1089,7 @@ class HomeCreditPreprocessorAdditional(Preprocessor):
                  bureau_df=None, bureau_balance_df=None,
                  instrallments_df=None, credit_df=None, pos_df=None,
                  ):
-        super(HomeCreditPreprocessor, self).__init__(logger=logger)
+        super(HomeCreditPreprocessorAdditional, self).__init__(logger=logger)
         self.train_df = train_df
         self.test_df = test_df
         self.prev_app_df = prev_app_df
@@ -1162,12 +1162,12 @@ class HomeCreditPreprocessorAdditional(Preprocessor):
         # ===============================
         # manual feature engineering 
         # ===============================
-        df = df[['SK_ID_CURR']]
+        #df = df[['SK_ID_CURR']]
         gc.collect()
         return df
 
     def fe_application_prev(self, df):
-        df_for_cat_tail = df[['CC_PREV_NAME_CONTRACT_STATUS_TAIL']]
+#        df_for_cat_tail = df[['CC_PREV_NAME_CONTRACT_STATUS_TAIL']]
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
         # ===============================
         # 欠損値埋め
@@ -1565,7 +1565,8 @@ class HomeCreditPreprocessorAdditional(Preprocessor):
 
     # Preprocess installments_payments.csv
     def fe_installments_payments(self, df):
-        df = df[df.NUM_INSTALMENT_NUMBER <= 3]
+        df = df[df.NUM_INSTALMENT_NUMBER <= 12]
+        #df = df.groupby('SK_ID_PREV').tail(5)
         df, cat_cols = self.onehot_encoding(df, drop_first=False)
         df = df.sort_values(['SK_ID_PREV', 'NUM_INSTALMENT_NUMBER'])
 
@@ -1589,7 +1590,6 @@ class HomeCreditPreprocessorAdditional(Preprocessor):
 
         aggregations_prev = {
             'NUM_INSTALMENT_VERSION': ['max', 'mean', 'min', 'sum', 'var', 'median'],
-            #'NUM_INSTALMENT_VERSION': ['median', lambda x: x.tail(1)],
             'AMT_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var'],
             'AMT_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
             'DAYS_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var'],

@@ -51,16 +51,18 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
-best_features = pd.read_csv('../importances/importance_2018-07-29-13-03-22.csv')
+best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-29-13-03-22.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-05-53-25.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-04-21-33.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-02-05-07.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
+drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(500).tolist()
 #drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
 #drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
-#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
@@ -97,8 +99,8 @@ def main():
     prep = HomeCreditPreprocessor(logger=logger)
 
     dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv',
-        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv'})
+        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv',
+        'test': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv'})
 #        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000.csv',
 #        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000.csv'})
 #        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1300.csv',
@@ -112,6 +114,8 @@ def main():
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
     train_df = dfs_dict['train']
     test_df = dfs_dict['test']
+    train_df = train_df.merge(pd.read_csv('../inputs/my_train_all_additional.csv'), on='SK_ID_CURR', how='left')
+    test_df = test_df.merge(pd.read_csv('../inputs/my_test_all_additional.csv'), on='SK_ID_CURR', how='left')
 
 #    train_df, test_df = preprocess.main()
 
@@ -129,8 +133,8 @@ def main():
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
-#    train_df.to_csv('../inputs/my_train_all_2000.csv')
-#    test_df.to_csv('../inputs/my_test_all_2000.csv')
+    #train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
+    #test_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
 
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
