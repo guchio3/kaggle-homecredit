@@ -91,6 +91,7 @@ class HomeCreditPreprocessor(Preprocessor):
         # ===============================
         # 欠損値埋め
         # ===============================
+        df = df[df['CODE_GENDER'] != 'XNA']
         # application train のみにある categorical features を削除
         #df['CODE_GENDER'].replace('XNA', np.nan, inplace=True)
         #df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace=True)

@@ -104,8 +104,12 @@ def main():
 #    prep.add_prev_loan_cnt()
 
     logger.info('saving train and test dfs...')
-    dataio.save_csv(train_df, '../inputs/my_train_all.csv', index=False)
-    dataio.save_csv(test_df, '../inputs/my_test_all.csv', index=False)
+    logger.info('saving train ...')
+    #dataio.save_csv(train_df, '../inputs/my_train_all.csv', index=False)
+    train_df.to_feather('../inputs/my_train_all.fth')
+    logger.info('saving test ...')
+    #dataio.save_csv(test_df, '../inputs/my_test_all.csv', index=False)
+    test_df.to_feather('../inputs/my_test_all.fth')
 
     logger.info('end')
 

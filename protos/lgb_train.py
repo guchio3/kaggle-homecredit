@@ -32,7 +32,7 @@ np.random.seed(100)
 plt.switch_backend('agg')
 
 drop_cols = [
-        'Unnamed: 0',
+#        'Unnamed: 0',
 #        'NEW_PREV_DAYS_TERMINATION_MAX_DAYS_EMPLOYED_DIFF',
 #        'NEW_PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX_DAYS_EMPLOYED_DIFF',
 #        'NEW_BURO_DAYS_CREDIT_MAX_DAYS_EMPLOYED_DIFF',
@@ -53,6 +53,8 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
+best_features = pd.read_csv('../importances/importance_2018-08-01-05-56-12.csv')
+
 #best_features = pd.read_csv('../importances/importance_2018-07-31-23-50-01.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
 
@@ -63,10 +65,11 @@ drop_cols = [
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(500).tolist()
+drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1700).tolist()
 #drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
 #drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
-#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+
 
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
@@ -103,8 +106,8 @@ def main():
     prep = HomeCreditPreprocessor(logger=logger)
 
     dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv',
-        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv'})
+#        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv',
+#        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv'})
 #        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv',
 #        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv'})
 #        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000.csv',
@@ -113,8 +116,8 @@ def main():
 #        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1300.csv'})
 #        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1500.csv',
 #        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1500.csv'})
-#        'train': '../inputs/my_train_all.csv',
-#        'test': '../inputs/my_test_all.csv'})
+        'train': '../inputs/my_train_all.csv',
+        'test': '../inputs/my_test_all.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
@@ -122,10 +125,15 @@ def main():
     INVALID_IDS = [141289, 144669, 196708, 319880]
     train_df = train_df[~train_df.SK_ID_CURR.isin(INVALID_IDS)]
     test_df = dfs_dict['test']
+
+#    train_df = pd.read_feather('../inputs/my_train_all.fth')
+#    test_df = pd.read_feather('../inputs/my_test_all.fth')
+
 #    train_df = train_df.merge(pd.read_csv('../inputs/my_train_all_additional.csv'), on='SK_ID_CURR', how='left')
 #    test_df = test_df.merge(pd.read_csv('../inputs/my_test_all_additional.csv'), on='SK_ID_CURR', how='left')
 
 #    _train_df, _test_df = additional_preprocessing.main()
+#    train_df, test_df = preprocess.main()
 #    _train_df, _test_df = preprocess.main()
 #    train_df = train_df.merge(_train_df, on='SK_ID_CURR', how='left')
 #    test_df = test_df.merge(_test_df, on='SK_ID_CURR', how='left')
@@ -207,7 +215,8 @@ def main():
 #        'min_data_in_bin': [50],
 ##        'num_leaves': [32],
 #        'num_leaves': [24],
-        'num_leaves': [15],
+#        'num_leaves': [15],
+        'num_leaves': [8],
 #        'num_leaves': [48],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
@@ -230,11 +239,17 @@ def main():
     trained_model_ids = {}
 #    num_epochs = []
     i = 0
+    import pickle
+    fold_train_test = pickle.load(open('shared_kfold/fold_train_test.pkl', 'rb'))
+
     for params in tqdm(list(ParameterGrid(all_params))):
         feature_importance_df = pd.DataFrame()
         logger.info('params: {}'.format(params))
         list_score = []
-        for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
+        for i in tqdm(list(range(5))):
+        #for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
+            trn_idx = fold_train_test[i]['train_index']
+            val_idx = fold_train_test[i]['test_index']
             x_trn, x_val = x_train[trn_idx], x_train[val_idx]
             y_trn, y_val = y_train[trn_idx], y_train[val_idx]
 
