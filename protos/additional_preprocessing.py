@@ -27,13 +27,21 @@ def main():
     train_df = pd.read_csv('../inputs/application_train.csv')
     test_df = pd.read_csv('../inputs/application_test.csv')
 #    pos_df = pd.read_csv('../inputs/POS_CASH_balance.csv')
-    ins_df = pd.read_csv('../inputs/installments_payments.csv')
+#    ins_df = pd.read_csv('../inputs/installments_payments.csv')
 #    cred_df = pd.read_csv('../inputs/credit_card_balance.csv')
 #    bureau_df = pd.read_csv('../inputs/bureau.csv')
 #    bb_df = pd.read_csv('../inputs/bureau_balance.csv')
-    prev_df = pd.read_csv('../inputs/previous_application.csv')
+#    prev_df = pd.read_csv('../inputs/previous_application.csv')
     train_and_test_df = pd.concat([train_df, test_df])
-    train_and_test_df = pd.DataFrame(train_and_test_df[['SK_ID_CURR']])
+    train_and_test_df = pd.DataFrame(train_and_test_df[[
+        'SK_ID_CURR',
+        'AMT_REQ_CREDIT_BUREAU_HOUR',
+        'AMT_REQ_CREDIT_BUREAU_DAY',
+        'AMT_REQ_CREDIT_BUREAU_WEEK',
+        'AMT_REQ_CREDIT_BUREAU_MON',
+        'AMT_REQ_CREDIT_BUREAU_QRT',
+        'AMT_REQ_CREDIT_BUREAU_YEAR',
+        ]])
 
 #    logger.info('fe for bureau...')
 #    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
@@ -41,24 +49,24 @@ def main():
 #    logger.info('fe for pos_cash...')
 #    pos_df_curr, pos_df_prev = prep.fe_pos_cash(pos_df)
 #
-    logger.info('fe for instalment...')
-    ins_df_curr, ins_df_prev = prep.fe_installments_payments(ins_df)
+#    logger.info('fe for instalment...')
+#    ins_df_curr, ins_df_prev = prep.fe_installments_payments(ins_df)
 #
 #    logger.info('fe for creditcard...')
 #    cred_df_curr, cred_df_prev = prep.fe_credit_card_balance(cred_df)
 
 #    prev_df = prev_df.merge(
 #            pos_df_prev, on='SK_ID_PREV', how='left')
-    prev_df = prev_df.merge(
-            ins_df_prev, on='SK_ID_PREV', how='left')
+#    prev_df = prev_df.merge(
+#            ins_df_prev, on='SK_ID_PREV', how='left')
 #    prev_df = prev_df.merge(
 #            cred_df_prev, on='SK_ID_PREV', how='left')
-    logger.info('fe for application_prev...')
-    prev_df = prep.fe_application_prev(prev_df)
+#    logger.info('fe for application_prev...')
+#    prev_df = prep.fe_application_prev(prev_df)
 
     logger.info('merge and splitting fes and train, test df...')
-    train_and_test_df = train_and_test_df.merge(
-            prev_df, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            prev_df, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            pos_df_curr, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
@@ -73,9 +81,9 @@ def main():
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
     logger.info('saving train dfs...')
-    dataio.save_csv(train_df, '../inputs/my_train_all_additional.csv', index=False)
+#    dataio.save_csv(train_df, '../inputs/my_train_all_additional.csv', index=False)
     logger.info('saving test dfs...')
-    dataio.save_csv(test_df, '../inputs/my_test_all_additional.csv', index=False)
+#    dataio.save_csv(test_df, '../inputs/my_test_all_additional.csv', index=False)
 
     logger.info('end')
 

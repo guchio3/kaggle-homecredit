@@ -1162,7 +1162,27 @@ class HomeCreditPreprocessorAdditional(Preprocessor):
         # ===============================
         # manual feature engineering 
         # ===============================
-        #df = df[['SK_ID_CURR']]
+        df['NEW_AMT_REQ_CREDIT_BUREAU_HOUR_DAY_DIFF'] = df['AMT_REQ_CREDIT_BUREAU_DAY'] - df['AMT_REQ_CREDIT_BUREAU_HOUR']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_DAY_WEEK_DIFF'] = df['AMT_REQ_CREDIT_BUREAU_WEEK'] - df['AMT_REQ_CREDIT_BUREAU_DAY']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_WEEK_MON_DIFF'] = df['AMT_REQ_CREDIT_BUREAU_MON'] - df['AMT_REQ_CREDIT_BUREAU_WEEK']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_MON_QRT_DIFF'] = df['AMT_REQ_CREDIT_BUREAU_QRT'] - df['AMT_REQ_CREDIT_BUREAU_MON']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_QRT_YEAR_DIFF'] = df['AMT_REQ_CREDIT_BUREAU_YEAR'] - df['AMT_REQ_CREDIT_BUREAU_QRT']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_HOUR_DAY_DIFF_DAY_RAT'] = df['NEW_AMT_REQ_CREDIT_BUREAU_DAY_WEEK_DIFF'] / df['AMT_REQ_CREDIT_BUREAU_DAY']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_DAY_WEEK_DIFF_WEEK_RAT'] = df['NEW_AMT_REQ_CREDIT_BUREAU_DAY_WEEK_DIFF'] /  df['AMT_REQ_CREDIT_BUREAU_WEEK']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_WEEK_MON_DIFF_MON_RAT'] = df['NEW_AMT_REQ_CREDIT_BUREAU_WEEK_MON_DIFF'] / df['AMT_REQ_CREDIT_BUREAU_MON']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_MON_QRT_DIFF_QRT_RAT'] = df['NEW_AMT_REQ_CREDIT_BUREAU_MON_QRT_DIFF'] / df['AMT_REQ_CREDIT_BUREAU_QRT']
+        df['NEW_AMT_REQ_CREDIT_BUREAU_QRT_YEAR_DIFF_YEAR_RAT'] = df['NEW_AMT_REQ_CREDIT_BUREAU_QRT_YEAR_DIFF'] / df['AMT_REQ_CREDIT_BUREAU_YEAR']
+        df.drop([
+        'AMT_REQ_CREDIT_BUREAU_HOUR',
+        'AMT_REQ_CREDIT_BUREAU_DAY',
+        'AMT_REQ_CREDIT_BUREAU_WEEK',
+        'AMT_REQ_CREDIT_BUREAU_MON',
+        'AMT_REQ_CREDIT_BUREAU_QRT',
+        'AMT_REQ_CREDIT_BUREAU_YEAR',], axis=1, inplace=True)
+
+#        for col in df.columns.tolist():
+#            if 'BURO' in col:
+#                df[col] *=  df['AMT_REQ_CREDIT_BUREAU_YEAR']
         gc.collect()
         return df
 
@@ -1834,7 +1854,7 @@ class HomeCreditPreprocessorAdditional(Preprocessor):
         active = bureau[bureau['CREDIT_ACTIVE_Active'] == 1]
         active_agg = active.groupby('SK_ID_CURR').agg(num_aggregations)
         active_agg.columns = pd.Index(
-            ['ACTIVE_' + e[0] + "_" + e[1].upper()
+            ['ACTIVE_BURO_' + e[0] + "_" + e[1].upper()
                 for e in active_agg.columns.tolist()])
         bureau_agg = bureau_agg.join(active_agg, how='left', on='SK_ID_CURR')
         del active, active_agg
@@ -1843,7 +1863,7 @@ class HomeCreditPreprocessorAdditional(Preprocessor):
         closed = bureau[bureau['CREDIT_ACTIVE_Closed'] == 1]
         closed_agg = closed.groupby('SK_ID_CURR').agg(num_aggregations)
         closed_agg.columns = pd.Index(
-            ['CLOSED_' + e[0] + "_" + e[1].upper()
+            ['CLOSED_BURO_' + e[0] + "_" + e[1].upper()
                 for e in closed_agg.columns.tolist()])
         bureau_agg = bureau_agg.join(closed_agg, how='left', on='SK_ID_CURR')
         del closed, closed_agg, bureau

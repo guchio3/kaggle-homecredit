@@ -16,6 +16,7 @@ from sklearn.feature_selection import VarianceThreshold
 from tqdm import tqdm
 from logging import getLogger
 import argparse
+import gc
 
 from utils.my_logging import logInit
 from data_processing.data_io import DataIO
@@ -25,6 +26,7 @@ from models.my_mlp import myMLPClassifier
 from scipy.special import erfinv
 
 import preprocess
+import additional_preprocessing
 
 np.random.seed(100)
 plt.switch_backend('agg')
@@ -51,7 +53,9 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
-best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-31-23-50-01.csv')
+#best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
+
 #best_features = pd.read_csv('../importances/importance_2018-07-29-13-03-22.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-05-53-25.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-04-21-33.csv')
@@ -59,10 +63,10 @@ best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(500).tolist()
+#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(500).tolist()
 #drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
 #drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
-drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
@@ -100,7 +104,9 @@ def main():
 
     dfs_dict = dataio.read_csvs({
         'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv',
-        'test': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv'})
+        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv'})
+#        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv',
+#        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv'})
 #        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000.csv',
 #        'test': '../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000.csv'})
 #        'train': '../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1300.csv',
@@ -113,11 +119,18 @@ def main():
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
     train_df = dfs_dict['train']
+    INVALID_IDS = [141289, 144669, 196708, 319880]
+    train_df = train_df[~train_df.SK_ID_CURR.isin(INVALID_IDS)]
     test_df = dfs_dict['test']
-    train_df = train_df.merge(pd.read_csv('../inputs/my_train_all_additional.csv'), on='SK_ID_CURR', how='left')
-    test_df = test_df.merge(pd.read_csv('../inputs/my_test_all_additional.csv'), on='SK_ID_CURR', how='left')
+#    train_df = train_df.merge(pd.read_csv('../inputs/my_train_all_additional.csv'), on='SK_ID_CURR', how='left')
+#    test_df = test_df.merge(pd.read_csv('../inputs/my_test_all_additional.csv'), on='SK_ID_CURR', how='left')
 
-#    train_df, test_df = preprocess.main()
+#    _train_df, _test_df = additional_preprocessing.main()
+#    _train_df, _test_df = preprocess.main()
+#    train_df = train_df.merge(_train_df, on='SK_ID_CURR', how='left')
+#    test_df = test_df.merge(_test_df, on='SK_ID_CURR', how='left')
+#    del _train_df, _test_df
+#    gc.collect()
 
     logger.info('removing the categorical features which\
                 are contained only by training set...')
@@ -126,6 +139,7 @@ def main():
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
 #    train_and_test_df['NEW_EXT_SOURCES_MEAN'] = train_and_test_df[['EXT_SOURCE_1', 'EXT_SOURCE_2','EXT_SOURCE_3']].mean(axis=1)
     train_and_test_df = train_and_test_df.drop(drop_cols, axis=1)
+#    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-31-10-42-54.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-04-46-46.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-02-38-58.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-29-11-28-13.csv'), on='SK_ID_CURR', how='left')
@@ -133,8 +147,8 @@ def main():
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
-    #train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
-    #test_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
+#    train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
+#    test_df.to_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
 
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))

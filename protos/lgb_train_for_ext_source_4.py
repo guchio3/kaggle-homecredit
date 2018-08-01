@@ -80,15 +80,15 @@ def main():
 #    bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
     base_train_df = pd.read_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv')
     base_test_df = pd.read_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550.csv')
-    base_df = pd.concat([base_train_df, base_test_df], axis=0).drop(['TARGET'], axis=1)
+#    base_df = pd.concat([base_train_df, base_test_df], axis=0).drop(['TARGET'], axis=1)
 
     train_and_test_df = pd.concat([prev_df, train_df, test_df], axis=0)
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
     train_and_test_df['NEW_CREDIT_TO_ANNUITY_RATIO'] = train_and_test_df['AMT_CREDIT'] / train_and_test_df['AMT_ANNUITY']
     train_and_test_df['NEW_CREDIT_TO_GOODS_RATIO'] = train_and_test_df['AMT_CREDIT'] / train_and_test_df['AMT_GOODS_PRICE']
     train_and_test_df['NEW_ANNUITY_GOODS_TO_RATIO'] = train_and_test_df['AMT_ANNUITY'] / train_and_test_df['AMT_GOODS_PRICE']
-    train_and_test_df = train_and_test_df.merge(base_df, on='SK_ID_CURR', how='left')
-    del base_df
+#    train_and_test_df = train_and_test_df.merge(base_df, on='SK_ID_CURR', how='left')
+#    del base_df
 
 #    train_and_test_df = train_and_test_df.merge(
 #            bureau_df, on='SK_ID_CURR', how='left')
@@ -123,6 +123,7 @@ def main():
         ], axis=1).values
 
     all_params = {
+        'is_unbalance': [True],
         'nthread': [-1],
         'n_estimators': [10000],
         'learning_rate': [0.2],
