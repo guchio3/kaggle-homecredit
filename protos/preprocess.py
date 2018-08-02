@@ -17,6 +17,12 @@ from utils.my_logging import logInit
 #was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
 was_null_list = []
 
+
+application_train_valid_lists = [
+        '',
+        ]
+
+
 def main():
     logger = getLogger(__name__)
     logInit(logger)
