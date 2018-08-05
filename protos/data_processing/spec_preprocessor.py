@@ -166,7 +166,7 @@ class HomeCreditPreprocessor(Preprocessor):
         df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_BIRTH_DIFF'] = \
             df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_BIRTH']
         df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_LAST_PHONE_CHANGE_DIFF'] = \
-#            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_LAST_PHONE_CHANGE']
+            df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_LAST_PHONE_CHANGE']
         df['NEW_BURO_DAYS_CREDIT_MAX_DAYS_ID_PUBLISH_DIFF'] = \
             df['BURO_DAYS_CREDIT_MAX'] - df['DAYS_ID_PUBLISH']
         df['NEW_BURO_DAYS_CREDIT_MAX_OWN_CAR_AGE_DIFF'] = \
@@ -385,13 +385,13 @@ class HomeCreditPreprocessor(Preprocessor):
 #
 #        # prev features from instal
 #        tail_0_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL == 0
-#        tail_1_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL == 1
+        tail_1_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL == 1
 #        tail_2_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL == 2
 #        tail_others_mask = df.INSTAL_PREV_NUM_INSTALMENT_VERSION_TAIL > 2
 #        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_0'] = \
 #            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_0_mask
-#        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1'] = \
-#            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_1_mask
+        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1'] = \
+            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_1_mask
 #        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_2'] = \
 #            df.INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX * tail_2_mask
 #        df['NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS'] = \
@@ -454,29 +454,29 @@ class HomeCreditPreprocessor(Preprocessor):
         # Add feature: value ask / value received percentage
         # Previous applications numeric features
         num_aggregations = {
-            'AMT_ANNUITY': ['max', 'mean', 'min', 'sum', 'var'],
-            'AMT_APPLICATION': ['max', 'mean', 'min', 'sum', 'var'],
-            'AMT_CREDIT': ['max', 'mean', 'min', 'sum', 'var'],
-            'AMT_DOWN_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
-            'AMT_GOODS_PRICE': ['max', 'mean', 'min', 'sum', 'var'],
-            'HOUR_APPR_PROCESS_START': ['max', 'mean', 'min', 'sum', 'var'],
-            'NFLAG_LAST_APPL_IN_DAY': ['max', 'mean', 'min', 'sum', 'var'],
-            'RATE_DOWN_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
-            'RATE_INTEREST_PRIMARY': ['max', 'mean', 'min', 'sum', 'var'],
-            'RATE_INTEREST_PRIVILEGED': ['max', 'mean', 'min', 'sum', 'var'],
-            'DAYS_DECISION': ['max', 'mean', 'min', 'sum', 'var'],
-            'DAYS_TERMINATION': ['max', 'mean', 'min', 'sum', 'var'],
-            'SELLERPLACE_AREA': ['max', 'mean', 'min', 'sum', 'var'],
-            'CNT_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
-            'NFLAG_INSURED_ON_APPROVAL': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_APP_CREDIT_PERC': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_RATE_INTEREST_RATE': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_DAYS_FIRST_DUE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_DAYS_LAST_DUE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
-            'NEW_CREDIT_SELLERPLACE_RATE': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_ANNUITY': ['max', 'mean', ],
+            'AMT_APPLICATION': ['max', 'mean', ],
+            'AMT_CREDIT': ['max', 'mean', ],
+            'AMT_DOWN_PAYMENT': ['max', 'mean', ],
+            'AMT_GOODS_PRICE': ['max', 'mean', ],
+            'HOUR_APPR_PROCESS_START': ['max', 'mean', ],
+            'NFLAG_LAST_APPL_IN_DAY': ['max', 'mean', ],
+            'RATE_DOWN_PAYMENT': ['max', 'mean', ],
+            'RATE_INTEREST_PRIMARY': ['max', 'mean', ],
+            'RATE_INTEREST_PRIVILEGED': ['max', 'mean', ],
+            'DAYS_DECISION': ['max', 'mean', 'min', ],
+            'DAYS_TERMINATION': ['max', 'mean', 'min', ],
+            'SELLERPLACE_AREA': ['max', 'mean', 'min', ],
+            'CNT_PAYMENT': ['mean'],
+            'NFLAG_INSURED_ON_APPROVAL': ['mean'],
+            'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean', ],
+            'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean', ],
+            'NEW_APP_CREDIT_PERC': ['max', 'mean', ],
+            'NEW_RATE_INTEREST_RATE': ['max', 'mean', 'min', ],
+            'NEW_DAYS_FIRST_DUE_DIFF': ['max', 'mean', 'min', ],
+            'NEW_DAYS_LAST_DUE_DIFF': ['max', 'mean', 'min', ],
+            'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['max', 'mean', 'min', ],
+            'NEW_CREDIT_SELLERPLACE_RATE': ['max', 'mean', 'min',],
 #
 #            'POS_PREV_MONTHS_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
             'POS_PREV_MONTHS_BALANCE_SIZE': ['sum'],
@@ -734,7 +734,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'SK_DPD': ['max', 'mean', 'min', 'sum', 'var'],
             'SK_DPD_DEF': ['max', 'mean', 'var'],
 #            'CNT_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var', 'nunique'],
-            'CNT_INSTALMENT_FUTURE': ['max', 'mean', 'min', 'sum', 'size'],
+            'CNT_INSTALMENT_FUTURE': ['max', 'mean', 'min', 'sum', 'size', 'var'],
 #            'NEW_SK_DPD_DIFF': ['max', 'mean', 'min', 'sum', 'var']
         }
 
@@ -776,8 +776,8 @@ class HomeCreditPreprocessor(Preprocessor):
         # version 2, 3 は一括返済?
         df['NEW_PAYMENT_PERC'] = df['AMT_PAYMENT'] / df['AMT_INSTALMENT']
         df['NEW_PAYMENT_DIFF'] = df['AMT_INSTALMENT'] - df['AMT_PAYMENT']
-#        df['NEW_DAYS_PAYMENT_DIFF'] = \
-#            df['DAYS_ENTRY_PAYMENT'] - df['DAYS_INSTALMENT']
+        df['NEW_DAYS_PAYMENT_DIFF'] = \
+            df['DAYS_ENTRY_PAYMENT'] - df['DAYS_INSTALMENT']
         df['NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD'] = \
             df['NEW_DAYS_PAYMENT_DIFF'] * df['NEW_PAYMENT_DIFF']
 
@@ -786,7 +786,7 @@ class HomeCreditPreprocessor(Preprocessor):
         }
 
         aggregations_prev = {
-            'NUM_INSTALMENT_VERSION': ['median', 'max', 'mean', 'min', 'sum', 'var']],
+            'NUM_INSTALMENT_VERSION': ['median', 'max', 'mean', 'min', 'sum', 'var'],
             'AMT_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var'],
             'AMT_PAYMENT': ['max', 'mean', 'min', 'sum', 'var'],
             'DAYS_INSTALMENT': ['max', 'mean', 'min', 'sum', 'var'],
@@ -834,7 +834,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #        df['NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL'] = df['AMT_RECEIVABLE_PRINCIPAL'] / (df['AMT_RECIVABLE'] + 1)
 #        df['NEW_AMT_RECEIVABLE_DIFF_W_TOTAL'] = df['AMT_RECIVABLE'] - df['AMT_TOTAL_RECEIVABLE']
         df['NEW_AMT_RECEIVABLE_RATIO_W_TOTAL'] = df['AMT_RECIVABLE'] / (df['AMT_TOTAL_RECEIVABLE'] + 1)
-#        df['NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] - df['AMT_PAYMENT_CURRENT']
+        df['NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] - df['AMT_PAYMENT_CURRENT']
 #        df['NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] / (df['AMT_PAYMENT_CURRENT'] + 1)
 #        df['NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_ATM_CURRENT'] / (df['CNT_DRAWINGS_ATM_CURRENT'] + 1)
 #        df['NEW_AMT_DRAWINGS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_CURRENT'] / (df['CNT_DRAWINGS_CURRENT'] + 1)
@@ -905,8 +905,8 @@ class HomeCreditPreprocessor(Preprocessor):
 #            .AMT_CREDIT_LIMIT_ACTUAL.tail(1)
 #        df_agg_prev['CC_PREV_CNT_INSTALMENT_MATURE_CUM_TAIL'] = df.groupby('SK_ID_PREV')\
 #            .CNT_INSTALMENT_MATURE_CUM.tail(1)
-#        df_agg_prev['CC_PREV_NAME_CONTRACT_STATUS_TAIL'] = df_for_cat_tail.groupby('SK_ID_PREV')\
-#            .NAME_CONTRACT_STATUS.tail(1)
+        df_agg_prev['CC_PREV_NAME_CONTRACT_STATUS_TAIL'] = df_for_cat_tail.groupby('SK_ID_PREV')\
+            .NAME_CONTRACT_STATUS.tail(1)
 
         del df
         gc.collect()
