@@ -544,11 +544,11 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'INSTAL_PREV_NEW_PAYMENT_DIFF_MIN': ['max', 'mean', 'min', 'sum', 'var'],
             'INSTAL_PREV_NEW_PAYMENT_DIFF_VAR': ['max'],
             'INSTAL_PREV_NEW_PAYMENT_DIFF_SUM': ['mean'],
-#####            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MAX': ['mean', 'min', 'var', 'sum', 'sum'],
-#####            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MEAN': ['max', 'var', 'sum'],
-#####            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MIN': ['sum', 'max', ],
-#####            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_VAR': ['min', 'var', 'max', 'sum', ],
-#####            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_SUM': ['max', 'var', 'mean', 'sum', ],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MAX': ['mean', 'min', 'var', 'sum', ],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MEAN': ['max', 'var', 'sum'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MIN': ['sum', 'max', ],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_VAR': ['min', 'var', 'max', 'sum', ],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_SUM': ['max', 'var', 'mean', 'sum', ],
 #            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MAX': ['max', 'mean', 'min', 'sum', 'var'],
             'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MEAN': ['min'],
             'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MIN': ['min', 'mean', 'max', 'var'],
@@ -662,30 +662,30 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'NEW_CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_SIZE_INS_MATURE_CUM_TAIL_RATIO': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
-#        num_aggregations = {
-#            'AMT_ANNUITY': ['max', 'mean', ],
-#            'AMT_APPLICATION': ['max', 'mean', ],
-#            'AMT_CREDIT': ['max', 'mean', ],
-#            'AMT_DOWN_PAYMENT': ['max', 'mean', ],
-#            'AMT_GOODS_PRICE': ['max', 'mean', ],
-#            'HOUR_APPR_PROCESS_START': ['max', 'mean', ],
+        app_num_aggregations = {
+            'AMT_ANNUITY': ['mean', 'var'],
+            'AMT_APPLICATION': ['sum', 'mean', ],
+            'AMT_CREDIT': ['min', 'var'],
+            'AMT_DOWN_PAYMENT': ['mean', 'min'],
+            'AMT_GOODS_PRICE': ['var'],
+            'HOUR_APPR_PROCESS_START': ['sum', ],
 #            'NFLAG_LAST_APPL_IN_DAY': ['max', 'mean', ],
-#            'RATE_DOWN_PAYMENT': ['max', 'mean', ],
+            'RATE_DOWN_PAYMENT': ['var'],
 #            'RATE_INTEREST_PRIMARY': ['max', 'mean', ],
 #            'RATE_INTEREST_PRIVILEGED': ['max', 'mean', ],
-#            'DAYS_DECISION': ['max', 'mean', 'min', ],
+            'DAYS_DECISION': ['max', 'mean', 'min', 'var'],
 #            'DAYS_TERMINATION': ['max', 'mean', 'min', ],
-#            'SELLERPLACE_AREA': ['max', 'mean', 'min', ],
-#            'CNT_PAYMENT': ['mean'],
+            'SELLERPLACE_AREA': ['mean'],
+            'CNT_PAYMENT': ['var'],
 #            'NFLAG_INSURED_ON_APPROVAL': ['mean'],
-#            'NEW_CREDIT_TO_ANNUITY_RATIO': ['max', 'mean', ],
-#            'NEW_CREDIT_TO_GOODS_RATIO': ['max', 'mean', ],
-#            'NEW_APP_CREDIT_PERC': ['max', 'mean', ],
+            'NEW_CREDIT_TO_ANNUITY_RATIO': ['var', 'sum'],
+            'NEW_CREDIT_TO_GOODS_RATIO': ['sum', 'mean', ],
+            'NEW_APP_CREDIT_PERC': ['sum', 'mean', ],
 #            'NEW_RATE_INTEREST_RATE': ['max', 'mean', 'min', ],
 #            'NEW_DAYS_FIRST_DUE_DIFF': ['max', 'mean', 'min', ],
 #            'NEW_DAYS_LAST_DUE_DIFF': ['max', 'mean', 'min', ],
 #            'NEW_DAYS_FIRST_AND_LAST_DUE_DIFF': ['max', 'mean', 'min', ],
-#            'NEW_CREDIT_SELLERPLACE_RATE': ['max', 'mean', 'min',],
+            'NEW_CREDIT_SELLERPLACE_RATE': ['mean', 'var'],
 #
 #            'POS_PREV_MONTHS_BALANCE_SIZE': ['sum'],
 #            'POS_PREV_MONTHS_BALANCE_MIN': ['var', 'mean'],
@@ -696,7 +696,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'POS_PREV_SK_DPD_DEF_VAR': ['mean'],
 #            'POS_PREV_CNT_INSTALMENT_FUTURE_MAX': ['var'],
 #            'POS_PREV_CNT_INSTALMENT_FUTURE_MEAN': ['mean', 'var', 'max'],
-#            'POS_PREV_CNT_INSTALMENT_FUTURE_MIN': ['sum', 'mean'],
+            'POS_PREV_CNT_INSTALMENT_FUTURE_MIN': ['sum', ],
 #            'POS_PREV_CNT_INSTALMENT_FUTURE_SUM': ['mean', 'min'],
 #            'POS_PREV_CNT_INSTALMENT_FUTURE_VAR': ['max', 'mean', 'min', 'sum', 'var'],
 #            'NEW_POS_PREV_INSTALMENT_SPEED': ['mean', 'min', 'var'],
@@ -711,9 +711,9 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'INSTAL_PREV_AMT_INSTALMENT_MIN': ['min', 'mean', 'sum', 'max', ],
 #            'INSTAL_PREV_AMT_INSTALMENT_VAR': ['var', 'min', 'sum', ],
 #            'INSTAL_PREV_AMT_INSTALMENT_SUM': ['min', 'mean', 'sum', ],
-#            'INSTAL_PREV_AMT_PAYMENT_MAX': ['min', 'max', 'sum'],
+            'INSTAL_PREV_AMT_PAYMENT_MAX': ['sum'],
 #            'INSTAL_PREV_AMT_PAYMENT_MEAN': ['min', ],
-#            'INSTAL_PREV_AMT_PAYMENT_MIN': ['mean', 'min', 'sum', ],
+            'INSTAL_PREV_AMT_PAYMENT_MIN': ['sum'],
 #            'INSTAL_PREV_AMT_PAYMENT_VAR': ['sum'],
 #            'INSTAL_PREV_AMT_PAYMENT_SUM': ['mean', 'var', 'sum', 'max', ],
 #            'INSTAL_PREV_DAYS_INSTALMENT_MAX': ['max', 'mean', 'min',],
@@ -734,24 +734,24 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'INSTAL_PREV_NEW_PAYMENT_DIFF_MEAN': ['max', 'mean', 'sum'],
 #            'INSTAL_PREV_NEW_PAYMENT_DIFF_VAR': ['max'],
 #            'INSTAL_PREV_NEW_PAYMENT_DIFF_SUM': ['mean'],
-##            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MAX': ['mean', 'min', 'var', 'sum', 'sum'],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MAX': ['sum'],
 ##            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MEAN': ['max', 'var', 'sum'],
 ##            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_MIN': ['sum', 'max', ],
-##            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_VAR': ['min', 'var', 'max', 'sum', ],
+            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_VAR': ['sum', 'min'],
 ##            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_SUM': ['max', 'var', 'mean', 'sum', ],
 #            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MEAN': ['min'],
 #            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_MIN': ['min', 'mean', 'max', 'var'],
 #            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_VAR': ['min'],
 #            'INSTAL_PREV_NEW_DAYS_PAYMENT_DIFF_AND_PAYMENT_DIFF_PROD_SUM': ['max', 'sum', ],
 #            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['mean'],
-#            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['sum'],
+            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['sum'],
 #            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean'],
 #
 #            'CC_PREV_AMT_BALANCE_VAR': ['max', ],
 #            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MAX': ['sum', ],
 #            'NEW_CC_PREV_AMT_BALANCE_PAYMENT_TOTAL_CURRENT_DIFF': ['mean', ],
-#            }
-##
+            }
+
         # Previous applications categorical features
         cat_aggregations = {}
         for cat in cat_cols:
@@ -768,7 +768,7 @@ class HomeCreditPreprocessor(Preprocessor):
         approved = df[df['NAME_CONTRACT_STATUS_Approved'] == 1]
         self.logger.info('aggregating for approved SK_ID_CURR...')
         approved_agg = approved.groupby('SK_ID_CURR')\
-            .agg(num_aggregations)
+            .agg(app_num_aggregations)
 #        app_agg_cols = approved_agg.columns.tolist()
         self.logger.info('done, renaming now...')
         approved_agg.columns = pd.Index(
@@ -789,10 +789,10 @@ class HomeCreditPreprocessor(Preprocessor):
         # ===============================
         # features based on agg or w/o agg
         # ===============================
-#        df_agg['PREV_NEW_CNT'] = df.groupby('SK_ID_CURR').size()
-#        df_agg['PREV_NEW_APPROVED_CNT'] = approved.groupby('SK_ID_CURR').size()
-#        df_agg['PREV_NEW_APPROVED_RATIO'] = \
-#            df_agg['PREV_NEW_APPROVED_CNT'] / df_agg['PREV_NEW_CNT']
+        df_agg['PREV_NEW_CNT'] = df.groupby('SK_ID_CURR').size()
+        df_agg['PREV_NEW_APPROVED_CNT'] = approved.groupby('SK_ID_CURR').size()
+        df_agg['PREV_NEW_APPROVED_RATIO'] = \
+            df_agg['PREV_NEW_APPROVED_CNT'] / df_agg['PREV_NEW_CNT']
 #        del refused, refused_agg, approved, approved_agg, df
 #        del approved, approved_agg, df
 
