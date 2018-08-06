@@ -67,6 +67,7 @@ def main():
 #    cred_df = prep.auto_impute(cred_df)
 
 #    prev_df = prep.fe_application_prev(prev_df)
+    logger.info('merging to application prev...')
     prev_df = prev_df.merge(
             pos_df_prev, on='SK_ID_PREV', how='left')
     prev_df = prev_df.merge(
@@ -74,9 +75,7 @@ def main():
     prev_df = prev_df.merge(
             cred_df_prev, on='SK_ID_PREV', how='left')
     logger.info('fe for application_prev...')
-
-#    prev_df = prep.fe_application_prev(prev_df)
-
+    prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
 #    prev_df = prep.add_was_null(prev_df)
@@ -84,8 +83,8 @@ def main():
 
     logger.info('merge and splitting fes and train, test df...')
 #    train_and_test_df = train_and_test_df[['TARGET', 'SK_ID_CURR']]
-#    train_and_test_df = train_and_test_df.merge(
-#            prev_df, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            prev_df, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             pos_df_curr, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
