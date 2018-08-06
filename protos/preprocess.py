@@ -46,6 +46,7 @@ def main():
 
     logger.info('fe for pos_cash...')
     pos_df_curr, pos_df_prev = prep.fe_pos_cash(pos_df)
+    pos_df_curr_latest, pos_df_prev_latest = prep.fe_pos_cash(pos_df[pos_df.MONTHS_BALANCE >= -12])
 #    pos_df = prep.add_was_null(pos_df, 
 #            special_list=was_null_list.feature.tolist())
 #    pos_df = prep.add_was_null(pos_df)
@@ -53,6 +54,7 @@ def main():
 
     logger.info('fe for instalment...')
     ins_df_curr, ins_df_prev = prep.fe_installments_payments(ins_df)
+    ins_df_curr_latest, ins_df_prev_latest = prep.fe_installments_payments(ins_df[ins_df.DAYS_ENTRY_PAYMENT >= -365])
 #    ins_df = prep.add_was_null(ins_df,
 #            special_list=was_null_list.feature.tolist())
 #    ins_df = prep.add_was_null(ins_df)
@@ -60,6 +62,7 @@ def main():
 
     logger.info('fe for creditcard...')
     cred_df_curr, cred_df_prev = prep.fe_credit_card_balance(cred_df)
+    cred_df_curr_latest, cred_df_prev_latest = prep.fe_credit_card_balance(cred_df[cred_df.MONTHS_BALANCE >= -12])
 #    cred_df = prep.add_was_null(cred_df, 
 #            special_list=was_null_list.feature.tolist())
 #    cred_df = prep.add_was_null(cred_df)
@@ -71,9 +74,15 @@ def main():
     prev_df = prev_df.merge(
             pos_df_prev, on='SK_ID_PREV', how='left')
     prev_df = prev_df.merge(
+            pos_df_prev_latest, on='SK_ID_PREV', how='left')
+    prev_df = prev_df.merge(
             ins_df_prev, on='SK_ID_PREV', how='left')
     prev_df = prev_df.merge(
+            ins_df_prev_latest, on='SK_ID_PREV', how='left')
+    prev_df = prev_df.merge(
             cred_df_prev, on='SK_ID_PREV', how='left')
+    prev_df = prev_df.merge(
+            cred_df_prev_latest, on='SK_ID_PREV', how='left')
     logger.info('fe for application_prev...')
     prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
@@ -87,10 +96,14 @@ def main():
             prev_df, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             pos_df_curr, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            pos_df_curr_latest, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
 #            ins_df_curr, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             cred_df_curr, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            cred_df_curr_latest, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             bureau_df, on='SK_ID_CURR', how='left')
 
