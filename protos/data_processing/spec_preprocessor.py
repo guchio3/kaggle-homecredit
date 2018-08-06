@@ -678,6 +678,7 @@ class HomeCreditPreprocessor(Preprocessor):
         approved_agg = approved.groupby('SK_ID_CURR')\
             .agg(num_aggregations)
 #        app_agg_cols = approved_agg.columns.tolist()
+        self.logger.info('aggregating for approved SK_ID_CURR...')
         approved_agg.columns = pd.Index(
             ['APPROVED_' + e[0] + "_" + e[1].upper()
              for e in approved_agg.columns.tolist()])

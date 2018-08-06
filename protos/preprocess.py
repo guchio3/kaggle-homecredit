@@ -74,7 +74,9 @@ def main():
     prev_df = prev_df.merge(
             cred_df_prev, on='SK_ID_PREV', how='left')
     logger.info('fe for application_prev...')
-    prev_df = prep.fe_application_prev(prev_df)
+
+#    prev_df = prep.fe_application_prev(prev_df)
+
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
 #    prev_df = prep.add_was_null(prev_df)
@@ -82,8 +84,8 @@ def main():
 
     logger.info('merge and splitting fes and train, test df...')
 #    train_and_test_df = train_and_test_df[['TARGET', 'SK_ID_CURR']]
-    train_and_test_df = train_and_test_df.merge(
-            prev_df, on='SK_ID_CURR', how='left')
+#    train_and_test_df = train_and_test_df.merge(
+#            prev_df, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             pos_df_curr, on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(
@@ -98,8 +100,8 @@ def main():
 
 #    train_and_test_df = prep.auto_impute(
 #            train_and_test_df, mode='min')
-    train_df = train_and_test_df.iloc[:train_df.shape[0]]
-    test_df = train_and_test_df.iloc[train_df.shape[0]:]
+    train_df = train_and_test_df.iloc[:train_df.shape[0]].reset_index()
+    test_df = train_and_test_df.iloc[train_df.shape[0]:].reset_index()
 
 #    prep.impute_all()
 #    prep.add_prev_loan_cnt()
