@@ -1291,17 +1291,17 @@ class HomeCreditPreprocessor(Preprocessor):
         # ===============================
         df['NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF'] = df['AMT_BALANCE'] - df['AMT_CREDIT_LIMIT_ACTUAL']
         df['NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_RATIO'] = df['AMT_BALANCE'] / (df['AMT_CREDIT_LIMIT_ACTUAL'] + 1)
-#        df['NEW_AMT_RECEIVABLE_DIFF_W_PRINCIPAL'] = df['AMT_RECIVABLE'] - df['AMT_RECEIVABLE_PRINCIPAL']
-#        df['NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL'] = df['AMT_RECEIVABLE_PRINCIPAL'] / (df['AMT_RECIVABLE'] + 1)
-#        df['NEW_AMT_RECEIVABLE_DIFF_W_TOTAL'] = df['AMT_RECIVABLE'] - df['AMT_TOTAL_RECEIVABLE']
+        df['NEW_AMT_RECEIVABLE_DIFF_W_PRINCIPAL'] = df['AMT_RECIVABLE'] - df['AMT_RECEIVABLE_PRINCIPAL']
+        df['NEW_AMT_RECEIVABLE_RATIO_W_PRINCIPAL'] = df['AMT_RECEIVABLE_PRINCIPAL'] / (df['AMT_RECIVABLE'] + 1)
+        df['NEW_AMT_RECEIVABLE_DIFF_W_TOTAL'] = df['AMT_RECIVABLE'] - df['AMT_TOTAL_RECEIVABLE']
         df['NEW_AMT_RECEIVABLE_RATIO_W_TOTAL'] = df['AMT_RECIVABLE'] / (df['AMT_TOTAL_RECEIVABLE'] + 1)
         df['NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] - df['AMT_PAYMENT_CURRENT']
-#        df['NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] / (df['AMT_PAYMENT_CURRENT'] + 1)
-#        df['NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_ATM_CURRENT'] / (df['CNT_DRAWINGS_ATM_CURRENT'] + 1)
-#        df['NEW_AMT_DRAWINGS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_CURRENT'] / (df['CNT_DRAWINGS_CURRENT'] + 1)
-#        df['NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_POS_CURRENT'] / (df['CNT_DRAWINGS_POS_CURRENT'] + 1)
-#        df['NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_OTHER_CURRENT'] / (df['CNT_DRAWINGS_OTHER_CURRENT'] + 1)
-#        df['NEW_SK_DPD_DIFF'] = df['SK_DPD'] - df['SK_DPD_DEF']
+        df['NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT'] = df['AMT_DRAWINGS_CURRENT'] / (df['AMT_PAYMENT_CURRENT'] + 1)
+        df['NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_ATM_CURRENT'] / (df['CNT_DRAWINGS_ATM_CURRENT'] + 1)
+        df['NEW_AMT_DRAWINGS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_CURRENT'] / (df['CNT_DRAWINGS_CURRENT'] + 1)
+        df['NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_POS_CURRENT'] / (df['CNT_DRAWINGS_POS_CURRENT'] + 1)
+        df['NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT'] = df['AMT_DRAWINGS_OTHER_CURRENT'] / (df['CNT_DRAWINGS_OTHER_CURRENT'] + 1)
+        df['NEW_SK_DPD_DIFF'] = df['SK_DPD'] - df['SK_DPD_DEF']
 
         aggregations_curr = {
             'CNT_DRAWINGS_ATM_CURRENT': ['mean', 'var'],
@@ -1318,6 +1318,22 @@ class HomeCreditPreprocessor(Preprocessor):
             'NEW_AMT_DRAWINGS_DIFF_W_PAYMENT_CURRENT': ['mean', 'sum', ],
 #            'NEW_AMT_DRAWINGS_RATIO_W_PAYMENT_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
 #            'NEW_SK_DPD_DIFF': ['max', 'mean', 'min', 'sum', 'var'],
+            'MONTHS_BALANCE': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_BALANCE': ['mean', 'var'], 
+            'AMT_CREDIT_LIMIT_ACTUAL': ['max', 'mean', 'min', 'nunique', 'size', 'var', 'sum'], 
+            'AMT_DRAWINGS_ATM_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_DRAWINGS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'], 
+            'AMT_DRAWINGS_OTHER_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_DRAWINGS_POS_CURRENT': ['max', 'mean', 'min', 'var', 'sum'],
+            'AMT_INST_MIN_REGULARITY': ['max', 'mean', 'min', 'sum', 'var'], 
+            'AMT_PAYMENT_CURRENT': ['max', 'mean', 'min', 'sum', 'var'],
+            'AMT_PAYMENT_TOTAL_CURRENT': ['mean', ],
+            'AMT_RECEIVABLE_PRINCIPAL': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF': ['max', ],
+            'NEW_AMT_DRAWINGS_ATM_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_POS_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
+            'NEW_AMT_DRAWINGS_OTHER_CURRENT_PER_CNT': ['max', 'mean', 'min', 'sum', 'var'],
         }
 
         aggregations_prev = {
