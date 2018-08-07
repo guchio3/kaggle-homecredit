@@ -26,12 +26,13 @@ from models.my_mlp import myMLPClassifier
 from scipy.special import erfinv
 
 import preprocess
-import additional_preprocessing
+#import additional_preprocessing
 
 np.random.seed(100)
 plt.switch_backend('agg')
 
 drop_cols = [
+        'index',
 #        'Unnamed: 0',
 #        'NEW_PREV_DAYS_TERMINATION_MAX_DAYS_EMPLOYED_DIFF',
 #        'NEW_PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX_DAYS_EMPLOYED_DIFF',
@@ -53,7 +54,7 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
-#best_features = pd.read_csv('../importances/importance_2018-08-01-05-56-12.csv')
+best_features = pd.read_csv('../importances/importance_2018-08-07-03-37-38.csv')
 
 #best_features = pd.read_csv('../importances/importance_2018-07-31-23-50-01.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
@@ -65,10 +66,10 @@ drop_cols = [
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1700).tolist()
+drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(400).tolist()
 #drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
 #drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
-#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 
 def remove_train_only_category(train_df, test_df):
@@ -153,6 +154,7 @@ def main():
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-29-11-28-13.csv'), on='SK_ID_CURR', how='left')
 
     train_df = train_and_test_df.iloc[:train_df.shape[0]]
+    #train_df = train_and_test_df.iloc[:train_df.shape[0] - 4]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
 #    train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
@@ -215,13 +217,14 @@ def main():
 #        'min_data_in_bin': [50],
 ##        'num_leaves': [32],
 #        'num_leaves': [24],
+        'num_leaves': [24],
 #        'num_leaves': [15],
-        'num_leaves': [8],
+#        'num_leaves': [8],
 #        'num_leaves': [48],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-#        'max_depth': [5],
-        'max_depth': [4],
+        'max_depth': [7],
+#        'max_depth': [4],
 #        'max_depth': [16],
 #        'subsample_freq': [1],
         'reg_alpha': [0.04],

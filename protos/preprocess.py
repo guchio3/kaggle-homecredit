@@ -16,6 +16,7 @@ from utils.my_logging import logInit
 #was_null_list = pd.read_csv('../importances/importance_2018-07-16-16-51-06.csv')[:100]
 #was_null_list = pd.read_csv('../importances/lgbm_importances01.csv')[:100]
 was_null_list = []
+latest_month = 12
 
 
 def main():
@@ -45,24 +46,27 @@ def main():
 #    bureau_df = prep.auto_impute(bureau_df)
 
     logger.info('fe for pos_cash...')
+    pos_df_curr_latest, pos_df_prev_latest = prep.fe_pos_cash(pos_df[pos_df.MONTHS_BALANCE >= -1 * latest_month])
+    pos_df_curr_latest.columns = pd.Index(['LATEST_' + e.upper() for e in pos_df_curr_latest.columns.tolist()])
     pos_df_curr, pos_df_prev = prep.fe_pos_cash(pos_df)
-    pos_df_curr_latest, pos_df_prev_latest = prep.fe_pos_cash(pos_df[pos_df.MONTHS_BALANCE >= -12])
 #    pos_df = prep.add_was_null(pos_df, 
 #            special_list=was_null_list.feature.tolist())
 #    pos_df = prep.add_was_null(pos_df)
 #    pos_df = prep.auto_impute(pos_df)
 
     logger.info('fe for instalment...')
+    ins_df_curr_latest, ins_df_prev_latest = prep.fe_installments_payments(ins_df[ins_df.DAYS_ENTRY_PAYMENT >= -1 * 30 * latest_month])
+    ins_df_curr_latest.columns = pd.Index(['LATEST_' + e.upper() for e in ins_df_curr_latest.columns.tolist()])
     ins_df_curr, ins_df_prev = prep.fe_installments_payments(ins_df)
-    ins_df_curr_latest, ins_df_prev_latest = prep.fe_installments_payments(ins_df[ins_df.DAYS_ENTRY_PAYMENT >= -365])
 #    ins_df = prep.add_was_null(ins_df,
 #            special_list=was_null_list.feature.tolist())
 #    ins_df = prep.add_was_null(ins_df)
 #    ins_df = prep.auto_impute(ins_df)
 
     logger.info('fe for creditcard...')
+    cred_df_curr_latest, cred_df_prev_latest = prep.fe_credit_card_balance(cred_df[cred_df.MONTHS_BALANCE >= -1 * latest_month])
+    cred_df_curr_latest.columns = pd.Index(['LATEST_' + e.upper() for e in cred_df_curr_latest.columns.tolist()])
     cred_df_curr, cred_df_prev = prep.fe_credit_card_balance(cred_df)
-    cred_df_curr_latest, cred_df_prev_latest = prep.fe_credit_card_balance(cred_df[cred_df.MONTHS_BALANCE >= -12])
 #    cred_df = prep.add_was_null(cred_df, 
 #            special_list=was_null_list.feature.tolist())
 #    cred_df = prep.add_was_null(cred_df)
@@ -71,19 +75,23 @@ def main():
 
 #    prev_df = prep.fe_application_prev(prev_df)
     logger.info('merging to application prev...')
+    prev_df_latest = prev_df[['SK_ID_CURR', 'SK_ID_PREV', 'NAME_CONTRACT_STATUS']]
+    prev_df_latest = prev_df_latest.merge(
+            pos_df_prev_latest, on='SK_ID_PREV', how='left')
+    prev_df_latest = prev_df_latest.merge(
+            ins_df_prev_latest, on='SK_ID_PREV', how='left')
+    prev_df_latest = prev_df_latest.merge(
+            cred_df_prev_latest, on='SK_ID_PREV', how='left')
+
     prev_df = prev_df.merge(
             pos_df_prev, on='SK_ID_PREV', how='left')
     prev_df = prev_df.merge(
-            pos_df_prev_latest, on='SK_ID_PREV', how='left')
-    prev_df = prev_df.merge(
             ins_df_prev, on='SK_ID_PREV', how='left')
     prev_df = prev_df.merge(
-            ins_df_prev_latest, on='SK_ID_PREV', how='left')
-    prev_df = prev_df.merge(
             cred_df_prev, on='SK_ID_PREV', how='left')
-    prev_df = prev_df.merge(
-            cred_df_prev_latest, on='SK_ID_PREV', how='left')
+
     logger.info('fe for application_prev...')
+    prev_df_latest = prep.fe_application_prev_latest(prev_df_latest)
     prev_df = prep.fe_application_prev(prev_df)
 #    prev_df = prep.add_was_null(prev_df,
 #            special_list=was_null_list.feature.tolist())
@@ -94,6 +102,8 @@ def main():
 #    train_and_test_df = train_and_test_df[['TARGET', 'SK_ID_CURR']]
     train_and_test_df = train_and_test_df.merge(
             prev_df, on='SK_ID_CURR', how='left')
+    train_and_test_df = train_and_test_df.merge(
+            prev_df_latest, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
             pos_df_curr, on='SK_ID_CURR', how='left')
     train_and_test_df = train_and_test_df.merge(
@@ -112,7 +122,7 @@ def main():
 
 #    train_and_test_df = prep.auto_impute(
 #            train_and_test_df, mode='min')
-    train_df = train_and_test_df.iloc[:train_df.shape[0]].reset_index()
+    train_df = train_and_test_df.iloc[:train_df.shape[0] - 4].reset_index()
     test_df = train_and_test_df.iloc[train_df.shape[0]:].reset_index()
 
 #    prep.impute_all()
