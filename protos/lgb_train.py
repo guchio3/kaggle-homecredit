@@ -54,7 +54,7 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
-best_features = pd.read_csv('../importances/importance_2018-08-07-03-37-38.csv')
+best_features = pd.read_csv('../importances/importance_2018-08-07-05-40-26.csv')
 
 #best_features = pd.read_csv('../importances/importance_2018-07-31-23-50-01.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
@@ -66,7 +66,7 @@ best_features = pd.read_csv('../importances/importance_2018-08-07-03-37-38.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(400).tolist()
+drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(200).tolist()
 #drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
 #drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
 drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
@@ -217,13 +217,13 @@ def main():
 #        'min_data_in_bin': [50],
 ##        'num_leaves': [32],
 #        'num_leaves': [24],
-        'num_leaves': [24],
-#        'num_leaves': [15],
+#        'num_leaves': [24],
+        'num_leaves': [15],
 #        'num_leaves': [8],
 #        'num_leaves': [48],
         'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-        'max_depth': [7],
+        'max_depth': [5],
 #        'max_depth': [4],
 #        'max_depth': [16],
 #        'subsample_freq': [1],
