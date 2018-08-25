@@ -54,8 +54,9 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
-best_features = pd.read_csv('../importances/importance_2018-08-07-05-40-26.csv')
+best_features = pd.read_csv('../importances/importance_2018-08-25-01-54-45.csv')
 
+#best_features = pd.read_csv('../importances/importance_2018-08-07-05-40-26.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-31-23-50-01.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-31-05-16-51.csv')
 
@@ -66,10 +67,10 @@ best_features = pd.read_csv('../importances/importance_2018-08-07-05-40-26.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(200).tolist()
+#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(700).tolist()
 #drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
 #drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
-drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
+#drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 
 def remove_train_only_category(train_df, test_df):
@@ -164,6 +165,7 @@ def main():
     logger.info('encoded test shape is {}'.format(test_df.shape))
 #    n_splits = 7
     n_splits = 5
+#    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=57)
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=71)
 #    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=777)
 
@@ -221,7 +223,7 @@ def main():
         'num_leaves': [15],
 #        'num_leaves': [8],
 #        'num_leaves': [48],
-        'colsample_bytree': [0.9497036],
+#        'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
         'max_depth': [5],
 #        'max_depth': [4],
@@ -249,16 +251,16 @@ def main():
         feature_importance_df = pd.DataFrame()
         logger.info('params: {}'.format(params))
         list_score = []
-        for i in tqdm(list(range(5))):
-        #for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
-            trn_idx = fold_train_test[i]['train_index']
-            val_idx = fold_train_test[i]['test_index']
+        for trn_idx, val_idx in tqdm(list(skf.split(x_train, y_train))):
+        #for i in tqdm(list(range(5))):
+            #trn_idx = fold_train_test[i]['train_index']
+            #val_idx = fold_train_test[i]['test_index']
             x_trn, x_val = x_train[trn_idx], x_train[val_idx]
             y_trn, y_val = y_train[trn_idx], y_train[val_idx]
 
             clf = LGBMClassifier(**params)
             clf.fit(x_trn, y_trn, eval_set=[(x_trn, y_trn), (x_val, y_val)],
-                    eval_metric='auc', verbose=100, early_stopping_rounds=300)
+                    eval_metric='auc', verbose=100, early_stopping_rounds=500)
 
             pred_prob = clf.predict_proba(
                     x_val, num_iteration=clf.best_iteration_)[:, 1]
