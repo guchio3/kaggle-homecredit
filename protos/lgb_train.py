@@ -32,7 +32,7 @@ np.random.seed(100)
 plt.switch_backend('agg')
 
 drop_cols = [
-        'index',
+#        'index',
 #        'Unnamed: 0',
 #        'NEW_PREV_DAYS_TERMINATION_MAX_DAYS_EMPLOYED_DIFF',
 #        'NEW_PREV_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_MAX_DAYS_EMPLOYED_DIFF',
@@ -251,8 +251,8 @@ def main():
     trained_model_ids = {}
 #    num_epochs = []
     i = 0
-    import pickle
-    fold_train_test = pickle.load(open('shared_kfold/fold_train_test.pkl', 'rb'))
+#    import pickle
+#    fold_train_test = pickle.load(open('shared_kfold/fold_train_test.pkl', 'rb'))
 
     for params in tqdm(list(ParameterGrid(all_params))):
         feature_importance_df = pd.DataFrame()
