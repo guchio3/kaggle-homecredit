@@ -159,13 +159,14 @@ def main():
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-02-38-58.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-29-11-28-13.csv'), on='SK_ID_CURR', how='left')
 
-    train_df = train_and_test_df.iloc[:train_df.shape[0]]
+    train_df = train_and_test_df.iloc[:train_df.shape[0]].reset_index(drop=True)
     #train_df = train_and_test_df.iloc[:train_df.shape[0] - 4]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
     # 分布がおかしいところを upsampling
-    up_train_df = train_df[(train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 430000)].
-    train_df = pd.concat([train_df] + [up_train_df for i in range(5)], axis=0)
+    up_train_df_index = train_df[(train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 430000)].loc
+#    up_train_df = train_df[(train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 430000)].
+#    train_df = pd.concat([train_df] + [up_train_df for i in range(5)], axis=0)
 
 #    train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
 #    test_df.to_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
