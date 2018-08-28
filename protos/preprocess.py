@@ -41,41 +41,46 @@ def main():
     # add missing value info
     train_and_test_df['IS_IN_PREV'] = train_and_test_df.SK_ID_CURR.isin(set(prev_df.SK_ID_CURR.tolist()))
     train_and_test_df['IS_IN_PREV_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(prev_df[prev_df.DAYS_FIRST_DUE >= -1 * latest_month].SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_PREV_LATEST_2'] = train_and_test_df.SK_ID_CURR.isin(set(prev_df[prev_df.DAYS_FIRST_DUE >= -1 * latest_month * 3].SK_ID_CURR.tolist()))
     train_and_test_df['IS_IN_CC'] = train_and_test_df.SK_ID_CURR.isin(set(cred_df.SK_ID_CURR.tolist()))
-#    train_and_test_df['IS_IN_CC_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(cred_df.SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_CC_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(cred_df[cred_df.MONTHS_BALANCE >= -1 * latest_month].SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_CC_LATEST_2'] = train_and_test_df.SK_ID_CURR.isin(set(cred_df[cred_df.MONTHS_BALANCE >= -1 * latest_month * 3].SK_ID_CURR.tolist()))
     train_and_test_df['IS_IN_INSTAL'] = train_and_test_df.SK_ID_CURR.isin(set(ins_df.SK_ID_CURR.tolist()))
-#    train_and_test_df['IS_IN_INSTAL_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(ins_df.SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_INSTAL_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(ins_df[ins_df.DAYS_ENTRY_PAYMENT >= -1 * 30 * latest_month].SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_INSTAL_LATEST_2'] = train_and_test_df.SK_ID_CURR.isin(set(ins_df[ins_df.DAYS_ENTRY_PAYMENT >= -1 * 30 * latest_month * 3].SK_ID_CURR.tolist()))
     train_and_test_df['IS_IN_POS'] = train_and_test_df.SK_ID_CURR.isin(set(pos_df.SK_ID_CURR.tolist()))
-#    train_and_test_df['IS_IN_POS_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(pos_df.SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_POS_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(pos_df[pos_df.MONTHS_BALANCE >= -1 * latest_month].SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_POS_LATEST_2'] = train_and_test_df.SK_ID_CURR.isin(set(pos_df[pos_df.MONTHS_BALANCE >= -1 * latest_month * 3].SK_ID_CURR.tolist()))
     train_and_test_df['IS_IN_BUREAU'] = train_and_test_df.SK_ID_CURR.isin(set(bureau_df.SK_ID_CURR.tolist()))
     train_and_test_df['IS_IN_BUREAU_LATEST'] = train_and_test_df.SK_ID_CURR.isin(set(bureau_df[bureau_df.DAYS_CREDIT >= -1 * 30 * latest_month].SK_ID_CURR.tolist()))
+    train_and_test_df['IS_IN_BUREAU_LATEST_2'] = train_and_test_df.SK_ID_CURR.isin(set(bureau_df[bureau_df.DAYS_CREDIT >= -1 * 30 * latest_month * 3].SK_ID_CURR.tolist()))
 
     logger.info('fe for bureau...')
     bureau_df_latest = prep.fe_bureau_and_balance(bureau_df[bureau_df.DAYS_CREDIT >= -1 * 30 * latest_month], bb_df)
     bureau_df_latest.columns = pd.Index(['LATEST_' + e.upper() for e in bureau_df_latest.columns.tolist()])
     bureau_df_latest_2 = prep.fe_bureau_and_balance(bureau_df[bureau_df.DAYS_CREDIT >= -1 * 30 * latest_month * 3], bb_df)
-    bureau_df_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in bureau_df_latest.columns.tolist()])
+    bureau_df_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in bureau_df_latest_2.columns.tolist()])
     bureau_df = prep.fe_bureau_and_balance(bureau_df, bb_df)
 
     logger.info('fe for pos_cash...')
     pos_df_curr_latest, pos_df_prev_latest = prep.fe_pos_cash(pos_df[pos_df.MONTHS_BALANCE >= -1 * latest_month])
     pos_df_curr_latest.columns = pd.Index(['LATEST_' + e.upper() for e in pos_df_curr_latest.columns.tolist()])
     pos_df_curr_latest_2, pos_df_prev_latest_2 = prep.fe_pos_cash(pos_df[pos_df.MONTHS_BALANCE >= -1 * latest_month * 3])
-    pos_df_curr_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in pos_df_curr_latest.columns.tolist()])
+    pos_df_curr_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in pos_df_curr_latest_2.columns.tolist()])
     pos_df_curr, pos_df_prev = prep.fe_pos_cash(pos_df)
 
     logger.info('fe for instalment...')
     ins_df_curr_latest, ins_df_prev_latest = prep.fe_installments_payments(ins_df[ins_df.DAYS_ENTRY_PAYMENT >= -1 * 30 * latest_month])
     ins_df_curr_latest.columns = pd.Index(['LATEST_' + e.upper() for e in ins_df_curr_latest.columns.tolist()])
     ins_df_curr_latest_2, ins_df_prev_latest_2 = prep.fe_installments_payments(ins_df[ins_df.DAYS_ENTRY_PAYMENT >= -1 * 30 * latest_month * 3])
-    ins_df_curr_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in ins_df_curr_latest.columns.tolist()])
+    ins_df_curr_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in ins_df_curr_latest_2.columns.tolist()])
     ins_df_curr, ins_df_prev = prep.fe_installments_payments(ins_df)
 
     logger.info('fe for creditcard...')
     cred_df_curr_latest, cred_df_prev_latest = prep.fe_credit_card_balance(cred_df[cred_df.MONTHS_BALANCE >= -1 * latest_month])
     cred_df_curr_latest.columns = pd.Index(['LATEST_' + e.upper() for e in cred_df_curr_latest.columns.tolist()])
     cred_df_curr_latest_2, cred_df_prev_latest_2 = prep.fe_credit_card_balance(cred_df[cred_df.MONTHS_BALANCE >= -1 * latest_month * 3])
-    cred_df_curr_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in cred_df_curr_latest.columns.tolist()])
+    cred_df_curr_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() for e in cred_df_curr_latest_2.columns.tolist()])
     cred_df_curr, cred_df_prev = prep.fe_credit_card_balance(cred_df)
 
 #    prev_df = prep.fe_application_prev(prev_df)
@@ -95,14 +100,12 @@ def main():
             ins_df_prev_latest, on='SK_ID_PREV', how='left')
     prev_df_latest = prev_df_latest.merge(
             cred_df_prev_latest, on='SK_ID_PREV', how='left')
-    prev_df_latest.columns = pd.Index(['LATEST_' + e.upper() if e.upper() not in ['SK_ID_PREV', 'SK_ID_CURR'] else e.upper() for e in prev_df_latest.columns.tolist()])
     prev_df_latest_2 = prev_df_latest_2.merge(
             ins_df_prev_latest_2, on='SK_ID_PREV', how='left')
     prev_df_latest_2 = prev_df_latest_2.merge(
             cred_df_prev_latest_2, on='SK_ID_PREV', how='left')
     prev_df_latest_2 = prev_df_latest_2.merge(
             pos_df_prev_latest_2, on='SK_ID_PREV', how='left')
-    prev_df_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() if e.upper() not in ['SK_ID_PREV', 'SK_ID_CURR'] else e.upper() for e in prev_df_latest_2.columns.tolist()])
 
     prev_df = prev_df.merge(
             pos_df_prev, on='SK_ID_PREV', how='left')
@@ -114,6 +117,8 @@ def main():
     logger.info('fe for application_prev...')
     prev_df_latest = prep.fe_application_prev_latest(prev_df_latest)
     prev_df_latest_2 = prep.fe_application_prev_latest(prev_df_latest_2)
+    prev_df_latest.columns = pd.Index(['LATEST_' + e.upper() if e.upper() not in ['SK_ID_PREV', 'SK_ID_CURR'] else e.upper() for e in prev_df_latest.columns.tolist()])
+    prev_df_latest_2.columns = pd.Index(['LATEST_2_' + e.upper() if e.upper() not in ['SK_ID_PREV', 'SK_ID_CURR'] else e.upper() for e in prev_df_latest_2.columns.tolist()])
 #    prev_df_latest = prep.fe_application_prev(prev_df_latest)
 #    prev_df_latest = prep.fe_application_prev_latest_2(prev_df_latest)
 #    prev_df_latest.columns = pd.Index(['LATEST_' + e.upper() if e.upper() not in ['SK_ID_PREV', 'SK_ID_CURR'] else e.upper() for e in prev_df_latest.columns.tolist()])
