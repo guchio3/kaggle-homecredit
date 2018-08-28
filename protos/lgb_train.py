@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, ParameterGrid
 from sklearn.neural_network import MLPClassifier
-from xgboost import XGBClassifier
+#from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn import metrics
@@ -208,7 +208,7 @@ def main():
         ], axis=1).values
 
     all_params = {
-        'nthread': [-1],
+        'nthread': [16],
 #        'boosting': ['gbdt', 'gbrt', 'rf', 
 #            'random_forest', 'dart', 'goss'],
 #        'is_unbalance':[True],
