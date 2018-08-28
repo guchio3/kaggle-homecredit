@@ -54,7 +54,8 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
-best_features = pd.read_csv('../importances/importance_2018-08-25-01-54-45.csv')
+best_features = pd.read_csv('../importances/importance_2018-08-25-06-46-12.csv')
+#best_features = pd.read_csv('../importances/importance_2018-08-25-01-54-45.csv')
 
 #best_features = pd.read_csv('../importances/importance_2018-08-07-05-40-26.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-31-23-50-01.csv')
@@ -67,7 +68,7 @@ best_features = pd.read_csv('../importances/importance_2018-08-25-01-54-45.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-28-00-27-32.csv')
 #best_features = pd.read_csv('../importances/importance_2018-07-27-08-49-50.csv')
 #drop_cols += best_features.iloc[:400].sort_values('importance_RAT', ascending=False).feature.head(50).tolist()
-#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(700).tolist()
+#drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1000).tolist()
 #drop_cols += best_features.sort_values('importance_RAT', ascending=False).feature.head(1550).tolist()
 #drop_cols += best_features.sort_values('importance_MEAN', ascending=True).feature.head(2500).tolist()
 #drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
@@ -160,6 +161,9 @@ def main():
 
 #    train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
 #    test_df.to_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
+#    train_df.to_feather('../inputs/my_train_all_LGBMClassifier_auc-0.797984_2018-08-25-08-31-33_drop1000.fth')
+#    test_df.to_feather('../inputs/my_test_all_LGBMClassifier_auc-0.797984_2018-08-25-08-31-33_drop1000.fth')
+#    exit(0)
 
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
@@ -220,16 +224,19 @@ def main():
 ##        'num_leaves': [32],
 #        'num_leaves': [24],
 #        'num_leaves': [24],
-        'num_leaves': [15],
+        'num_leaves': [31],
+#        'num_leaves': [15],
 #        'num_leaves': [8],
 #        'num_leaves': [48],
-#        'colsample_bytree': [0.9497036],
+        'colsample_bytree': [0.9497036],
         'subsample': [0.8715623],
-        'max_depth': [5],
+        'max_depth': [8],
+#        'max_depth': [5],
 #        'max_depth': [4],
 #        'max_depth': [16],
 #        'subsample_freq': [1],
-        'reg_alpha': [0.04],
+#        'reg_alpha': [0.04],
+        'reg_alpha': [0.041545473],
         'reg_lambda': [0.073],
         'min_split_gain': [0.0222415],
         'min_child_weight': [60],
