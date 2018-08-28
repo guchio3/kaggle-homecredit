@@ -74,6 +74,10 @@ best_features = pd.read_csv('../importances/importance_2018-08-25-06-46-12.csv')
 #drop_cols += best_features[best_features.importance_RAT.isnull()].feature.tolist()
 
 
+id_start = 370000
+id_end = 430000
+
+
 def remove_train_only_category(train_df, test_df):
     for column in tqdm(train_df.columns.values):
         # minmax normalization for continuous data
@@ -159,6 +163,10 @@ def main():
     #train_df = train_and_test_df.iloc[:train_df.shape[0] - 4]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
+    # 分布がおかしいところを upsampling
+    up_train_df = train_df[(train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 430000)].
+    train_df = pd.concat([train_df] + [up_train_df for i in range(5)], axis=0)
+
 #    train_df.to_csv('../inputs/my_train_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
 #    test_df.to_csv('../inputs/my_test_all_LGBMClassifier_auc-0.796075_2018-07-28-00-27-32_1000_550_ins-12mon_500.csv')
 #    train_df.to_feather('../inputs/my_train_all_LGBMClassifier_auc-0.797984_2018-08-25-08-31-33_drop1000.fth')
@@ -229,7 +237,7 @@ def main():
 #        'num_leaves': [8],
 #        'num_leaves': [48],
         'colsample_bytree': [0.9497036],
-        'subsample': [0.8715623],
+#        'subsample': [0.8715623],
         'max_depth': [8],
 #        'max_depth': [5],
 #        'max_depth': [4],
