@@ -98,10 +98,10 @@ def main():
 #    dfs_dict['train'] = prep.down_sampling(dfs_dict['train'], 'TARGET')
 #    train_df = dfs_dict['train']
 #    test_df = dfs_dict['test']
-    train_df = pd.read_feather('../inputs/my_train_all.fth')
-    test_df = pd.read_feather('../inputs/my_test_all.fth')
-    #train_df = pd.read_feather('../inputs/my_train_all_LGBMClassifier_auc-0.797984_2018-08-25-08-31-33_drop1000.fth')
-    #test_df = pd.read_feather('../inputs/my_test_all_LGBMClassifier_auc-0.797984_2018-08-25-08-31-33_drop1000.fth')
+    #train_df = pd.read_feather('../inputs/my_train_all.fth')
+    #test_df = pd.read_feather('../inputs/my_test_all.fth')
+    train_df = pd.read_feather('../inputs/my_train_all_LGBMClassifier_auc-0.797984_2018-08-25-08-31-33_drop1000.fth')
+    test_df = pd.read_feather('../inputs/my_test_all_LGBMClassifier_auc-0.797984_2018-08-25-08-31-33_drop1000.fth')
 
     logger.info('removing the categorical features which\
                 are contained only by training set...')
@@ -139,7 +139,7 @@ def main():
         #'solver': ['sgd', 'adam'],
 #        'hidden_layer_sizes': [(250, 70), ],
 #        'hidden_layer_sizes': [(400, 40)],
-        'hidden_layer_sizes': [(700, 40)],
+        'hidden_layer_sizes': [(700, 80), (700, 40), ],
         #'hidden_layer_sizes': [(150, 35), (300, 50), (500, 100), (500, 50), (400, 40)],
         #'hidden_layer_sizes': [(150, 35)],
 #        'hidden_layer_sizes': [(100, 30), (150, 35)],
@@ -147,6 +147,7 @@ def main():
         'random_state': [71],
 #        'learning_rate_init': [0.00001, ],
         'learning_rate_init': [0.7, ],
+#        'learning_rate_init': [0.3, ],
         'alpha': [0.05, ],
         'batch_size': [256],
         'batch_norm': [(False, True), ],
