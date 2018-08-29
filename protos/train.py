@@ -139,7 +139,7 @@ def main():
         #'solver': ['sgd', 'adam'],
 #        'hidden_layer_sizes': [(250, 70), ],
 #        'hidden_layer_sizes': [(400, 40)],
-        'hidden_layer_sizes': [(700, 80), (700, 40), ],
+        'hidden_layer_sizes': [(250, 70), (400, 40), (700, 80), (700, 40), ],
         #'hidden_layer_sizes': [(150, 35), (300, 50), (500, 100), (500, 50), (400, 40)],
         #'hidden_layer_sizes': [(150, 35)],
 #        'hidden_layer_sizes': [(100, 30), (150, 35)],

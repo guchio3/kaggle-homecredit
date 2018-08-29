@@ -423,6 +423,8 @@ class HomeCreditPreprocessor(Preprocessor):
             df['INSTAL_PREV_AMT_INSTALMENT_SUM'] - df['INSTAL_PREV_AMT_PAYMENT_SUM']
         df['NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO'] = \
             df['INSTAL_PREV_AMT_PAYMENT_SUM'] / df['INSTAL_PREV_AMT_INSTALMENT_SUM']
+        df['NEW_INSTAL_REST_PAYMENT'] = \
+            df['AMT_CREDIT'] - df['AMT_DOWNPAYMENT'] - df['INSTAL_PREV_AMT_PAYMENT_SUM']
 
         # prev features from cc
 #        tail_completed_mask = df_for_cat_tail.CC_PREV_NAME_CONTRACT_STATUS_TAIL == 'Completed'
@@ -580,6 +582,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['sum'],
             'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean'],
+            'NEW_INSTAL_REST_PAYMENT': ['sum', 'mean', 'max'],
 
 #            'CC_PREV_MONTHS_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
 #            'CC_PREV_MONTHS_BALANCE_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
@@ -589,7 +592,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'CC_PREV_AMT_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
 #            'CC_PREV_AMT_BALANCE_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
 #            'CC_PREV_AMT_BALANCE_MIN': ['max', 'mean', 'min', 'sum', 'var'],
-            'CC_PREV_AMT_BALANCE_VAR': ['max', ],
+             'CC_PREV_AMT_BALANCE_VAR': ['max', ],
 #            'CC_PREV_AMT_BALANCE_SUM': ['max', 'mean', 'min', 'sum', 'var'],
 #            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MAX': ['max', 'mean', 'min', 'sum', 'var'],
 #            'CC_PREV_AMT_CREDIT_LIMIT_ACTUAL_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
@@ -762,6 +765,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['mean'],
             'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['sum'],
 #            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean'],
+            'NEW_INSTAL_REST_PAYMENT': ['sum', 'mean', 'max'],
 #
 #            'CC_PREV_AMT_BALANCE_VAR': ['max', ],
 #            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MAX': ['sum', ],
@@ -870,6 +874,8 @@ class HomeCreditPreprocessor(Preprocessor):
             df['INSTAL_PREV_AMT_INSTALMENT_SUM'] - df['INSTAL_PREV_AMT_PAYMENT_SUM']
         df['NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO'] = \
             df['INSTAL_PREV_AMT_PAYMENT_SUM'] / df['INSTAL_PREV_AMT_INSTALMENT_SUM']
+        df['NEW_INSTAL_REST_PAYMENT'] = \
+            df['AMT_CREDIT'] - df['AMT_DOWNPAYMENT'] - df['INSTAL_PREV_AMT_PAYMENT_SUM']
 
         # prev features from cc
 #        tail_completed_mask = df_for_cat_tail.CC_PREV_NAME_CONTRACT_STATUS_TAIL == 'Completed'
@@ -1027,6 +1033,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'NEW_INSTAL_PREV_DAYS_INSTALMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_OTHERS': ['max', 'mean', 'min', 'sum', 'var'],
             'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['sum'],
             'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean'],
+            'NEW_INSTAL_REST_PAYMENT': ['sum', 'mean', 'max'],
 
 #            'CC_PREV_MONTHS_BALANCE_MAX': ['max', 'mean', 'min', 'sum', 'var'],
 #            'CC_PREV_MONTHS_BALANCE_MEAN': ['max', 'mean', 'min', 'sum', 'var'],
@@ -1209,6 +1216,7 @@ class HomeCreditPreprocessor(Preprocessor):
 #            'NEW_INSTAL_PREV_DAYS_ENTRY_PAYMENT_MAX_FOR_NUM_INSTALMENT_VERSION_TAIL_1': ['mean'],
             'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_DIFF': ['sum'],
 #            'NEW_INSTAL_PREV_AMT_INSTALMENT_AND_PAYMENT_SUM_RATIO': ['mean'],
+            'NEW_INSTAL_REST_PAYMENT': ['sum', 'mean', 'max'],
 #
 #            'CC_PREV_AMT_BALANCE_VAR': ['max', ],
 #            'CC_PREV_NEW_AMT_BALANCE_CREDIT_LIMIT_ACTUAL_DIFF_MAX': ['sum', ],
