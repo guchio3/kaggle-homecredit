@@ -5,7 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, ParameterGrid
 from sklearn.neural_network import MLPClassifier
-from xgboost import XGBClassifier
+#from xgboost import XGBClassifier
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn import metrics
 from sklearn.feature_selection import VarianceThreshold
@@ -17,7 +17,7 @@ K.set_session(K.tf.Session(
     config=K.tf.ConfigProto(
 #        intra_op_parallelism_threads=2, 
 #        inter_op_parallelism_threads=2)))
-         device_count={'CPU': 8})))
+         device_count={'CPU': 16})))
 
 from tqdm import tqdm
 from logging import getLogger
@@ -89,19 +89,24 @@ def main():
     dataio = DataIO(logger=logger)
     prep = HomeCreditPreprocessor(logger=logger)
 
-    dfs_dict = dataio.read_csvs({
-        'train': '../inputs/my_train_2.csv',
-        'test': '../inputs/my_test_2.csv'})
+#    dfs_dict = dataio.read_csvs({
+#        'train': '../inputs/my_train_2.csv',
+#        'test': '../inputs/my_test_2.csv'})
 
 #    source_train_df = prep.onehot_encoding(dfs_dict['train'])
 #    test_df = prep.onehot_encoding(dfs_dict['test'])
 #    dfs_dict['train'] = prep.down_sampling(dfs_dict['train'], 'TARGET')
-    train_df = dfs_dict['train']
-    test_df = dfs_dict['test']
+#    train_df = dfs_dict['train']
+#    test_df = dfs_dict['test']
+    train_df = pd.read_feather('../inputs/my_train_all.fth')
+    test_df = pd.read_feather('../inputs/my_test_all.fth')
+
     logger.info('removing the categorical features which\
                 are contained only by training set...')
 #    train_df = remove_train_only_category(train_df, test_df)
     train_and_test_df = pd.concat([train_df, test_df], axis=0)
+    logger.info('imputing...')
+    train_and_test_df = prep.auto_impute(train_and_test_df)
     logger.info('normalizing inputs...')
 #    scaler = MinMaxScaler()
     scaler = GaussRankScaler()
@@ -113,7 +118,8 @@ def main():
     logger.info('encoded training shape is {}'.format(train_df.shape))
     logger.info('encoded test shape is {}'.format(test_df.shape))
     n_splits = 5
-    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=777)
+    #skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=777)
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=71)
 
 #    x_train = train_df.drop(['TARGET', 'SK_ID_CURR'], axis=1).values
     x_train = train_df.drop([
@@ -129,8 +135,8 @@ def main():
         'max_iter': [200],
         'solver': ['sgd'],
         #'solver': ['sgd', 'adam'],
-        'hidden_layer_sizes': [(250, 70), ],
-#        'hidden_layer_sizes': [(400, 40)],
+#        'hidden_layer_sizes': [(250, 70), ],
+        'hidden_layer_sizes': [(400, 40)],
         #'hidden_layer_sizes': [(150, 35), (300, 50), (500, 100), (500, 50), (400, 40)],
         #'hidden_layer_sizes': [(150, 35)],
 #        'hidden_layer_sizes': [(100, 30), (150, 35)],

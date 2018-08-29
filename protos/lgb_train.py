@@ -54,7 +54,9 @@ drop_cols = [
 #        'NEW_AMT_CREDIT_POPRAT',
         ]
 
-best_features = pd.read_csv('../importances/importance_2018-08-25-06-46-12.csv')
+best_features = pd.read_csv('../importances/importance_2018-08-28-15-51-02.csv')
+
+#best_features = pd.read_csv('../importances/importance_2018-08-25-06-46-12.csv')
 #best_features = pd.read_csv('../importances/importance_2018-08-25-01-54-45.csv')
 
 #best_features = pd.read_csv('../importances/importance_2018-08-07-05-40-26.csv')
@@ -153,18 +155,27 @@ def main():
     train_and_test_df = pd.concat([train_df, test_df], axis=0)
     train_and_test_df, _ = prep.onehot_encoding(train_and_test_df)
 #    train_and_test_df['NEW_EXT_SOURCES_MEAN'] = train_and_test_df[['EXT_SOURCE_1', 'EXT_SOURCE_2','EXT_SOURCE_3']].mean(axis=1)
-    train_and_test_df = train_and_test_df.drop(drop_cols, axis=1)
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-31-10-42-54.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-04-46-46.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-30-02-38-58.csv'), on='SK_ID_CURR', how='left')
 #    train_and_test_df = train_and_test_df.merge(pd.read_csv('../inputs/ext_sources_4_2018-07-29-11-28-13.csv'), on='SK_ID_CURR', how='left')
+
+#    df_train_yamakawasan = 
+#    df_test_yamakawasan = 
+#    df_haradasan = pd.read_csv('/home/kei.harada/features/ext_features.csv')
+#    df_nardtreesan = pd.DataFrame(np.load('/var/share_mnt/yamakawa-yoichi/nps_min.npy'))
+#    df_haradasan = pd.concat([df_haradasan, df_nardtreesan], axis=1)
+#    train_and_test_df = train_and_test_df.merge(df_haradasan, on='SK_ID_CURR', how='left')
+#    train_and_test_df.columns = pd.Index([str(col) for col in train_and_test_df.columns.tolist()])
+#    train_and_test_df = train_and_test_df.drop(drop_cols, axis=1)
 
     train_df = train_and_test_df.iloc[:train_df.shape[0]].reset_index(drop=True)
     #train_df = train_and_test_df.iloc[:train_df.shape[0] - 4]
     test_df = train_and_test_df.iloc[train_df.shape[0]:]
 
     # 分布がおかしいところを upsampling
-    up_train_df_index = train_df[(train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 430000)].loc
+#    up_train_df_index = set(train_df[(train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 430000)].index)
+    up_train_df_index = set(train_df[(train_df.SK_ID_CURR > 400000) & (train_df.SK_ID_CURR < 413000)].index)
 #    up_train_df = train_df[(train_df.SK_ID_CURR > 370000) & (train_df.SK_ID_CURR < 430000)].
 #    train_df = pd.concat([train_df] + [up_train_df for i in range(5)], axis=0)
 
@@ -271,6 +282,8 @@ def main():
         #for i in tqdm(list(range(5))):
             #trn_idx = fold_train_test[i]['train_index']
             #val_idx = fold_train_test[i]['test_index']
+            upsamples = np.array(list(set(trn_idx) & up_train_df_index))
+            trn_idx = np.concatenate([trn_idx] + [upsamples for i in range(3)], axis=0)
             x_trn, x_val = x_train[trn_idx], x_train[val_idx]
             y_trn, y_val = y_train[trn_idx], y_train[val_idx]
 
